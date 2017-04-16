@@ -57,9 +57,8 @@ body {
   margin: 0;
   padding: 0;
   position: absolute;
-  top: 50%;
+  top: calc(50% - 120px);
   left: 10%;
-  transform: translateY(-50%);
 }
 
 .menu li {
