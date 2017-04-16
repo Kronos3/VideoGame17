@@ -1,0 +1,72 @@
+/* main css */
+
+html {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  display: block;
+  position: relative;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  background: #1c1d25;
+  overflow: hidden;
+  cursor: url('resources/textures/cursor.png'),url('resources/textures/cursor.png'),none;
+}
+
+#gameCanvas {
+  height: 100%;
+  width: 100%;
+  display: none;
+  opacity: 0;
+}
+
+.stars {
+  display: block;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.stars > img {
+  position: absolute;
+}
+
+#mars {
+  width: 20%;
+  height: auto;
+  position: absolute;
+  right: -20px;
+  bottom: -20px;
+}
+
+#moon {
+  width: 128px;
+  height: auto;
+  position: absolute;
+  left: 60%;
+  bottom: 60%;
+}
+
+.menu {
+  list-style-type: none;
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  transform: translateY(-50%);
+}
+
+.menu li {
+  color: #fff;
+  font-family: 'Black Ops One', cursive;
+  font-size: 64px;
+}
+
+.menu li:hover {
+  color: #7B7B7B;
+}

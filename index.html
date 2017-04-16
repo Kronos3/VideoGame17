@@ -1,10 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script src=""></script>
+<script src="lib/easeljs-0.8.2.min.js"></script>
+<script src="lib/jquery-3.2.1.min.js"></script>
+<script src="lib/main.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Black+Ops+One" rel="stylesheet">
+<link href="main.css" rel="stylesheet">
 </head>
-<body onload="init();">
-  <canvas id="demoCanvas" width="500" height="300"></canvas>
+<body>
+  <div class="scene scene1">
+    <div class="stars"></div>
+    <img id="mars" src="resources/textures/Mars-L.png">
+    <img id="moon" src="resources/textures/moon.png">
+    <ul class="menu">
+      <li>Start</li>
+      <li>Credits</li>
+      <li>Quit</li>
+    </ul>
+  </div>
 </body>
 
 </html>
