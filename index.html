@@ -1,22 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script src="lib/easeljs-0.8.2.min.js"></script>
+<script src="lib/matter.min.js"></script>
 <script src="lib/jquery-3.2.1.min.js"></script>
 <script src="lib/main.js"></script>
 <link href="https://fonts.googleapis.com/css?family=Black+Ops+One" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
 <link href="main.css" rel="stylesheet">
 </head>
 <body>
-  <div class="scene scene0">
+<div class="blackbox-logs">
+    <div>
+        <div>
+            <span class="noformat">----------------------------------</span>
+            <span class="noformat">RockOS</span>
+            <span class="noformat">The future of rocketing</span>
+            <span class="noformat">Shake well before booting</span>
+            <span class="noformat">----------------------------------</span>
+            <span>System init...</span>
+        </div>
+    </div>
+</div>
+  <div class="scene scene0 view">
     <div class="stars"></div>
     <img id="mars" class="pos" src="resources/textures/Mars-L.png">
     <img id="moon" class="pos" src="resources/textures/moon.png">
     <ul class="menu rot">
-      <li>Start</li>
+      <li onclick="next_scene()">Start</li>
       <li>Credits</li>
       <li>Quit</li>
     </ul>
+  </div>
+  <div class="scene scene1">
+      <h1 class="buf anim-typewriter"></h1>
+      <div class="intro">
+          <img id="ground" src="resources/textures/Foreground-L.png">
+          <img id="launch" src="resources/textures/Launch-L.png">
+          <div id="__rocket"><img src="resources/textures/Rocket-L.png"></div>
+          <div id="cloud1"><img src="resources/textures/Cloud_1-L.png"></div>
+          <div id="cloud2"><img src="resources/textures/Cloud_2-L.png"></div>
+          <div id="cloud3"><img src="resources/textures/Cloud_3-L.png"></div>
+      </div>
+      <div id="canvas1-wrapper"></div>
   </div>
 </body>
 
