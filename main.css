@@ -274,3 +274,9 @@ body {
 .intro.launch {
     transform: translateY(200%);
 }
+
+body > canvas {
+    top: 0px;
+    position: absolute;
+    display: none;
+}
