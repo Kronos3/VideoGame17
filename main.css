@@ -280,3 +280,121 @@ body > canvas {
     position: absolute;
     display: none;
 }
+
+#canvas-wrapper {
+    position: fixed;
+    top: 0;
+    display: none;
+}
+
+.tutorial {
+    position: absolute;
+    display: block;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 60px;
+    color: #fff;
+    font-size: 45px;
+}
+
+.overlay-keys {
+    background-image: url('resources/tutorial/Keys_For_Tutorial_Unpressed-L.png');
+    display: block;
+    width: 200px;
+    height: 135px;
+    position: absolute;
+    top: calc(100% + 30px);
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(255,255,255,0.3);
+    background-repeat: no-repeat;
+    background-position: center center;
+    padding: 12px;
+}
+
+@keyframes flash {
+    0% {opacity: 0;}
+    50% {opacity: 0;}
+    55% {opacity: 1;}
+    100% {opacity: 1;}
+}
+
+.overlay-keys.up::after {
+    content: '';
+    background-image: url('resources/tutorial/Keys_For_Tutorial_Up-L.png');
+    display: block;
+    width: 200px;
+    height: 135px;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 8;
+    animation-name: flash;
+    animation-duration: 0.4s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    background-position: center center;
+    padding: 12px;
+    animation-delay: 0s, 0.3s;
+}
+
+.overlay-keys.down::after {
+    content: '';
+    background-image: url('resources/tutorial/Keys_For_Tutorial_Down-L.png');
+    display: block;
+    width: 200px;
+    height: 135px;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 8;
+    animation-name: flash;
+    animation-duration: 0.4s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    background-position: center center;
+    padding: 12px;
+    animation-delay: 0s, 0.3s;
+}
+
+.overlay-keys.left::after {
+    content: '';
+    background-image: url('resources/tutorial/Keys_For_Tutorial_Left-L.png');
+    display: block;
+    width: 200px;
+    height: 135px;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 8;
+    animation-name: flash;
+    animation-duration: 0.4s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    background-position: center center;
+    padding: 12px;
+    animation-delay: 0s, 0.3s;
+}
+
+.overlay-keys.right::after {
+    content: '';
+    background-image: url('resources/tutorial/Keys_For_Tutorial_Right-L.png');
+    display: block;
+    width: 200px;
+    height: 135px;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 8;
+    animation-name: flash;
+    animation-duration: 0.4s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    background-position: center center;
+    padding: 12px;
+    animation-delay: 0s, 0.3s;
+}
