@@ -284,7 +284,6 @@ body > canvas {
 #canvas-wrapper {
     position: fixed;
     top: 0;
-    display: none;
 }
 
 .tutorial {
