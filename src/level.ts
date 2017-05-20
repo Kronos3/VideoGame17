@@ -80,16 +80,8 @@ export class Level {
         return null;
     }
 
-    loadAsset = (name: string, path: string, all = false) => {
+    loadAsset = (name: string, path: string) => {
         this.game.game.load.image (name, path);
-        if (all) {
-            
-            for (var iter of this.game.levelsequence.levels) {
-                iter.assets.push ({path: path, name, level: iter})
-            }
-        }
-        else {
-            this.assets.push ({path: path, name: name, level: this});
-        }
+        this.assets.push ({path: path, name: name, level: this});
     }
 }

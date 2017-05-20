@@ -98,14 +98,17 @@ var MainGame = (function () {
         this.loadAsset = function (name, path, level) {
             if (typeof level === "string") {
                 if (level == "all") {
-                    _this.levelsequence.levels[0].loadAsset(name, path, true);
+                    for (var _i = 0, _a = _this.levelsequence.levels; _i < _a.length; _i++) {
+                        var iter = _a[_i];
+                        iter.loadAsset(name, path);
+                    }
                 }
                 else {
-                    _this.levelsequence.getLevel(level).loadAsset(name, path, false);
+                    _this.levelsequence.getLevel(level).loadAsset(name, path);
                 }
             }
             else {
-                level.loadAsset(name, path, false);
+                level.loadAsset(name, path);
             }
         };
         this.create = function () {
@@ -208,18 +211,9 @@ var Level = (function () {
             UTIL.error('Object {0} could not be found'.format(name));
             return null;
         };
-        this.loadAsset = function (name, path, all) {
-            if (all === void 0) { all = false; }
+        this.loadAsset = function (name, path) {
             _this.game.game.load.image(name, path);
-            if (all) {
-                for (var _i = 0, _a = _this.game.levelsequence.levels; _i < _a.length; _i++) {
-                    var iter = _a[_i];
-                    iter.assets.push({ path: path, name: name, level: iter });
-                }
-            }
-            else {
-                _this.assets.push({ path: path, name: name, level: _this });
-            }
+            _this.assets.push({ path: path, name: name, level: _this });
         };
         this.game = game;
         this.name = name;

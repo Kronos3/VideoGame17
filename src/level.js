@@ -59,18 +59,9 @@ var Level = (function () {
             UTIL.error('Object {0} could not be found'.format(name));
             return null;
         };
-        this.loadAsset = function (name, path, all) {
-            if (all === void 0) { all = false; }
+        this.loadAsset = function (name, path) {
             _this.game.game.load.image(name, path);
-            if (all) {
-                for (var _i = 0, _a = _this.game.levelsequence.levels; _i < _a.length; _i++) {
-                    var iter = _a[_i];
-                    iter.assets.push({ path: path, name: name, level: iter });
-                }
-            }
-            else {
-                _this.assets.push({ path: path, name: name, level: _this });
-            }
+            _this.assets.push({ path: path, name: name, level: _this });
         };
         this.game = game;
         this.name = name;

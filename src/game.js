@@ -65,14 +65,17 @@ var MainGame = (function () {
         this.loadAsset = function (name, path, level) {
             if (typeof level === "string") {
                 if (level == "all") {
-                    _this.levelsequence.levels[0].loadAsset(name, path, true);
+                    for (var _i = 0, _a = _this.levelsequence.levels; _i < _a.length; _i++) {
+                        var iter = _a[_i];
+                        iter.loadAsset(name, path);
+                    }
                 }
                 else {
-                    _this.levelsequence.getLevel(level).loadAsset(name, path, false);
+                    _this.levelsequence.getLevel(level).loadAsset(name, path);
                 }
             }
             else {
-                level.loadAsset(name, path, false);
+                level.loadAsset(name, path);
             }
         };
         this.create = function () {

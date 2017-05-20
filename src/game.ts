@@ -71,14 +71,16 @@ export class MainGame {
     loadAsset = (name: string, path: string, level: Level | string) => {
         if (typeof level === "string") {
             if (level == "all") {
-                this.levelsequence.levels[0].loadAsset (name, path, true);
+                for (var iter of this.levelsequence.levels) {
+                    iter.loadAsset (name, path);
+                }
             }
             else {
-                this.levelsequence.getLevel (level).loadAsset (name, path, false);
+                this.levelsequence.getLevel (level).loadAsset (name, path);
             }
         }
         else {
-            level.loadAsset (name, path, false);
+            level.loadAsset (name, path);
         }
     }
 
