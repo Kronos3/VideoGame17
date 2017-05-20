@@ -74,6 +74,7 @@ export class MainGame {
         this.cursor = this.game.input.keyboard.createCursorKeys();
         var mainCanvas = $(this.game.canvas);
         $('#canvas-wrapper').append (mainCanvas);
+        this.hide ();
     }
 
     update = () => {

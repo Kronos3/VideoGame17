@@ -1,5 +1,6 @@
 /// <reference path="../imports/phaser.d.ts" />
 import * as GAME from "./game"
+import * as UTIL from "./util"
 
 export class GameSprite {
     pObject: Phaser.Sprite;
@@ -20,4 +21,25 @@ export class GameSprite {
     enablePhysics () {
         this.game.game.physics.p2.enable (this.pObject);
     }
+}
+
+export class DynamicSprite extends GameSprite {
+    assets: string[] = [];
+    constructor (game: GAME.MainGame, assets: string[], extra?: any) {
+        super (game, assets[0], extra);
+        this.assets = assets;
+    }
+
+    switchToIndex (index: number) {
+        this.pObject.key = this.assets[index];
+        this.pObject.loadTexture (this.pObject.key);
+    }
+
+    switchTo (name: string) {
+        if (UTIL.find (name, this.assets) != -1) {
+            this.pObject.key = name;
+            this.pObject.loadTexture (this.pObject.key);
+        }
+    }
+
 }

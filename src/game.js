@@ -67,6 +67,7 @@ var MainGame = (function () {
             _this.cursor = _this.game.input.keyboard.createCursorKeys();
             var mainCanvas = $(_this.game.canvas);
             $('#canvas-wrapper').append(mainCanvas);
+            _this.hide();
         };
         this.update = function () {
             // Control
