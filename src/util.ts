@@ -7,12 +7,15 @@ export function find (a: any, b: any[]): number {
     return -1;
 }
 
-export interface String {
-    format: () => string;
+
+declare global {
+    interface String {
+        format(..._args: any[]): string;
+    }
 }
 
-String.prototype.format = function() {
-    var args = arguments;
+String.prototype.format = function(..._args: any[]) {
+    var args = _args;
     return this.replace(/{(\d+)}/g, (match, number) => { 
         return typeof args[number] != 'undefined'
         ? args[number]: match;

@@ -105,9 +105,9 @@ export class MainGame {
         this.assets.push ({path: path, name: name});
     }
 
-    addObjectFromAsset = (assetName: string, extra?: any) => {
+    addObjectFromAsset = (assetName: string, _pos = {x: 0, y: 0}, extra?: any) => {
         if (UTIL.find(assetName, this.assets) != -1) {
-            this.objects.push ({name: assetName, object: new GameSprite (this, assetName, extra)});
+            this.objects.push ({name: assetName, object: new GameSprite (this, _pos, assetName, extra)});
         }
         else {
             try {
@@ -119,7 +119,23 @@ export class MainGame {
         }
     }
 
-    newObject = (name: string, path: string, extra?: any) => {
+    newObject = (name: string, path: string, _pos = {x: 0, y: 0}, extra?: any) => {
         this.loadAsset (name, path);
+        this.addObjectFromAsset (name, _pos, extra);
+    }
+
+    getObject = (name: string): GameSprite => {
+        for (var i of this.objects) {
+            if (i.name == name) {
+                return i.object;
+            }
+        }
+        try {
+            throw new Error ('Object {0} could not be found'.format (name));
+        }
+        catch (e) {
+            console.log (e.name, + ': ' + e.message);
+        }
+        return null;
     }
 }

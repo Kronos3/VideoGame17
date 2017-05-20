@@ -123,9 +123,10 @@ var MainGame = (function () {
             _this.game.load.image(name, path);
             _this.assets.push({ path: path, name: name });
         };
-        this.addObjectFromAsset = function (assetName, extra) {
+        this.addObjectFromAsset = function (assetName, _pos, extra) {
+            if (_pos === void 0) { _pos = { x: 0, y: 0 }; }
             if (UTIL.find(assetName, _this.assets) != -1) {
-                _this.objects.push({ name: assetName, object: new object_1.GameSprite(_this, assetName, extra) });
+                _this.objects.push({ name: assetName, object: new object_1.GameSprite(_this, _pos, assetName, extra) });
             }
             else {
                 try {
@@ -136,8 +137,25 @@ var MainGame = (function () {
                 }
             }
         };
-        this.newObject = function (name, path, extra) {
+        this.newObject = function (name, path, _pos, extra) {
+            if (_pos === void 0) { _pos = { x: 0, y: 0 }; }
             _this.loadAsset(name, path);
+            _this.addObjectFromAsset(name, _pos, extra);
+        };
+        this.getObject = function (name) {
+            for (var _i = 0, _a = _this.objects; _i < _a.length; _i++) {
+                var i = _a[_i];
+                if (i.name == name) {
+                    return i.object;
+                }
+            }
+            try {
+                throw new Error('Object {0} could not be found'.format(name));
+            }
+            catch (e) {
+                console.log(e.name, +': ' + e.message);
+            }
+            return null;
         };
         this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'T17', { preload: this.preload, create: this.create, update: this.update }, true);
         $(window).resize(function () {
@@ -240,7 +258,7 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var UTIL = require("./util");
 var GameSprite = (function () {
-    function GameSprite(game, asset, extra) {
+    function GameSprite(game, pos, asset, extra) {
         this.game = game;
         this.assetName = asset;
         this.extra = $.extend({}, this.extra, external);
@@ -257,22 +275,22 @@ var GameSprite = (function () {
 exports.GameSprite = GameSprite;
 var DynamicSprite = (function (_super) {
     __extends(DynamicSprite, _super);
-    function DynamicSprite(game, assets, extra) {
-        var _this = _super.call(this, game, assets[0], extra) || this;
+    function DynamicSprite(game, pos, assets, extra) {
+        var _this = _super.call(this, game, pos, assets[0], extra) || this;
         _this.assets = [];
+        _this.switchToIndex = function (index) {
+            _this.pObject.key = _this.assets[index];
+            _this.pObject.loadTexture(_this.pObject.key);
+        };
+        _this.switchTo = function (name) {
+            if (UTIL.find(name, _this.assets) != -1) {
+                _this.pObject.key = name;
+                _this.pObject.loadTexture(_this.pObject.key);
+            }
+        };
         _this.assets = assets;
         return _this;
     }
-    DynamicSprite.prototype.switchToIndex = function (index) {
-        this.pObject.key = this.assets[index];
-        this.pObject.loadTexture(this.pObject.key);
-    };
-    DynamicSprite.prototype.switchTo = function (name) {
-        if (UTIL.find(name, this.assets) != -1) {
-            this.pObject.key = name;
-            this.pObject.loadTexture(this.pObject.key);
-        }
-    };
     return DynamicSprite;
 }(GameSprite));
 exports.DynamicSprite = DynamicSprite;
