@@ -45,38 +45,38 @@ export class MainGame {
     objects: GameSprite[] = [];
     assets: asset[] = [];
 
-    public addControlScheme (bindings: KeyBinding[], captureInput = true) {
+    addControlScheme = (bindings: KeyBinding[], captureInput = true) => {
         var temp: toggleControlScheme = new toggleControlScheme (this.game, bindings, captureInput);
         this.controls.push (temp);
     }
 
-    public addControlSchemeFromScheme (scheme: toggleControlScheme) {
+    addControlSchemeFromScheme = (scheme: toggleControlScheme) => {
         this.controls.push(scheme);
     }
 
-    public preload() {
+    preload = () => {
         this.loadAsset('rocket', 'resources/textures/player/Rocket-L.png');
         this.loadAsset('rocket-thrust', 'resources/textures/player/Rocket-L-T.png');
         this.loadAsset('rocket-L-L', 'resources/textures/player/Rocket-L-L.png');
         this.loadAsset('rocket-L-R', 'resources/textures/player/Rocket-L-R.png');
     }
 
-    public hide () {
+    hide = () => {
         $('#canvas-wrapper').css ('display', "none");
     }
 
-    public show () {
+    show = () => {
         $('#canvas-wrapper').css ('display', "block");
     }
 
-    public create() {
+    create = () => {
         this.game.physics.startSystem(Phaser.Physics.P2JS);
         this.cursor = this.game.input.keyboard.createCursorKeys();
         var mainCanvas = $(this.game.canvas);
         $('#canvas-wrapper').append (mainCanvas);
     }
 
-    public update () {
+    update = () => {
         // Control
         if (this.controls != undefined) {
             for (var iter of this.controls) {
@@ -85,7 +85,7 @@ export class MainGame {
         }
     }
 
-    public resize () {
+    resize = () => {
         var height = $(window).height();
         var width = $(window).width();
         this.game.width = width;
@@ -93,16 +93,16 @@ export class MainGame {
         this.game.renderer.resize(width, height);
     }
 
-    public loadAsset (name: string, path: string) {
+    loadAsset = (name: string, path: string) => {
         this.game.load.image (name, path);
         this.assets.push ({path: path, name: name});
     }
 
-    public addObjectFromAsset (assetName: string, extra?: any) {
+    addObjectFromAsset = (assetName: string, extra?: any) => {
         this.objects.push (new GameSprite (this, assetName, extra));
     }
 
-    public newObject (name: string, path: string, extra?: any) {
+    newObject = (name: string, path: string, extra?: any) => {
         this.loadAsset (name, path);
     }
 }
