@@ -14,7 +14,7 @@ var ControlScheme = (function () {
     }
     ControlScheme.prototype.frame = function (_args) {
         for (var iter = 0; iter != this.bindings.length; iter++) {
-            if (typeof this.bindings[iter].press == "undefined") {
+            if (typeof this.bindings[iter].press != "undefined") {
                 continue;
             }
             if (this.game.input.keyboard.isDown(this.bindings[iter].key)) {
