@@ -13,6 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /// <reference path="../imports/phaser.d.ts" />
 var control_1 = require("./control");
 var object_1 = require("./object");
+var UTIL = require("./util");
 var toggleControlScheme = (function (_super) {
     __extends(toggleControlScheme, _super);
     function toggleControlScheme(game, _bindings, captureInput, enabled) {
@@ -90,7 +91,17 @@ var MainGame = (function () {
             _this.assets.push({ path: path, name: name });
         };
         this.addObjectFromAsset = function (assetName, extra) {
-            _this.objects.push(new object_1.GameSprite(_this, assetName, extra));
+            if (UTIL.find(assetName, _this.assets) != -1) {
+                _this.objects.push({ name: assetName, object: new object_1.GameSprite(_this, assetName, extra) });
+            }
+            else {
+                try {
+                    throw new Error('Asset {0} has not been preloaded, use newObject()'.format(assetName));
+                }
+                catch (e) {
+                    console.log(e.name, +': ' + e.message);
+                }
+            }
         };
         this.newObject = function (name, path, extra) {
             _this.loadAsset(name, path);

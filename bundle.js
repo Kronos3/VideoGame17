@@ -15,7 +15,7 @@ var ControlScheme = (function () {
     }
     ControlScheme.prototype.frame = function (_args) {
         for (var iter = 0; iter != this.bindings.length; iter++) {
-            if (typeof this.bindings[iter].press == "undefined") {
+            if (typeof this.bindings[iter].press != "undefined") {
                 continue;
             }
             if (this.game.input.keyboard.isDown(this.bindings[iter].key)) {
@@ -46,6 +46,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /// <reference path="../imports/phaser.d.ts" />
 var control_1 = require("./control");
 var object_1 = require("./object");
+var UTIL = require("./util");
 var toggleControlScheme = (function (_super) {
     __extends(toggleControlScheme, _super);
     function toggleControlScheme(game, _bindings, captureInput, enabled) {
@@ -123,7 +124,17 @@ var MainGame = (function () {
             _this.assets.push({ path: path, name: name });
         };
         this.addObjectFromAsset = function (assetName, extra) {
-            _this.objects.push(new object_1.GameSprite(_this, assetName, extra));
+            if (UTIL.find(assetName, _this.assets) != -1) {
+                _this.objects.push({ name: assetName, object: new object_1.GameSprite(_this, assetName, extra) });
+            }
+            else {
+                try {
+                    throw new Error('Asset {0} has not been preloaded, use newObject()'.format(assetName));
+                }
+                catch (e) {
+                    console.log(e.name, +': ' + e.message);
+                }
+            }
         };
         this.newObject = function (name, path, extra) {
             _this.loadAsset(name, path);
@@ -137,7 +148,7 @@ var MainGame = (function () {
 }());
 exports.MainGame = MainGame;
 
-},{"./control":1,"./object":4}],3:[function(require,module,exports){
+},{"./control":1,"./object":4,"./util":5}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var game_1 = require("./game");
@@ -278,5 +289,12 @@ function find(a, b) {
     return -1;
 }
 exports.find = find;
+String.prototype.format = function () {
+    var args = arguments;
+    return this.replace(/{(\d+)}/g, function (match, number) {
+        return typeof args[number] != 'undefined'
+            ? args[number] : match;
+    });
+};
 
 },{}]},{},[1,2,3]);

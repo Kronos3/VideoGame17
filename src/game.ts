@@ -2,6 +2,7 @@
 import {ControlScheme} from "./control"
 import {KeyBinding} from "./control"
 import {GameSprite} from "./object"
+import * as UTIL from "./util"
 
 export class toggleControlScheme extends ControlScheme {
     enabled: boolean;
@@ -30,6 +31,11 @@ export interface asset {
     name: string;
 }
 
+export interface __object {
+    name: string;
+    object: GameSprite;
+}
+
 export class MainGame {
 
     constructor() {
@@ -42,7 +48,7 @@ export class MainGame {
     game: Phaser.Game;
     cursor: Phaser.CursorKeys;
     controls: toggleControlScheme[] = [];
-    objects: GameSprite[] = [];
+    objects: __object[] = [];
     assets: asset[] = [];
 
     addControlScheme = (bindings: KeyBinding[], captureInput = true) => {
@@ -100,7 +106,17 @@ export class MainGame {
     }
 
     addObjectFromAsset = (assetName: string, extra?: any) => {
-        this.objects.push (new GameSprite (this, assetName, extra));
+        if (UTIL.find(assetName, this.assets) != -1) {
+            this.objects.push ({name: assetName, object: new GameSprite (this, assetName, extra)});
+        }
+        else {
+            try {
+                throw new Error ('Asset {0} has not been preloaded, use newObject()'.format (assetName));
+            }
+            catch (e) {
+                console.log (e.name, + ': ' + e.message);
+            }
+        }
     }
 
     newObject = (name: string, path: string, extra?: any) => {
