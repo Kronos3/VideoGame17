@@ -1,3 +1,4 @@
+/// <reference path="../imports/jquery-3.1.1.min.js" />
 import {toggleControlScheme} from "./game"
 import {MainGame} from "./game"
 
