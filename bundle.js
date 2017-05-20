@@ -45,8 +45,8 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 /// <reference path="../imports/phaser.d.ts" />
 var control_1 = require("./control");
-var object_1 = require("./object");
-var UTIL = require("./util");
+var level_1 = require("./level");
+var level_2 = require("./level");
 var toggleControlScheme = (function (_super) {
     __extends(toggleControlScheme, _super);
     function toggleControlScheme(game, _bindings, captureInput, enabled) {
@@ -74,8 +74,7 @@ var MainGame = (function () {
     function MainGame() {
         var _this = this;
         this.controls = [];
-        this.objects = [];
-        this.assets = [];
+        this.levelsequence = new level_1.LevelSequence();
         this.addControlScheme = function (bindings, captureInput) {
             if (captureInput === void 0) { captureInput = true; }
             var temp = new toggleControlScheme(_this.game, bindings, captureInput);
@@ -85,16 +84,29 @@ var MainGame = (function () {
             _this.controls.push(scheme);
         };
         this.preload = function () {
-            _this.loadAsset('rocket', 'resources/textures/player/Rocket-L.png');
-            _this.loadAsset('rocket-thrust', 'resources/textures/player/Rocket-L-T.png');
-            _this.loadAsset('rocket-L-L', 'resources/textures/player/Rocket-L-L.png');
-            _this.loadAsset('rocket-L-R', 'resources/textures/player/Rocket-L-R.png');
+            _this.loadAsset('rocket', 'resources/textures/player/Rocket-L.png', "all");
+            _this.loadAsset('rocket-thrust', 'resources/textures/player/Rocket-L-T.png', "all");
+            _this.loadAsset('rocket-L-L', 'resources/textures/player/Rocket-L-L.png', "all");
+            _this.loadAsset('rocket-L-R', 'resources/textures/player/Rocket-L-R.png', "all");
         };
         this.hide = function () {
             $('#canvas-wrapper').css('display', "none");
         };
         this.show = function () {
             $('#canvas-wrapper').css('display', "block");
+        };
+        this.loadAsset = function (name, path, level) {
+            if (typeof level === "string") {
+                if (level == "all") {
+                    _this.levelsequence.levels[0].loadAsset(name, path, true);
+                }
+                else {
+                    _this.levelsequence.getLevel(level).loadAsset(name, path, false);
+                }
+            }
+            else {
+                level.loadAsset(name, path, false);
+            }
         };
         this.create = function () {
             _this.game.physics.startSystem(Phaser.Physics.P2JS);
@@ -119,22 +131,66 @@ var MainGame = (function () {
             _this.game.height = height;
             _this.game.renderer.resize(width, height);
         };
-        this.loadAsset = function (name, path) {
-            _this.game.load.image(name, path);
-            _this.assets.push({ path: path, name: name });
+        this.newLevel = function (name) {
+            var level = new level_2.Level(_this, name);
+            _this.levelsequence.addLevel(level);
+            return level;
+        };
+        this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'T17', { preload: this.preload, create: this.create, update: this.update }, true);
+        $(window).resize(function () {
+            _this.resize();
+        });
+        this.newLevel('intro');
+    }
+    return MainGame;
+}());
+exports.MainGame = MainGame;
+
+},{"./control":1,"./level":3}],3:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var object_1 = require("./object");
+var UTIL = require("./util");
+var LevelSequence = (function () {
+    function LevelSequence() {
+        var _this = this;
+        this.levels = [];
+        this.addLevel = function (_level) {
+            _this.levels.push(_level);
+        };
+        this.start = function () {
+            _this.current = 0;
+            _this.levels[0].enable();
+        };
+        this.getLevel = function (name) {
+            for (var _i = 0, _a = _this.levels; _i < _a.length; _i++) {
+                var iter = _a[_i];
+                if (iter.name == name) {
+                    return iter;
+                }
+            }
+            UTIL.error('Level {0} could not be found'.format(name));
+            return null;
+        };
+        ;
+    }
+    return LevelSequence;
+}());
+exports.LevelSequence = LevelSequence;
+var Level = (function () {
+    function Level(game, name) {
+        var _this = this;
+        this.objects = [];
+        this.assets = [];
+        this.enable = function () {
         };
         this.addObjectFromAsset = function (assetName, _pos, extra) {
             if (_pos === void 0) { _pos = { x: 0, y: 0 }; }
             if (UTIL.find(assetName, _this.assets) != -1) {
-                _this.objects.push({ name: assetName, object: new object_1.GameSprite(_this, _pos, assetName, extra) });
+                _this.objects.push({ name: assetName, object: new object_1.GameSprite(_this.game, _pos, assetName, extra) });
             }
             else {
-                try {
-                    throw new Error('Asset {0} has not been preloaded, use newObject()'.format(assetName));
-                }
-                catch (e) {
-                    console.log(e.name, +': ' + e.message);
-                }
+                UTIL.error('Asset {0} has not been preloaded, use newObject()'.format(assetName));
             }
         };
         this.newObject = function (name, path, _pos, extra) {
@@ -149,24 +205,30 @@ var MainGame = (function () {
                     return i.object;
                 }
             }
-            try {
-                throw new Error('Object {0} could not be found'.format(name));
-            }
-            catch (e) {
-                console.log(e.name, +': ' + e.message);
-            }
+            UTIL.error('Object {0} could not be found'.format(name));
             return null;
         };
-        this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'T17', { preload: this.preload, create: this.create, update: this.update }, true);
-        $(window).resize(function () {
-            _this.resize();
-        });
+        this.loadAsset = function (name, path, all) {
+            if (all === void 0) { all = false; }
+            _this.game.game.load.image(name, path);
+            if (all) {
+                for (var _i = 0, _a = _this.game.levelsequence.levels; _i < _a.length; _i++) {
+                    var iter = _a[_i];
+                    iter.assets.push({ path: path, name: name, level: iter });
+                }
+            }
+            else {
+                _this.assets.push({ path: path, name: name, level: _this });
+            }
+        };
+        this.game = game;
+        this.name = name;
     }
-    return MainGame;
+    return Level;
 }());
-exports.MainGame = MainGame;
+exports.Level = Level;
 
-},{"./control":1,"./object":4,"./util":5}],3:[function(require,module,exports){
+},{"./object":5,"./util":6}],4:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var game_1 = require("./game");
@@ -243,7 +305,7 @@ function setup_pos(e, x_scale, y_scale) {
     $(e).data('yfactor', y_scale);
 }
 
-},{"./game":2}],4:[function(require,module,exports){
+},{"./game":2}],5:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -295,7 +357,7 @@ var DynamicSprite = (function (_super) {
 }(GameSprite));
 exports.DynamicSprite = DynamicSprite;
 
-},{"./util":5}],5:[function(require,module,exports){
+},{"./util":6}],6:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 function find(a, b) {
@@ -308,11 +370,24 @@ function find(a, b) {
 }
 exports.find = find;
 String.prototype.format = function () {
-    var args = arguments;
+    var _args = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        _args[_i] = arguments[_i];
+    }
+    var args = _args;
     return this.replace(/{(\d+)}/g, function (match, number) {
         return typeof args[number] != 'undefined'
             ? args[number] : match;
     });
 };
+function error(message) {
+    try {
+        throw new Error(message);
+    }
+    catch (e) {
+        console.log(e.name, +': ' + e.message);
+    }
+}
+exports.error = error;
 
-},{}]},{},[1,2,3]);
+},{}]},{},[1,2,4,5,6]);

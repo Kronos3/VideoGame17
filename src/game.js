@@ -12,8 +12,8 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 /// <reference path="../imports/phaser.d.ts" />
 var control_1 = require("./control");
-var object_1 = require("./object");
-var UTIL = require("./util");
+var level_1 = require("./level");
+var level_2 = require("./level");
 var toggleControlScheme = (function (_super) {
     __extends(toggleControlScheme, _super);
     function toggleControlScheme(game, _bindings, captureInput, enabled) {
@@ -41,8 +41,7 @@ var MainGame = (function () {
     function MainGame() {
         var _this = this;
         this.controls = [];
-        this.objects = [];
-        this.assets = [];
+        this.levelsequence = new level_1.LevelSequence();
         this.addControlScheme = function (bindings, captureInput) {
             if (captureInput === void 0) { captureInput = true; }
             var temp = new toggleControlScheme(_this.game, bindings, captureInput);
@@ -52,16 +51,29 @@ var MainGame = (function () {
             _this.controls.push(scheme);
         };
         this.preload = function () {
-            _this.loadAsset('rocket', 'resources/textures/player/Rocket-L.png');
-            _this.loadAsset('rocket-thrust', 'resources/textures/player/Rocket-L-T.png');
-            _this.loadAsset('rocket-L-L', 'resources/textures/player/Rocket-L-L.png');
-            _this.loadAsset('rocket-L-R', 'resources/textures/player/Rocket-L-R.png');
+            _this.loadAsset('rocket', 'resources/textures/player/Rocket-L.png', "all");
+            _this.loadAsset('rocket-thrust', 'resources/textures/player/Rocket-L-T.png', "all");
+            _this.loadAsset('rocket-L-L', 'resources/textures/player/Rocket-L-L.png', "all");
+            _this.loadAsset('rocket-L-R', 'resources/textures/player/Rocket-L-R.png', "all");
         };
         this.hide = function () {
             $('#canvas-wrapper').css('display', "none");
         };
         this.show = function () {
             $('#canvas-wrapper').css('display', "block");
+        };
+        this.loadAsset = function (name, path, level) {
+            if (typeof level === "string") {
+                if (level == "all") {
+                    _this.levelsequence.levels[0].loadAsset(name, path, true);
+                }
+                else {
+                    _this.levelsequence.getLevel(level).loadAsset(name, path, false);
+                }
+            }
+            else {
+                level.loadAsset(name, path, false);
+            }
         };
         this.create = function () {
             _this.game.physics.startSystem(Phaser.Physics.P2JS);
@@ -86,48 +98,16 @@ var MainGame = (function () {
             _this.game.height = height;
             _this.game.renderer.resize(width, height);
         };
-        this.loadAsset = function (name, path) {
-            _this.game.load.image(name, path);
-            _this.assets.push({ path: path, name: name });
-        };
-        this.addObjectFromAsset = function (assetName, _pos, extra) {
-            if (_pos === void 0) { _pos = { x: 0, y: 0 }; }
-            if (UTIL.find(assetName, _this.assets) != -1) {
-                _this.objects.push({ name: assetName, object: new object_1.GameSprite(_this, _pos, assetName, extra) });
-            }
-            else {
-                try {
-                    throw new Error('Asset {0} has not been preloaded, use newObject()'.format(assetName));
-                }
-                catch (e) {
-                    console.log(e.name, +': ' + e.message);
-                }
-            }
-        };
-        this.newObject = function (name, path, _pos, extra) {
-            if (_pos === void 0) { _pos = { x: 0, y: 0 }; }
-            _this.loadAsset(name, path);
-            _this.addObjectFromAsset(name, _pos, extra);
-        };
-        this.getObject = function (name) {
-            for (var _i = 0, _a = _this.objects; _i < _a.length; _i++) {
-                var i = _a[_i];
-                if (i.name == name) {
-                    return i.object;
-                }
-            }
-            try {
-                throw new Error('Object {0} could not be found'.format(name));
-            }
-            catch (e) {
-                console.log(e.name, +': ' + e.message);
-            }
-            return null;
+        this.newLevel = function (name) {
+            var level = new level_2.Level(_this, name);
+            _this.levelsequence.addLevel(level);
+            return level;
         };
         this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'T17', { preload: this.preload, create: this.create, update: this.update }, true);
         $(window).resize(function () {
             _this.resize();
         });
+        this.newLevel('intro');
     }
     return MainGame;
 }());

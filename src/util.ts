@@ -21,3 +21,12 @@ String.prototype.format = function(..._args: any[]) {
         ? args[number]: match;
     });
 }
+
+export function error (message: string) {
+    try {
+        throw new Error (message);
+    }
+    catch (e) {
+        console.log (e.name, + ': ' + e.message);
+    }
+}

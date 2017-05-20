@@ -2,6 +2,9 @@
 import {ControlScheme} from "./control"
 import {KeyBinding} from "./control"
 import {GameSprite} from "./object"
+import {LevelSequence} from "./level"
+import {__object} from "./level"
+import {Level} from "./level"
 import * as UTIL from "./util"
 
 export class toggleControlScheme extends ControlScheme {
@@ -26,16 +29,6 @@ export class toggleControlScheme extends ControlScheme {
     }
 }
 
-export interface asset {
-    path: string;
-    name: string;
-}
-
-export interface __object {
-    name: string;
-    object: GameSprite;
-}
-
 export class MainGame {
 
     constructor() {
@@ -43,13 +36,13 @@ export class MainGame {
         $(window).resize( () => {
             this.resize();
         });
+        this.newLevel ('intro');
     }
 
     game: Phaser.Game;
     cursor: Phaser.CursorKeys;
     controls: toggleControlScheme[] = [];
-    objects: __object[] = [];
-    assets: asset[] = [];
+    levelsequence: LevelSequence = new LevelSequence ();
 
     addControlScheme = (bindings: KeyBinding[], captureInput = true) => {
         var temp: toggleControlScheme = new toggleControlScheme (this.game, bindings, captureInput);
@@ -61,10 +54,10 @@ export class MainGame {
     }
 
     preload = () => {
-        this.loadAsset('rocket', 'resources/textures/player/Rocket-L.png');
-        this.loadAsset('rocket-thrust', 'resources/textures/player/Rocket-L-T.png');
-        this.loadAsset('rocket-L-L', 'resources/textures/player/Rocket-L-L.png');
-        this.loadAsset('rocket-L-R', 'resources/textures/player/Rocket-L-R.png');
+        this.loadAsset('rocket', 'resources/textures/player/Rocket-L.png', "all");
+        this.loadAsset('rocket-thrust', 'resources/textures/player/Rocket-L-T.png', "all");
+        this.loadAsset('rocket-L-L', 'resources/textures/player/Rocket-L-L.png', "all");
+        this.loadAsset('rocket-L-R', 'resources/textures/player/Rocket-L-R.png', "all");
     }
 
     hide = () => {
@@ -73,6 +66,20 @@ export class MainGame {
 
     show = () => {
         $('#canvas-wrapper').css ('display', "block");
+    }
+
+    loadAsset = (name: string, path: string, level: Level | string) => {
+        if (typeof level === "string") {
+            if (level == "all") {
+                this.levelsequence.levels[0].loadAsset (name, path, true);
+            }
+            else {
+                this.levelsequence.getLevel (level).loadAsset (name, path, false);
+            }
+        }
+        else {
+            level.loadAsset (name, path, false);
+        }
     }
 
     create = () => {
@@ -100,42 +107,9 @@ export class MainGame {
         this.game.renderer.resize(width, height);
     }
 
-    loadAsset = (name: string, path: string) => {
-        this.game.load.image (name, path);
-        this.assets.push ({path: path, name: name});
-    }
-
-    addObjectFromAsset = (assetName: string, _pos = {x: 0, y: 0}, extra?: any) => {
-        if (UTIL.find(assetName, this.assets) != -1) {
-            this.objects.push ({name: assetName, object: new GameSprite (this, _pos, assetName, extra)});
-        }
-        else {
-            try {
-                throw new Error ('Asset {0} has not been preloaded, use newObject()'.format (assetName));
-            }
-            catch (e) {
-                console.log (e.name, + ': ' + e.message);
-            }
-        }
-    }
-
-    newObject = (name: string, path: string, _pos = {x: 0, y: 0}, extra?: any) => {
-        this.loadAsset (name, path);
-        this.addObjectFromAsset (name, _pos, extra);
-    }
-
-    getObject = (name: string): GameSprite => {
-        for (var i of this.objects) {
-            if (i.name == name) {
-                return i.object;
-            }
-        }
-        try {
-            throw new Error ('Object {0} could not be found'.format (name));
-        }
-        catch (e) {
-            console.log (e.name, + ': ' + e.message);
-        }
-        return null;
+    newLevel = (name: string): Level => {
+        var level = new Level (this, name);
+        this.levelsequence.addLevel (level);
+        return level;
     }
 }

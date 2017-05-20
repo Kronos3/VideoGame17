@@ -10,9 +10,22 @@ function find(a, b) {
 }
 exports.find = find;
 String.prototype.format = function () {
-    var args = arguments;
+    var _args = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        _args[_i] = arguments[_i];
+    }
+    var args = _args;
     return this.replace(/{(\d+)}/g, function (match, number) {
         return typeof args[number] != 'undefined'
             ? args[number] : match;
     });
 };
+function error(message) {
+    try {
+        throw new Error(message);
+    }
+    catch (e) {
+        console.log(e.name, +': ' + e.message);
+    }
+}
+exports.error = error;
