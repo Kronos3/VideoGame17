@@ -180,6 +180,25 @@ var LevelSequence = (function () {
     return LevelSequence;
 }());
 exports.LevelSequence = LevelSequence;
+function createLevel(_const) {
+    var out = new Level(_const.game, _const.name);
+    if (typeof _const.objects !== "undefined") {
+        for (var _i = 0, _a = _const.objects; _i < _a.length; _i++) {
+            var iter = _a[_i];
+            if (iter.assets instanceof Array) {
+                // Dynamic Objects
+                // Load the assets
+                for (var _b = 0, _c = iter.assets; _b < _c.length; _b++) {
+                    var asset_iter = _c[_b];
+                    out.loadAsset(asset_iter.name, asset_iter.path);
+                }
+                // Generate the object
+                object_1.DynamicSprite;
+            }
+        }
+    }
+}
+exports.createLevel = createLevel;
 var Level = (function () {
     function Level(game, name) {
         var _this = this;
@@ -187,33 +206,53 @@ var Level = (function () {
         this.assets = [];
         this.enable = function () {
         };
-        this.addObjectFromAsset = function (assetName, _pos, extra) {
-            if (_pos === void 0) { _pos = { x: 0, y: 0 }; }
-            if (UTIL.find(assetName, _this.assets) != -1) {
-                _this.objects.push({ name: assetName, object: new object_1.GameSprite(_this.game, _pos, assetName, extra) });
+        /* MOVE TO GAME SCOPE
+        addObjectFromAsset = (assetName: string, _pos = {x: 0, y: 0}, extra?: any) => {
+            if (UTIL.find(assetName, this.assets) != -1) {
+                this.objects.push ({name: assetName, object: new GameSprite (this.game, _pos, assetName, extra)});
             }
             else {
-                UTIL.error('Asset {0} has not been preloaded, use newObject()'.format(assetName));
+                UTIL.error('Asset {0} has not been preloaded, use newObject()'.format (assetName));
             }
-        };
-        this.newObject = function (name, path, _pos, extra) {
-            if (_pos === void 0) { _pos = { x: 0, y: 0 }; }
-            _this.loadAsset(name, path);
-            _this.addObjectFromAsset(name, _pos, extra);
-        };
+        }
+    
+        newObject = (name: string, path: string, _pos = {x: 0, y: 0}, extra?: any) => {
+            this.loadAsset (name, path);
+            this.addObjectFromAsset (name, _pos, extra);
+        }
+        */
         this.getObject = function (name) {
             for (var _i = 0, _a = _this.objects; _i < _a.length; _i++) {
                 var i = _a[_i];
                 if (i.name == name) {
-                    return i.object;
+                    return i;
                 }
             }
             UTIL.error('Object {0} could not be found'.format(name));
             return null;
         };
+        this.getAsset = function (name) {
+            for (var _i = 0, _a = _this.assets; _i < _a.length; _i++) {
+                var i = _a[_i];
+                if (i.name == name) {
+                    return i;
+                }
+            }
+            UTIL.error('Asset {0} could not be found'.format(name));
+            return null;
+        };
         this.loadAsset = function (name, path) {
             _this.game.game.load.image(name, path);
-            _this.assets.push({ path: path, name: name, level: _this });
+            var found = false;
+            for (var _i = 0, _a = _this.assets; _i < _a.length; _i++) {
+                var iter = _a[_i];
+                if (iter.path == path) {
+                    found = true;
+                }
+            }
+            if (!found) {
+                _this.assets.push({ path: path, name: name, level: _this });
+            }
         };
         this.game = game;
         this.name = name;
@@ -314,28 +353,34 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var UTIL = require("./util");
 var GameSprite = (function () {
-    function GameSprite(game, pos, asset, extra) {
-        this.game = game;
-        this.assetName = asset;
+    function GameSprite(level, name, pos, asset, extra) {
+        this.level = level;
+        this.name = name;
+        if (typeof asset !== "string") {
+            this.asset = asset;
+        }
+        else {
+            this.level.getAsset(asset);
+        }
         this.extra = $.extend({}, this.extra, external);
-        this.pObject = this.game.game.add.sprite(0, 0, this.assetName);
+        this.pObject = this.level.game.game.add.sprite(0, 0, this.asset);
     }
     GameSprite.prototype.addProperty = function (extra) {
         this.extra = $.extend({}, this.extra, external);
     };
     GameSprite.prototype.enablePhysics = function () {
-        this.game.game.physics.p2.enable(this.pObject);
+        this.level.game.game.physics.p2.enable(this.pObject);
     };
     return GameSprite;
 }());
 exports.GameSprite = GameSprite;
 var DynamicSprite = (function (_super) {
     __extends(DynamicSprite, _super);
-    function DynamicSprite(game, pos, assets, extra) {
-        var _this = _super.call(this, game, pos, assets[0], extra) || this;
+    function DynamicSprite(game, name, pos, assets, extra) {
+        var _this = _super.call(this, game, name, pos, assets[0], extra) || this;
         _this.assets = [];
         _this.switchToIndex = function (index) {
-            _this.pObject.key = _this.assets[index];
+            _this.pObject.key = _this.assets[index].name;
             _this.pObject.loadTexture(_this.pObject.key);
         };
         _this.switchTo = function (name) {
@@ -344,7 +389,15 @@ var DynamicSprite = (function (_super) {
                 _this.pObject.loadTexture(_this.pObject.key);
             }
         };
-        _this.assets = assets;
+        for (var _i = 0, assets_1 = assets; _i < assets_1.length; _i++) {
+            var iter = assets_1[_i];
+            if (typeof iter === "string") {
+                _this.assets.push(_this.level.getAsset(iter));
+            }
+            else {
+                _this.assets.push(iter);
+            }
+        }
         return _this;
     }
     return DynamicSprite;

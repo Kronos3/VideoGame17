@@ -3,7 +3,6 @@ import {ControlScheme} from "./control"
 import {KeyBinding} from "./control"
 import {GameSprite} from "./object"
 import {LevelSequence} from "./level"
-import {__object} from "./level"
 import {Level} from "./level"
 import * as UTIL from "./util"
 
