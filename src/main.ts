@@ -1,4 +1,3 @@
-/// <reference path="../imports/jquery-3.1.1.min.js" />
 import {toggleControlScheme} from "./game"
 import {MainGame} from "./game"
 
@@ -55,6 +54,7 @@ var game;
 
 function initGame () {
     game = new MainGame();
+    window.GAME = game;
     var testControlBindings = [
         {
             key: Phaser.Keyboard.SPACEBAR,

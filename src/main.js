@@ -45,6 +45,7 @@ $(document).ready(function () {
 var game;
 function initGame() {
     game = new game_1.MainGame();
+    window.GAME = game;
     var testControlBindings = [
         {
             key: Phaser.Keyboard.SPACEBAR,

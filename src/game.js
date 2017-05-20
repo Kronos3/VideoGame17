@@ -12,6 +12,7 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 /// <reference path="../imports/phaser.d.ts" />
 var control_1 = require("./control");
+var object_1 = require("./object");
 var toggleControlScheme = (function (_super) {
     __extends(toggleControlScheme, _super);
     function toggleControlScheme(game, _bindings, captureInput, enabled) {
@@ -39,6 +40,8 @@ var MainGame = (function () {
     function MainGame() {
         var _this = this;
         this.controls = [];
+        this.objects = [];
+        this.assets = [];
         this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'T17', { preload: this.preload, create: this.create, update: this.update }, true);
         $(window).resize(function () {
             _this.resize();
@@ -53,17 +56,22 @@ var MainGame = (function () {
         this.controls.push(scheme);
     };
     MainGame.prototype.preload = function () {
-        this.game.load.image('rocket', 'resources/textures/player/Rocket-L.png');
-        this.game.load.image('rocket-thrust', 'resources/textures/player/Rocket-L-T.png');
-        this.game.load.image('rocket-L-L', 'resources/textures/player/Rocket-L-L.png');
-        this.game.load.image('rocket-L-R', 'resources/textures/player/Rocket-L-R.png');
+        this.loadAsset('rocket', 'resources/textures/player/Rocket-L.png');
+        this.loadAsset('rocket-thrust', 'resources/textures/player/Rocket-L-T.png');
+        this.loadAsset('rocket-L-L', 'resources/textures/player/Rocket-L-L.png');
+        this.loadAsset('rocket-L-R', 'resources/textures/player/Rocket-L-R.png');
+    };
+    MainGame.prototype.hide = function () {
+        $('#canvas-wrapper').css('display', "none");
+    };
+    MainGame.prototype.show = function () {
+        $('#canvas-wrapper').css('display', "block");
     };
     MainGame.prototype.create = function () {
         this.game.physics.startSystem(Phaser.Physics.P2JS);
         this.cursor = this.game.input.keyboard.createCursorKeys();
         var mainCanvas = $(this.game.canvas);
         $('#canvas-wrapper').append(mainCanvas);
-        $('#canvas-wrapper').css('display', "none");
     };
     MainGame.prototype.update = function () {
         // Control
@@ -80,6 +88,16 @@ var MainGame = (function () {
         this.game.width = width;
         this.game.height = height;
         this.game.renderer.resize(width, height);
+    };
+    MainGame.prototype.loadAsset = function (name, path) {
+        this.game.load.image(name, path);
+        this.assets.push({ path: path, name: name });
+    };
+    MainGame.prototype.addObjectFromAsset = function (assetName, extra) {
+        this.objects.push(new object_1.GameSprite(this, assetName, extra));
+    };
+    MainGame.prototype.newObject = function (name, path, extra) {
+        this.loadAsset(name, path);
     };
     return MainGame;
 }());

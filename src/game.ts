@@ -1,6 +1,7 @@
 /// <reference path="../imports/phaser.d.ts" />
 import {ControlScheme} from "./control"
 import {KeyBinding} from "./control"
+import {GameSprite} from "./object"
 
 export class toggleControlScheme extends ControlScheme {
     enabled: boolean;
@@ -24,6 +25,11 @@ export class toggleControlScheme extends ControlScheme {
     }
 }
 
+export interface asset {
+    path: string;
+    name: string;
+}
+
 export class MainGame {
 
     constructor() {
@@ -36,32 +42,41 @@ export class MainGame {
     game: Phaser.Game;
     cursor: Phaser.CursorKeys;
     controls: toggleControlScheme[] = [];
+    objects: GameSprite[] = [];
+    assets: asset[] = [];
 
-    addControlScheme (bindings: KeyBinding[], captureInput = true) {
+    public addControlScheme (bindings: KeyBinding[], captureInput = true) {
         var temp: toggleControlScheme = new toggleControlScheme (this.game, bindings, captureInput);
         this.controls.push (temp);
     }
 
-    addControlSchemeFromScheme (scheme: toggleControlScheme) {
+    public addControlSchemeFromScheme (scheme: toggleControlScheme) {
         this.controls.push(scheme);
     }
 
-    preload() {
-        this.game.load.image('rocket', 'resources/textures/player/Rocket-L.png');
-        this.game.load.image('rocket-thrust', 'resources/textures/player/Rocket-L-T.png');
-        this.game.load.image('rocket-L-L', 'resources/textures/player/Rocket-L-L.png');
-        this.game.load.image('rocket-L-R', 'resources/textures/player/Rocket-L-R.png');
+    public preload() {
+        this.loadAsset('rocket', 'resources/textures/player/Rocket-L.png');
+        this.loadAsset('rocket-thrust', 'resources/textures/player/Rocket-L-T.png');
+        this.loadAsset('rocket-L-L', 'resources/textures/player/Rocket-L-L.png');
+        this.loadAsset('rocket-L-R', 'resources/textures/player/Rocket-L-R.png');
     }
 
-    create() {
+    public hide () {
+        $('#canvas-wrapper').css ('display', "none");
+    }
+
+    public show () {
+        $('#canvas-wrapper').css ('display', "block");
+    }
+
+    public create() {
         this.game.physics.startSystem(Phaser.Physics.P2JS);
         this.cursor = this.game.input.keyboard.createCursorKeys();
         var mainCanvas = $(this.game.canvas);
         $('#canvas-wrapper').append (mainCanvas);
-        $('#canvas-wrapper').css ('display', "none");
     }
 
-    update () {
+    public update () {
         // Control
         if (this.controls != undefined) {
             for (var iter of this.controls) {
@@ -70,11 +85,24 @@ export class MainGame {
         }
     }
 
-    resize () {
+    public resize () {
         var height = $(window).height();
         var width = $(window).width();
         this.game.width = width;
         this.game.height = height;
         this.game.renderer.resize(width, height);
+    }
+
+    public loadAsset (name: string, path: string) {
+        this.game.load.image (name, path);
+        this.assets.push ({path: path, name: name});
+    }
+
+    public addObjectFromAsset (assetName: string, extra?: any) {
+        this.objects.push (new GameSprite (this, assetName, extra));
+    }
+
+    public newObject (name: string, path: string, extra?: any) {
+        this.loadAsset (name, path);
     }
 }
