@@ -1,0 +1,25 @@
+<html>
+<head>
+<link href="https://fonts.googleapis.com/css?family=Black+Ops+One" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
+<link href="main.css" rel="stylesheet">
+
+<script type="text/javascript" src="imports/phaser.min.js"></script>
+<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="bundle.js"></script>
+</head>
+
+<body>
+<div class="titlescreen scene">
+    <div class="stars"></div>
+    <img id="mars" class="pos" src="resources/textures/Mars-L.png">
+    <img id="moon" class="pos" src="resources/textures/moon.png">
+    <ul class="menu rot">
+        <li onclick="next_scene()">Start</li>
+        <li>Credits</li>
+        <li>Quit</li>
+    </ul>
+</div>
+<div id="canvas-wrapper"></div>
+</body>
+</html>
