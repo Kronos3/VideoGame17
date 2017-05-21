@@ -16,7 +16,6 @@ var GameSprite = (function () {
         var _this = this;
         this.resetPosition = function () {
             _this.pObject.x = _this.pos.x();
-            console.log(_this.pos.x);
             _this.pObject.y = _this.pos.y();
         };
         this.addProperty = function (extra) {
@@ -25,19 +24,34 @@ var GameSprite = (function () {
         this.enablePhysics = function () {
             _this.level.game.game.physics.p2.enable(_this.pObject);
         };
+        this.loadBody = function (key) {
+            _this.enablePhysics();
+            _this.pObject.body.clearShapes();
+            _this.pObject.body.loadPolygon('physicsData', key);
+        };
+        this.disable = function () {
+            console.log(_this.pObject.body);
+            if (_this.pObject.body != null) {
+                _this.isStatic = _this.pObject.body.static;
+                _this.pObject.body.static = true;
+                _this.pObject.body.moves = false;
+            }
+            _this.pObject.visible = false;
+        };
+        this.enable = function () {
+            _this.pObject.visible = true;
+            if (_this.pObject.body != null) {
+                _this.pObject.body.static = _this.isStatic;
+                _this.pObject.body.moves = true;
+            }
+        };
         this.level = level;
         this.name = name;
         this.game = game;
-        if (typeof asset !== "string") {
-            this.asset = asset;
-        }
-        else {
-            this.asset = this.game.getAsset(asset);
-        }
-        this.extra = $.extend({}, this.extra, external);
+        this.asset = asset;
+        this.extra = extra;
         this.pos = pos;
-        this.game.loadAsset(this.asset.name, this.asset.path);
-        this.pObject = this.game.game.add.sprite(this.pos.x(), this.pos.y(), this.asset.name);
+        this.pObject = this.game.game.add.sprite(this.pos.x(), this.pos.y(), this.asset);
     }
     GameSprite.prototype.addToLevel = function (level) {
     };
@@ -50,27 +64,19 @@ var DynamicSprite = (function (_super) {
         var _this = _super.call(this, game, level, name, pos, assets[0], extra) || this;
         _this.assets = [];
         _this.switchToIndex = function (index) {
-            _this.pObject.key = _this.assets[index].name;
-            _this.pObject.loadTexture(_this.pObject.key);
+            _this.pObject.key = _this.assets[index];
+            _this.pObject.loadTexture(_this.pObject.key, 0);
         };
         _this.switchTo = function (name) {
             if (UTIL.find(name, _this.assets) != -1) {
                 _this.pObject.key = name;
-                _this.pObject.loadTexture(_this.pObject.key);
+                _this.pObject.loadTexture(_this.pObject.key, 0);
             }
         };
         _this.resetPosition = function () {
             return;
         };
-        for (var _i = 0, assets_1 = assets; _i < assets_1.length; _i++) {
-            var iter = assets_1[_i];
-            if (typeof iter === "string") {
-                _this.assets.push(_this.game.getAsset(iter));
-            }
-            else {
-                _this.assets.push(iter);
-            }
-        }
+        _this.assets = assets;
         return _this;
     }
     return DynamicSprite;

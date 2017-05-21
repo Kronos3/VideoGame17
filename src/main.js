@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var game_1 = require("./game");
+var ship_1 = require("./ship");
+var ship_2 = require("./ship");
 $(document).ready(function () {
     for (var i = 0; i != 50; i++) {
         $("<img src=\"resources/textures/Star.png\" class=\"pos\">").appendTo(".stars");
@@ -81,16 +83,39 @@ function DoGame(game) {
             game: window.GAME,
             objects: [
                 {
+                    name: "sky",
+                    assets: "Sky",
+                    position: {
+                        x: function () { return 0; },
+                        y: function () { return window.GAME.game.height - 820; }
+                    }
+                },
+                {
+                    name: "mountains",
+                    assets: "Mountain-E",
+                    position: {
+                        x: function () { return 0; },
+                        y: function () { return window.GAME.game.height - 520; }
+                    }
+                },
+                {
+                    name: 'backdrop',
+                    assets: "Fore",
+                    position: {
+                        x: function () { return 0; },
+                        y: function () { return window.GAME.game.height - 120; }
+                    }
+                },
+                {
                     name: "Launch-L",
-                    assets: {
-                        path: "../resources/textures/Launch-L.png",
-                        name: "Launch-L"
-                    },
+                    assets: "Launch-L",
+                    physics: "Launch-L",
+                    static: true,
                     position: {
                         x: function () { return window.GAME.game.width / 2; },
-                        y: function () { return window.GAME.game.height - 190; }
+                        y: function () { return window.GAME.game.height - 120; }
                     }
-                }
+                },
             ]
         }
     ];
@@ -98,5 +123,17 @@ function DoGame(game) {
         var iter = levels_1[_i];
         game.addLevel(iter);
     }
+    var artemis_pos = {
+        x: function () { return window.GAME.game.width / 2 + 70; },
+        y: function () { return window.GAME.game.height - 60; },
+    };
+    game.getLevel('global').addObject(new ship_2.Ship(game, 'Artemis', artemis_pos, [
+        'rocket',
+        'rocket-thrust',
+        'rocket-L-L',
+        'rocket-L-R'
+    ]));
+    game.controls[0].addBinding(ship_1.ShipBinding(game, game.getLevel('global').getObject('Artemis')));
+    game.setGravity(100, 0.1);
     game.show();
 }

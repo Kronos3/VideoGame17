@@ -20,6 +20,9 @@ var ControlScheme = (function () {
             if (this.game.input.keyboard.isDown(this.bindings[iter].key)) {
                 this.bindings[iter].callback(_args);
             }
+            if (this.bindings[iter].key == -1) {
+                this.bindings[iter].callback(_args);
+            }
         }
     };
     ControlScheme.prototype.addBinding = function (binding) {

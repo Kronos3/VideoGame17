@@ -4,7 +4,6 @@ import {KeyBinding} from "./control"
 import {GameSprite} from "./object"
 import {LevelSequence} from "./level"
 import {Level} from "./level"
-import {Asset} from "./level"
 import {LevelConstructor} from "./level"
 import {createLevel} from "./level"
 import * as UTIL from "./util"
@@ -34,20 +33,20 @@ export class toggleControlScheme extends ControlScheme {
 export class MainGame {
     onReady: (game: MainGame) => void;
     constructor(onReady: (game: MainGame) => void) {
-        this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'T17', {preload: this.preload, create: this.create, update: this.update}, true);
+        this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'T17', {preload: this.preload, create: this.create, update: this.update, render: this.render}, true);
         $(window).resize( () => {
             this.resize();
         });
         this.newLevel ('global');
         this.onReady = onReady;
-
     }
 
     game: Phaser.Game;
     cursor: Phaser.CursorKeys;
     controls: toggleControlScheme[] = [];
     levelsequence: LevelSequence = new LevelSequence ();
-    assets: Asset[] = [];
+    assets: string[] = [];
+    gravity: number;
 
     addControlScheme = (bindings: KeyBinding[], captureInput = true) => {
         var temp: toggleControlScheme = new toggleControlScheme (this.game, bindings, captureInput);
@@ -64,6 +63,11 @@ export class MainGame {
         this.game.load.image('rocket-L-L', '../resources/textures/player/Rocket-L-L.png');
         this.game.load.image('rocket-L-R', '../resources/textures/player/Rocket-L-R.png');
         this.game.load.image('Launch-L', '../resources/textures/Launch-L.png');
+        this.game.load.image('Fore', '../resources/textures/Foreground-L.png');
+        this.game.load.image('Mountain-E', '../resources/textures/BG_1-L.png');
+        this.game.load.image('Sky', '../resources/textures/Sky Gradient Color Overlay-L.png');
+        this.game.load.image('Back', '../resources/textures/Background-L.png');
+        this.game.load.physics('physicsData', '../resources/physics/mappings.json');
     }
 
     hide = () => {
@@ -81,6 +85,8 @@ export class MainGame {
         $('#canvas-wrapper').append (mainCanvas);
         this.hide ();
         this.onReady (this);
+        this.game.time.advancedTiming = true;
+        this.game.time.desiredFps = 60;
     }
 
     update = () => {
@@ -90,6 +96,17 @@ export class MainGame {
                 iter.frame ();
             }
         }
+    }
+
+    render = () => {
+        this.game.debug.text('render FPS: ' + (this.game.time.fps || '--') , 2, 14, "#00ff00");
+        if (this.game.time.suggestedFps !== null)
+        {
+            this.game.debug.text('suggested FPS: ' + this.game.time.suggestedFps, 2, 28, "#00ff00");
+            this.game.debug.text('desired FPS: ' + this.game.time.desiredFps, 2, 42, "#00ff00");
+        }
+        this.game.debug.text(this.getLevel('global').getObject('Artemis').pObject.body.velocity.y, 2, 56, "#00ff00");
+        this.game.debug.text(this.getLevel('global').getObject('Artemis').pObject.body.velocity.x, 2, 70, "#00ff00");
     }
 
     resize = () => {
@@ -118,14 +135,13 @@ export class MainGame {
         }
     }
 
-    getAsset = (name: string): Asset => {
-        for (var i of this.assets) {
-            if (i.name == name) {
-                return i;
-            }
-        }
-        UTIL.error ('Asset {0} could not be found'.format (name));
-        return null;
+    getLevel = (name: string): Level => {
+        return this.levelsequence.getLevel (name);
+    }
+
+    setGravity (value: number, restitution = 0.8) {
+        this.gravity = value;
+        this.game.physics.p2.restitution = restitution;
     }
 
     loadAsset = (name: string, path: string) => {

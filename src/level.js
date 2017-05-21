@@ -34,23 +34,24 @@ function createLevel(_const) {
     if (typeof _const.objects !== "undefined") {
         for (var _i = 0, _a = _const.objects; _i < _a.length; _i++) {
             var iter = _a[_i];
+            var OBJ;
             if (iter.assets instanceof Array) {
                 // Dynamic Objects
-                // Load the assets
-                for (var _b = 0, _c = iter.assets; _b < _c.length; _b++) {
-                    var asset_iter = _c[_b];
-                    out.game.loadAsset(asset_iter.name, asset_iter.path);
-                }
                 // Generate the object
-                out.addObject(new object_2.DynamicSprite(out.game, out, iter.name, iter.position, iter.assets, iter.extra));
+                OBJ = new object_2.DynamicSprite(out.game, out, iter.name, iter.position, iter.assets, iter.extra);
             }
             else {
                 // Static Object
-                // Load the asset
-                out.game.loadAsset(iter.assets.name, iter.assets.path);
                 // Add the object
-                out.addObject(new object_1.GameSprite(out.game, out, iter.name, iter.position, iter.assets, iter.extra));
+                OBJ = new object_1.GameSprite(out.game, out, iter.name, iter.position, iter.assets, iter.extra);
             }
+            if (typeof iter.physics !== "undefined") {
+                OBJ.loadBody(iter.physics);
+            }
+            if (typeof iter.static !== "undefined") {
+                OBJ.pObject.body.static = iter.static;
+            }
+            out.addObject(OBJ);
         }
     }
     return out;
@@ -61,6 +62,14 @@ var Level = (function () {
         var _this = this;
         this.objects = [];
         this.enable = function () {
+            _this.objects.forEach(function (element) {
+                element.enable();
+            });
+        };
+        this.disable = function () {
+            _this.objects.forEach(function (element) {
+                element.disable();
+            });
         };
         this.addObjectFromAsset = function (name, _pos, extra) {
             if (_pos === void 0) { _pos = { x: function () { return 0; }, y: function () { return 0; } }; }

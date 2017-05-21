@@ -1,6 +1,8 @@
 import {toggleControlScheme} from "./game"
 import {MainGame} from "./game"
 import {LevelConstructor} from "./level"
+import {ShipBinding} from "./ship"
+import {Ship} from "./ship"
 
 $( document ).ready(function() {
     for (var i=0; i != 50; i++) {
@@ -93,21 +95,62 @@ function DoGame (game: MainGame): void {
             game: (<any>window).GAME,
             objects: [
                 {
+                    name: "sky",
+                    assets: "Sky",
+                    position: {
+                        x: ():number => {return 0},
+                        y: ():number => {return (<any>window).GAME.game.height - 820}
+                    }
+                },
+                {
+                    name: "mountains",
+                    assets: "Mountain-E",
+                    position: {
+                        x: ():number => {return 0},
+                        y: ():number => {return (<any>window).GAME.game.height - 520}
+                    }
+                },
+                {
+                    name: 'backdrop',
+                    assets: "Fore",
+                    position: {
+                        x: ():number => {return 0},
+                        y: ():number => {return (<any>window).GAME.game.height - 120}
+                    }
+                },
+                {
                     name: "Launch-L",
-                    assets: {
-                        path: "../resources/textures/Launch-L.png",
-                        name: "Launch-L"
-                    },
+                    assets: "Launch-L",
+                    physics: "Launch-L",
+                    static: true,
                     position: {
                         x: ():number => {return (<any>window).GAME.game.width / 2},
-                        y: ():number => {return (<any>window).GAME.game.height -190}
+                        y: ():number => {return (<any>window).GAME.game.height - 120}
                     }
-                }
+                },
             ]
         }
     ]
     for (var iter of levels) {
         game.addLevel (iter);
     }
+
+    var artemis_pos = {
+        x: ():number => {return (<any>window).GAME.game.width / 2 + 70},
+        y: ():number => {return (<any>window).GAME.game.height - 60},
+    }
+
+    game.getLevel ('global').addObject (new Ship (
+        game,
+        'Artemis',
+        artemis_pos,
+        [
+            'rocket',
+            'rocket-thrust',
+            'rocket-L-L',
+            'rocket-L-R'
+        ]));
+    game.controls[0].addBinding (ShipBinding(game, <Ship>game.getLevel('global').getObject ('Artemis')));
+    game.setGravity (100, 0.1);
     game.show ();
 }

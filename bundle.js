@@ -21,6 +21,9 @@ var ControlScheme = (function () {
             if (this.game.input.keyboard.isDown(this.bindings[iter].key)) {
                 this.bindings[iter].callback(_args);
             }
+            if (this.bindings[iter].key == -1) {
+                this.bindings[iter].callback(_args);
+            }
         }
     };
     ControlScheme.prototype.addBinding = function (binding) {
@@ -48,7 +51,6 @@ var control_1 = require("./control");
 var level_1 = require("./level");
 var level_2 = require("./level");
 var level_3 = require("./level");
-var UTIL = require("./util");
 var toggleControlScheme = (function (_super) {
     __extends(toggleControlScheme, _super);
     function toggleControlScheme(game, _bindings, captureInput, enabled) {
@@ -92,6 +94,11 @@ var MainGame = (function () {
             _this.game.load.image('rocket-L-L', '../resources/textures/player/Rocket-L-L.png');
             _this.game.load.image('rocket-L-R', '../resources/textures/player/Rocket-L-R.png');
             _this.game.load.image('Launch-L', '../resources/textures/Launch-L.png');
+            _this.game.load.image('Fore', '../resources/textures/Foreground-L.png');
+            _this.game.load.image('Mountain-E', '../resources/textures/BG_1-L.png');
+            _this.game.load.image('Sky', '../resources/textures/Sky Gradient Color Overlay-L.png');
+            _this.game.load.image('Back', '../resources/textures/Background-L.png');
+            _this.game.load.physics('physicsData', '../resources/physics/mappings.json');
         };
         this.hide = function () {
             $('#canvas-wrapper').css('display', "none");
@@ -106,6 +113,8 @@ var MainGame = (function () {
             $('#canvas-wrapper').append(mainCanvas);
             _this.hide();
             _this.onReady(_this);
+            _this.game.time.advancedTiming = true;
+            _this.game.time.desiredFps = 60;
         };
         this.update = function () {
             // Control
@@ -115,6 +124,15 @@ var MainGame = (function () {
                     iter.frame();
                 }
             }
+        };
+        this.render = function () {
+            _this.game.debug.text('render FPS: ' + (_this.game.time.fps || '--'), 2, 14, "#00ff00");
+            if (_this.game.time.suggestedFps !== null) {
+                _this.game.debug.text('suggested FPS: ' + _this.game.time.suggestedFps, 2, 28, "#00ff00");
+                _this.game.debug.text('desired FPS: ' + _this.game.time.desiredFps, 2, 42, "#00ff00");
+            }
+            _this.game.debug.text(_this.getLevel('global').getObject('Artemis').pObject.body.velocity.y, 2, 56, "#00ff00");
+            _this.game.debug.text(_this.getLevel('global').getObject('Artemis').pObject.body.velocity.x, 2, 70, "#00ff00");
         };
         this.resize = function () {
             var height = $(window).height();
@@ -131,21 +149,14 @@ var MainGame = (function () {
             _this.levelsequence.addLevel(level);
             return level;
         };
-        this.getAsset = function (name) {
-            for (var _i = 0, _a = _this.assets; _i < _a.length; _i++) {
-                var i = _a[_i];
-                if (i.name == name) {
-                    return i;
-                }
-            }
-            UTIL.error('Asset {0} could not be found'.format(name));
-            return null;
+        this.getLevel = function (name) {
+            return _this.levelsequence.getLevel(name);
         };
         this.loadAsset = function (name, path) {
             /*console.log (name + ':' + path)
             this.game.load.image (name, path);*/
         };
-        this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'T17', { preload: this.preload, create: this.create, update: this.update }, true);
+        this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'T17', { preload: this.preload, create: this.create, update: this.update, render: this.render }, true);
         $(window).resize(function () {
             _this.resize();
         });
@@ -160,11 +171,16 @@ var MainGame = (function () {
             this.levelsequence.addLevel(level_3.createLevel(l));
         }
     };
+    MainGame.prototype.setGravity = function (value, restitution) {
+        if (restitution === void 0) { restitution = 0.8; }
+        this.gravity = value;
+        this.game.physics.p2.restitution = restitution;
+    };
     return MainGame;
 }());
 exports.MainGame = MainGame;
 
-},{"./control":1,"./level":3,"./util":6}],3:[function(require,module,exports){
+},{"./control":1,"./level":3}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var object_1 = require("./object");
@@ -201,23 +217,24 @@ function createLevel(_const) {
     if (typeof _const.objects !== "undefined") {
         for (var _i = 0, _a = _const.objects; _i < _a.length; _i++) {
             var iter = _a[_i];
+            var OBJ;
             if (iter.assets instanceof Array) {
                 // Dynamic Objects
-                // Load the assets
-                for (var _b = 0, _c = iter.assets; _b < _c.length; _b++) {
-                    var asset_iter = _c[_b];
-                    out.game.loadAsset(asset_iter.name, asset_iter.path);
-                }
                 // Generate the object
-                out.addObject(new object_2.DynamicSprite(out.game, out, iter.name, iter.position, iter.assets, iter.extra));
+                OBJ = new object_2.DynamicSprite(out.game, out, iter.name, iter.position, iter.assets, iter.extra);
             }
             else {
                 // Static Object
-                // Load the asset
-                out.game.loadAsset(iter.assets.name, iter.assets.path);
                 // Add the object
-                out.addObject(new object_1.GameSprite(out.game, out, iter.name, iter.position, iter.assets, iter.extra));
+                OBJ = new object_1.GameSprite(out.game, out, iter.name, iter.position, iter.assets, iter.extra);
             }
+            if (typeof iter.physics !== "undefined") {
+                OBJ.loadBody(iter.physics);
+            }
+            if (typeof iter.static !== "undefined") {
+                OBJ.pObject.body.static = iter.static;
+            }
+            out.addObject(OBJ);
         }
     }
     return out;
@@ -228,6 +245,14 @@ var Level = (function () {
         var _this = this;
         this.objects = [];
         this.enable = function () {
+            _this.objects.forEach(function (element) {
+                element.enable();
+            });
+        };
+        this.disable = function () {
+            _this.objects.forEach(function (element) {
+                element.disable();
+            });
         };
         this.addObjectFromAsset = function (name, _pos, extra) {
             if (_pos === void 0) { _pos = { x: function () { return 0; }, y: function () { return 0; } }; }
@@ -268,10 +293,12 @@ var Level = (function () {
 }());
 exports.Level = Level;
 
-},{"./object":5,"./util":6}],4:[function(require,module,exports){
+},{"./object":5,"./util":7}],4:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var game_1 = require("./game");
+var ship_1 = require("./ship");
+var ship_2 = require("./ship");
 $(document).ready(function () {
     for (var i = 0; i != 50; i++) {
         $("<img src=\"resources/textures/Star.png\" class=\"pos\">").appendTo(".stars");
@@ -352,16 +379,39 @@ function DoGame(game) {
             game: window.GAME,
             objects: [
                 {
+                    name: "sky",
+                    assets: "Sky",
+                    position: {
+                        x: function () { return 0; },
+                        y: function () { return window.GAME.game.height - 820; }
+                    }
+                },
+                {
+                    name: "mountains",
+                    assets: "Mountain-E",
+                    position: {
+                        x: function () { return 0; },
+                        y: function () { return window.GAME.game.height - 520; }
+                    }
+                },
+                {
+                    name: 'backdrop',
+                    assets: "Fore",
+                    position: {
+                        x: function () { return 0; },
+                        y: function () { return window.GAME.game.height - 120; }
+                    }
+                },
+                {
                     name: "Launch-L",
-                    assets: {
-                        path: "../resources/textures/Launch-L.png",
-                        name: "Launch-L"
-                    },
+                    assets: "Launch-L",
+                    physics: "Launch-L",
+                    static: true,
                     position: {
                         x: function () { return window.GAME.game.width / 2; },
-                        y: function () { return window.GAME.game.height - 190; }
+                        y: function () { return window.GAME.game.height - 120; }
                     }
-                }
+                },
             ]
         }
     ];
@@ -369,10 +419,22 @@ function DoGame(game) {
         var iter = levels_1[_i];
         game.addLevel(iter);
     }
+    var artemis_pos = {
+        x: function () { return window.GAME.game.width / 2 + 70; },
+        y: function () { return window.GAME.game.height - 60; },
+    };
+    game.getLevel('global').addObject(new ship_2.Ship(game, 'Artemis', artemis_pos, [
+        'rocket',
+        'rocket-thrust',
+        'rocket-L-L',
+        'rocket-L-R'
+    ]));
+    game.controls[0].addBinding(ship_1.ShipBinding(game, game.getLevel('global').getObject('Artemis')));
+    game.setGravity(100, 0.1);
     game.show();
 }
 
-},{"./game":2}],5:[function(require,module,exports){
+},{"./game":2,"./ship":6}],5:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -391,7 +453,6 @@ var GameSprite = (function () {
         var _this = this;
         this.resetPosition = function () {
             _this.pObject.x = _this.pos.x();
-            console.log(_this.pos.x);
             _this.pObject.y = _this.pos.y();
         };
         this.addProperty = function (extra) {
@@ -400,19 +461,34 @@ var GameSprite = (function () {
         this.enablePhysics = function () {
             _this.level.game.game.physics.p2.enable(_this.pObject);
         };
+        this.loadBody = function (key) {
+            _this.enablePhysics();
+            _this.pObject.body.clearShapes();
+            _this.pObject.body.loadPolygon('physicsData', key);
+        };
+        this.disable = function () {
+            console.log(_this.pObject.body);
+            if (_this.pObject.body != null) {
+                _this.isStatic = _this.pObject.body.static;
+                _this.pObject.body.static = true;
+                _this.pObject.body.moves = false;
+            }
+            _this.pObject.visible = false;
+        };
+        this.enable = function () {
+            _this.pObject.visible = true;
+            if (_this.pObject.body != null) {
+                _this.pObject.body.static = _this.isStatic;
+                _this.pObject.body.moves = true;
+            }
+        };
         this.level = level;
         this.name = name;
         this.game = game;
-        if (typeof asset !== "string") {
-            this.asset = asset;
-        }
-        else {
-            this.asset = this.game.getAsset(asset);
-        }
-        this.extra = $.extend({}, this.extra, external);
+        this.asset = asset;
+        this.extra = extra;
         this.pos = pos;
-        this.game.loadAsset(this.asset.name, this.asset.path);
-        this.pObject = this.game.game.add.sprite(this.pos.x(), this.pos.y(), this.asset.name);
+        this.pObject = this.game.game.add.sprite(this.pos.x(), this.pos.y(), this.asset);
     }
     GameSprite.prototype.addToLevel = function (level) {
     };
@@ -425,34 +501,137 @@ var DynamicSprite = (function (_super) {
         var _this = _super.call(this, game, level, name, pos, assets[0], extra) || this;
         _this.assets = [];
         _this.switchToIndex = function (index) {
-            _this.pObject.key = _this.assets[index].name;
-            _this.pObject.loadTexture(_this.pObject.key);
+            _this.pObject.key = _this.assets[index];
+            _this.pObject.loadTexture(_this.pObject.key, 0);
         };
         _this.switchTo = function (name) {
             if (UTIL.find(name, _this.assets) != -1) {
                 _this.pObject.key = name;
-                _this.pObject.loadTexture(_this.pObject.key);
+                _this.pObject.loadTexture(_this.pObject.key, 0);
             }
         };
         _this.resetPosition = function () {
             return;
         };
-        for (var _i = 0, assets_1 = assets; _i < assets_1.length; _i++) {
-            var iter = assets_1[_i];
-            if (typeof iter === "string") {
-                _this.assets.push(_this.game.getAsset(iter));
-            }
-            else {
-                _this.assets.push(iter);
-            }
-        }
+        _this.assets = assets;
         return _this;
     }
     return DynamicSprite;
 }(GameSprite));
 exports.DynamicSprite = DynamicSprite;
 
-},{"./util":6}],6:[function(require,module,exports){
+},{"./util":7}],6:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+/// <reference path="../imports/phaser.d.ts" />
+/// <reference path="../imports/p2.d.ts" />
+var object_1 = require("./object");
+exports.ShipBinding = function (game, ship) {
+    return {
+        key: -1,
+        callback: function () {
+            ship.preframe();
+            if (game.game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
+                ship.rightRCS();
+            }
+            if (game.game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
+                ship.leftRCS();
+            }
+            if (game.game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
+                ship.engineOn();
+            }
+            ship.postframe();
+        }
+    };
+};
+var Ship = (function (_super) {
+    __extends(Ship, _super);
+    function Ship(game, name, pos, assets) {
+        var _this = _super.call(this, game, game.levelsequence.getLevel('global'), name, pos, assets, { angularRot: 0, SAS: false, thrustOn: false, inSpace: false }) || this;
+        _this.thrust = function (newtons) {
+            var BODY = _this.pObject.body;
+            var relative_thrust = newtons; // Dont subtract newtons (done in postframe)
+            var magnitude = BODY.world.pxmi(-relative_thrust);
+            var angle = BODY.data.angle + Math.PI / 2;
+            BODY.velocity.x -= magnitude * Math.cos(angle);
+            BODY.velocity.y -= magnitude * Math.sin(angle);
+        };
+        _this.engineOn = function () {
+            _this.switchTo('rocket-thrust');
+            // Rocket weighs 200
+            _this.thrust(270);
+            _this.extra.thrustOn = true;
+        };
+        // Turn right using RCS (reaction control system)
+        _this.rightRCS = function () {
+            var angularVelocity = function () { return _this.pObject.body.angularVelocity / 0.05; }; // Convert to correct unit
+            var tempVel = _this.calculate_velocity(0.7, angularVelocity);
+            _this.pObject.body.rotateRight(tempVel);
+            _this.extra.angularRot = tempVel;
+            _this.switchTo('rocket-L-L');
+        };
+        _this.leftRCS = function () {
+            var angularVelocity = function () { return _this.pObject.body.angularVelocity / 0.05; }; // Convert to correct unit
+            var tempVel = _this.calculate_velocity(-0.7, angularVelocity);
+            _this.pObject.body.rotateRight(tempVel);
+            _this.extra.angularRot = tempVel;
+            _this.switchTo('rocket-L-R');
+        };
+        // Dampen rotation using SAS (stability assist system)
+        _this.SAS = function () {
+            _this.extra.angularRot *= 0.93;
+            if (_this.extra.angularRot >= -0.001 && _this.extra.angularRot <= 0.001) {
+                _this.extra.angularRot = 0;
+            }
+        };
+        // Ran before the control function in the frame
+        _this.preframe = function () {
+            _this.switchTo('rocket');
+        };
+        _this.postframe = function () {
+            if (_this.extra.SAS && !_this.game.game.input.keyboard.isDown(Phaser.Keyboard.LEFT) && _this.game.game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
+                _this.SAS();
+            }
+            if (_this.extra.inSpace) {
+                _this.pObject.body.applyDamping(0);
+                //this.pObject.body.rotateRight ((<any>this.extra).angularRot);
+            }
+            else {
+                _this.pObject.body.applyDamping(0.001);
+            }
+            _this.extra.thrustOn = false;
+            _this.gravityAction();
+        };
+        _this.gravityAction = function () {
+            var BODY = _this.pObject.body;
+            var relative_thrust = -(_this.game.gravity * _this.pObject.body.mass); // Dont subtract newtons (done in postframe)
+            var magnitude = BODY.world.pxmi(-relative_thrust);
+            var angle = BODY.data.angle + Math.PI / 2;
+            BODY.velocity.y -= relative_thrust / 100;
+        };
+        _this.calculate_velocity = function (acceleration, initialVel) {
+            return acceleration + initialVel();
+        };
+        _this.enablePhysics();
+        _this.pObject.body.mass = 5;
+        _this.loadBody('Rocket-L');
+        return _this;
+    }
+    return Ship;
+}(object_1.DynamicSprite));
+exports.Ship = Ship;
+
+},{"./object":5}],7:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 function find(a, b) {
@@ -485,4 +664,4 @@ function error(message) {
 }
 exports.error = error;
 
-},{}]},{},[1,2,3,4,5,6]);
+},{}]},{},[1,2,3,4,5,7]);

@@ -33,15 +33,12 @@ export class LevelSequence {
     }
 }
 
-export interface Asset {
-    path: string;
-    name: string;
-}
-
 export interface ObjectAsset {
     name: string;
-    assets: BasicAsset | BasicAsset[];
+    assets: string | string[];
     position?: _position;
+    physics?: string;
+    static?: boolean;
     extra?: any;
 }
 
@@ -60,24 +57,24 @@ export function createLevel (_const: LevelConstructor): Level {
     var out = new Level (_const.game, _const.name);
     if (typeof _const.objects !== "undefined") {
         for (var iter of _const.objects){
+            var OBJ: GameSprite;
             if (iter.assets instanceof Array) {
                 // Dynamic Objects
-                // Load the assets
-                for (var asset_iter of iter.assets) {
-                    out.game.loadAsset (asset_iter.name, asset_iter.path);
-                }
-
                 // Generate the object
-                out.addObject (new DynamicSprite (out.game, out, iter.name, iter.position, iter.assets, iter.extra));
+                OBJ = new DynamicSprite (out.game, out, iter.name, iter.position, iter.assets, iter.extra);
             }
             else {
                 // Static Object
-                // Load the asset
-                out.game.loadAsset (iter.assets.name, iter.assets.path);
-
                 // Add the object
-                out.addObject (new GameSprite (out.game, out, iter.name, iter.position, iter.assets, iter.extra));
+                OBJ = new GameSprite (out.game, out, iter.name, iter.position, iter.assets, iter.extra);
             }
+            if (typeof iter.physics !== "undefined") {
+                OBJ.loadBody (iter.physics);
+            }
+            if (typeof iter.static !== "undefined") {
+                OBJ.pObject.body.static = iter.static;
+            }
+            out.addObject (OBJ);
         }
     }
     return out;
@@ -93,7 +90,15 @@ export class Level {
     }
 
     enable = () => {
+        this.objects.forEach(element => {
+            element.enable ();
+        });
+    }
 
+    disable = () => {
+        this.objects.forEach(element => {
+            element.disable ();
+        });
     }
 
     addObjectFromAsset = (name: string, _pos = {x: () => {return 0}, y: () => {return 0}}, extra?: any) => {
