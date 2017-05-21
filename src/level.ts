@@ -96,7 +96,7 @@ export class Level {
 
     }
 
-    addObjectFromAsset = (name: string, _pos = {x: 0, y: 0}, extra?: any) => {
+    addObjectFromAsset = (name: string, _pos = {x: () => {return 0}, y: () => {return 0}}, extra?: any) => {
         if (UTIL.find(name, this.game.assets) != -1) {
             this.objects.push (new GameSprite (this.game, this, name, _pos, this.game.assets[UTIL.find(name, this.game.assets)], extra));
         }
@@ -105,7 +105,7 @@ export class Level {
         }
     }
 
-    newObject = (name: string, path: string, _pos = {x: 0, y: 0}, extra?: any) => {
+    newObject = (name: string, path: string, _pos = {x: () => {return 0}, y: () => {return 0}}, extra?: any) => {
         this.game.loadAsset (name, path);
         this.addObjectFromAsset (name, _pos, extra);
     }
@@ -120,7 +120,13 @@ export class Level {
         return null;
     }
 
-    addObject (obj: GameSprite) {
+    addObject = (obj: GameSprite) => {
         this.objects.push (obj);
+    }
+
+    resetPositions = () => {
+        this.objects.forEach(element => {
+            element.resetPosition ();
+        });
     }
 }

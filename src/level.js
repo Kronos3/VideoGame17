@@ -63,7 +63,7 @@ var Level = (function () {
         this.enable = function () {
         };
         this.addObjectFromAsset = function (name, _pos, extra) {
-            if (_pos === void 0) { _pos = { x: 0, y: 0 }; }
+            if (_pos === void 0) { _pos = { x: function () { return 0; }, y: function () { return 0; } }; }
             if (UTIL.find(name, _this.game.assets) != -1) {
                 _this.objects.push(new object_1.GameSprite(_this.game, _this, name, _pos, _this.game.assets[UTIL.find(name, _this.game.assets)], extra));
             }
@@ -72,7 +72,7 @@ var Level = (function () {
             }
         };
         this.newObject = function (name, path, _pos, extra) {
-            if (_pos === void 0) { _pos = { x: 0, y: 0 }; }
+            if (_pos === void 0) { _pos = { x: function () { return 0; }, y: function () { return 0; } }; }
             _this.game.loadAsset(name, path);
             _this.addObjectFromAsset(name, _pos, extra);
         };
@@ -86,12 +86,17 @@ var Level = (function () {
             UTIL.error('Object {0} could not be found'.format(name));
             return null;
         };
+        this.addObject = function (obj) {
+            _this.objects.push(obj);
+        };
+        this.resetPositions = function () {
+            _this.objects.forEach(function (element) {
+                element.resetPosition();
+            });
+        };
         this.game = game;
         this.name = name;
     }
-    Level.prototype.addObject = function (obj) {
-        this.objects.push(obj);
-    };
     return Level;
 }());
 exports.Level = Level;

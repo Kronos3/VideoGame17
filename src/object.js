@@ -14,6 +14,11 @@ var UTIL = require("./util");
 var GameSprite = (function () {
     function GameSprite(game, level, name, pos, asset, extra) {
         var _this = this;
+        this.resetPosition = function () {
+            _this.pObject.x = _this.pos.x();
+            console.log(_this.pos.x);
+            _this.pObject.y = _this.pos.y();
+        };
         this.addProperty = function (extra) {
             _this.extra = $.extend({}, _this.extra, external);
         };
@@ -30,8 +35,9 @@ var GameSprite = (function () {
             this.asset = this.game.getAsset(asset);
         }
         this.extra = $.extend({}, this.extra, external);
+        this.pos = pos;
         this.game.loadAsset(this.asset.name, this.asset.path);
-        this.pObject = this.game.game.add.sprite(pos.x, pos.y, this.asset.name);
+        this.pObject = this.game.game.add.sprite(this.pos.x(), this.pos.y(), this.asset.name);
     }
     GameSprite.prototype.addToLevel = function (level) {
     };
@@ -52,6 +58,9 @@ var DynamicSprite = (function (_super) {
                 _this.pObject.key = name;
                 _this.pObject.loadTexture(_this.pObject.key);
             }
+        };
+        _this.resetPosition = function () {
+            return;
         };
         for (var _i = 0, assets_1 = assets; _i < assets_1.length; _i++) {
             var iter = assets_1[_i];

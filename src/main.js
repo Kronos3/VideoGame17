@@ -87,8 +87,8 @@ function DoGame(game) {
                         name: "Launch-L"
                     },
                     position: {
-                        x: window.GAME.game.world.centerX,
-                        y: window.GAME.game.world.height - 190
+                        x: function () { return window.GAME.game.width / 2; },
+                        y: function () { return window.GAME.game.height - 190; }
                     }
                 }
             ]

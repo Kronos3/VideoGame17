@@ -89,6 +89,9 @@ var MainGame = (function () {
             _this.game.width = width;
             _this.game.height = height;
             _this.game.renderer.resize(width, height);
+            _this.levelsequence.levels.forEach(function (element) {
+                element.resetPositions();
+            });
         };
         this.newLevel = function (name) {
             var level = new level_2.Level(_this, name);

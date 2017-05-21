@@ -98,6 +98,9 @@ export class MainGame {
         this.game.width = width;
         this.game.height = height;
         this.game.renderer.resize(width, height);
+        this.levelsequence.levels.forEach(element => {
+            element.resetPositions ();
+        });
     }
 
     newLevel = (name: string): Level => {

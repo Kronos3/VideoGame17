@@ -99,8 +99,8 @@ function DoGame (game: MainGame): void {
                         name: "Launch-L"
                     },
                     position: {
-                        x: (<any>window).GAME.game.world.centerX,
-                        y: (<any>window).GAME.game.world.height -190
+                        x: ():number => {return (<any>window).GAME.game.width / 2},
+                        y: ():number => {return (<any>window).GAME.game.height -190}
                     }
                 }
             ]

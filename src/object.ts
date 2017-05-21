@@ -4,8 +4,8 @@ import {MainGame} from "./game"
 import * as UTIL from "./util"
 
 export interface _position {
-    x: number;
-    y: number;
+    x(): number;
+    y(): number;
 }
 
 export class GameSprite {
@@ -15,6 +15,7 @@ export class GameSprite {
     asset: LEVEL.Asset;
     extra: Object;
     name: string;
+    pos: _position;
     constructor (game: MainGame, level: LEVEL.Level, name:string, pos: _position, asset: string | LEVEL.Asset, extra?: any) {
         this.level = level;
         this.name = name;
@@ -26,12 +27,19 @@ export class GameSprite {
             this.asset = this.game.getAsset (asset);
         }
         this.extra = $.extend ({}, this.extra, external);
+        this.pos = pos;
         this.game.loadAsset (this.asset.name, this.asset.path);
-        this.pObject = this.game.game.add.sprite (pos.x, pos.y, this.asset.name);
+        this.pObject = this.game.game.add.sprite (this.pos.x(), this.pos.y(), this.asset.name);
     }
 
     addToLevel (level: LEVEL.Level) {
 
+    }
+
+    resetPosition = () => {
+        this.pObject.x = this.pos.x ();
+        console.log (this.pos.x)
+        this.pObject.y = this.pos.y ();
     }
 
     addProperty = (extra: any) => {
@@ -67,5 +75,9 @@ export class DynamicSprite extends GameSprite {
             this.pObject.key = name;
             this.pObject.loadTexture (this.pObject.key);
         }
+    }
+
+    resetPosition = () => {
+        return;
     }
 }
