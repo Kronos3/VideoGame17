@@ -98,6 +98,7 @@ var MainGame = (function () {
             _this.game.load.image('Mountain-E', '../resources/textures/BG_1-L.png');
             _this.game.load.image('Sky', '../resources/textures/Sky Gradient Color Overlay-L.png');
             _this.game.load.image('Back', '../resources/textures/Background-L.png');
+            _this.game.load.image('Stars', '../resources/textures/stars.png');
             _this.game.load.physics('physicsData', '../resources/physics/mappings.json');
         };
         this.hide = function () {
@@ -107,6 +108,7 @@ var MainGame = (function () {
             $('#canvas-wrapper').css('display', "block");
         };
         this.create = function () {
+            _this.game.world.setBounds(0, 0, _this.game.width, 4200);
             _this.game.physics.startSystem(Phaser.Physics.P2JS);
             _this.cursor = _this.game.input.keyboard.createCursorKeys();
             var mainCanvas = $(_this.game.canvas);
@@ -115,6 +117,16 @@ var MainGame = (function () {
             _this.onReady(_this);
             _this.game.time.advancedTiming = true;
             _this.game.time.desiredFps = 60;
+            _this.game.camera.follow(_this.getLevel('global').getObject('Artemis').pObject);
+            _this.game.camera.bounds.top = 0;
+            _this.levelsequence.initGame();
+        };
+        this.getGravity = function () {
+            var temp = (-6.66666667e-14) * Math.pow(_this.game.world.height - _this.game.camera.view.bottom, 4) + 1;
+            if (temp < 0) {
+                return 0;
+            }
+            return temp;
         };
         this.update = function () {
             // Control
@@ -124,15 +136,11 @@ var MainGame = (function () {
                     iter.frame();
                 }
             }
+            // Per-Level
+            _this.levelsequence.getCurrent().frame();
         };
         this.render = function () {
             _this.game.debug.text('render FPS: ' + (_this.game.time.fps || '--'), 2, 14, "#00ff00");
-            if (_this.game.time.suggestedFps !== null) {
-                _this.game.debug.text('suggested FPS: ' + _this.game.time.suggestedFps, 2, 28, "#00ff00");
-                _this.game.debug.text('desired FPS: ' + _this.game.time.desiredFps, 2, 42, "#00ff00");
-            }
-            _this.game.debug.text(_this.getLevel('global').getObject('Artemis').pObject.body.velocity.y, 2, 56, "#00ff00");
-            _this.game.debug.text(_this.getLevel('global').getObject('Artemis').pObject.body.velocity.x, 2, 70, "#00ff00");
         };
         this.resize = function () {
             var height = $(window).height();
@@ -193,6 +201,9 @@ var LevelSequence = (function () {
         this.addLevel = function (_level) {
             _this.levels.push(_level);
         };
+        this.getCurrent = function () {
+            return _this.levels[_this.current + 1];
+        };
         this.start = function () {
             _this.current = 0;
             _this.levels[0].enable();
@@ -207,13 +218,20 @@ var LevelSequence = (function () {
             UTIL.error('Level {0} could not be found'.format(name));
             return null;
         };
+        this.initGame = function () {
+            _this.current = 0;
+            for (var i = 1; i != _this.levels.length; i++) {
+                _this.levels[i].disable();
+            }
+            _this.levels[_this.current + 1].enable();
+        };
         ;
     }
     return LevelSequence;
 }());
 exports.LevelSequence = LevelSequence;
 function createLevel(_const) {
-    var out = new Level(_const.game, _const.name);
+    var out = new Level(_const.game, _const.name, _const.frame);
     if (typeof _const.objects !== "undefined") {
         for (var _i = 0, _a = _const.objects; _i < _a.length; _i++) {
             var iter = _a[_i];
@@ -241,9 +259,11 @@ function createLevel(_const) {
 }
 exports.createLevel = createLevel;
 var Level = (function () {
-    function Level(game, name) {
+    function Level(game, name, frame) {
+        if (frame === void 0) { frame = function () { return; }; }
         var _this = this;
         this.objects = [];
+        this.frame = function () { return; };
         this.enable = function () {
             _this.objects.forEach(function (element) {
                 element.enable();
@@ -288,6 +308,7 @@ var Level = (function () {
         };
         this.game = game;
         this.name = name;
+        this.frame = frame;
     }
     return Level;
 }());
@@ -379,11 +400,27 @@ function DoGame(game) {
             game: window.GAME,
             objects: [
                 {
+                    name: "stars",
+                    assets: "Stars",
+                    position: {
+                        x: function () { return 0; },
+                        y: function () { return 0; }
+                    }
+                },
+                {
+                    name: "stars2",
+                    assets: "Stars",
+                    position: {
+                        x: function () { return 0; },
+                        y: function () { return 1600; }
+                    }
+                },
+                {
                     name: "sky",
                     assets: "Sky",
                     position: {
                         x: function () { return 0; },
-                        y: function () { return window.GAME.game.height - 820; }
+                        y: function () { return window.GAME.game.world.height - 820; }
                     }
                 },
                 {
@@ -391,7 +428,7 @@ function DoGame(game) {
                     assets: "Mountain-E",
                     position: {
                         x: function () { return 0; },
-                        y: function () { return window.GAME.game.height - 520; }
+                        y: function () { return 0; }
                     }
                 },
                 {
@@ -399,7 +436,7 @@ function DoGame(game) {
                     assets: "Fore",
                     position: {
                         x: function () { return 0; },
-                        y: function () { return window.GAME.game.height - 120; }
+                        y: function () { return window.GAME.game.world.height - 120; }
                     }
                 },
                 {
@@ -408,11 +445,15 @@ function DoGame(game) {
                     physics: "Launch-L",
                     static: true,
                     position: {
-                        x: function () { return window.GAME.game.width / 2; },
-                        y: function () { return window.GAME.game.height - 120; }
+                        x: function () { return window.GAME.game.world.width / 2; },
+                        y: function () { return window.GAME.game.world.height - 96; }
                     }
                 },
-            ]
+            ],
+            frame: function () {
+                window.GAME.getLevel('intro').getObject('mountains').pObject.y = (window.GAME.game.world.height - 520) + 0.3 * (window.GAME.game.world.height - window.GAME.game.camera.view.bottom);
+                window.GAME.gravity = 100 * window.GAME.getGravity();
+            }
         }
     ];
     for (var _i = 0, levels_1 = levels; _i < levels_1.length; _i++) {
@@ -420,8 +461,8 @@ function DoGame(game) {
         game.addLevel(iter);
     }
     var artemis_pos = {
-        x: function () { return window.GAME.game.width / 2 + 70; },
-        y: function () { return window.GAME.game.height - 60; },
+        x: function () { return window.GAME.game.world.width / 2 + 70; },
+        y: function () { return window.GAME.game.world.height - 60; },
     };
     game.getLevel('global').addObject(new ship_2.Ship(game, 'Artemis', artemis_pos, [
         'rocket',

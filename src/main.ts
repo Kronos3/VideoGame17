@@ -95,11 +95,27 @@ function DoGame (game: MainGame): void {
             game: (<any>window).GAME,
             objects: [
                 {
+                    name: "stars",
+                    assets: "Stars",
+                    position: {
+                        x: ():number => {return 0},
+                        y: ():number => {return 0}
+                    }
+                },
+                {
+                    name: "stars2",
+                    assets: "Stars",
+                    position: {
+                        x: ():number => {return 0},
+                        y: ():number => {return 1600}
+                    }
+                },
+                {
                     name: "sky",
                     assets: "Sky",
                     position: {
                         x: ():number => {return 0},
-                        y: ():number => {return (<any>window).GAME.game.height - 820}
+                        y: ():number => {return (<any>window).GAME.game.world.height - 820}
                     }
                 },
                 {
@@ -107,7 +123,7 @@ function DoGame (game: MainGame): void {
                     assets: "Mountain-E",
                     position: {
                         x: ():number => {return 0},
-                        y: ():number => {return (<any>window).GAME.game.height - 520}
+                        y: ():number => {return 0}
                     }
                 },
                 {
@@ -115,7 +131,7 @@ function DoGame (game: MainGame): void {
                     assets: "Fore",
                     position: {
                         x: ():number => {return 0},
-                        y: ():number => {return (<any>window).GAME.game.height - 120}
+                        y: ():number => {return (<any>window).GAME.game.world.height - 120}
                     }
                 },
                 {
@@ -124,11 +140,16 @@ function DoGame (game: MainGame): void {
                     physics: "Launch-L",
                     static: true,
                     position: {
-                        x: ():number => {return (<any>window).GAME.game.width / 2},
-                        y: ():number => {return (<any>window).GAME.game.height - 120}
+                        x: ():number => {return (<any>window).GAME.game.world.width / 2},
+                        y: ():number => {return (<any>window).GAME.game.world.height - 96}
                     }
                 },
-            ]
+            ],
+            frame: () => {
+                (<any>window).GAME.getLevel('intro').getObject ('mountains').pObject.y = ((<any>window).GAME.game.world.height - 520) + 0.3 * ((<any>window).GAME.game.world.height - (<any>window).GAME.game.camera.view.bottom);
+                (<any>window).GAME.gravity = 100 * (<any>window).GAME.getGravity ();
+                
+            }
         }
     ]
     for (var iter of levels) {
@@ -136,8 +157,8 @@ function DoGame (game: MainGame): void {
     }
 
     var artemis_pos = {
-        x: ():number => {return (<any>window).GAME.game.width / 2 + 70},
-        y: ():number => {return (<any>window).GAME.game.height - 60},
+        x: ():number => {return (<any>window).GAME.game.world.width / 2 + 70},
+        y: ():number => {return (<any>window).GAME.game.world.height - 60},
     }
 
     game.getLevel ('global').addObject (new Ship (

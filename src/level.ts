@@ -17,6 +17,10 @@ export class LevelSequence {
         this.levels.push (_level);
     }
 
+    getCurrent = () => {
+        return this.levels[this.current + 1];
+    }
+
     start = () => {
         this.current = 0;
         this.levels[0].enable ();
@@ -30,6 +34,14 @@ export class LevelSequence {
         }
         UTIL.error ('Level {0} could not be found'.format (name));
         return null;
+    }
+
+    initGame = () => {
+        this.current = 0;
+        for (var i = 1; i!= this.levels.length; i++) {
+            this.levels[i].disable ();
+        }
+        this.levels[this.current + 1].enable ();
     }
 }
 
@@ -51,10 +63,11 @@ export interface LevelConstructor {
     name: string;
     game: MainGame;
     objects?: ObjectAsset[];
+    frame?: () => void;
 }
 
 export function createLevel (_const: LevelConstructor): Level {
-    var out = new Level (_const.game, _const.name);
+    var out = new Level (_const.game, _const.name, _const.frame);
     if (typeof _const.objects !== "undefined") {
         for (var iter of _const.objects){
             var OBJ: GameSprite;
@@ -84,9 +97,11 @@ export class Level {
     objects: GameSprite[] = [];
     game: MainGame;
     name: string;
-    constructor (game: MainGame,  name: string) {
+    frame: () => void = () => {return};
+    constructor (game: MainGame,  name: string, frame = () => {return} ) {
         this.game = game;
         this.name = name;
+        this.frame = frame;
     }
 
     enable = () => {

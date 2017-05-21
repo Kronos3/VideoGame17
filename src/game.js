@@ -62,6 +62,7 @@ var MainGame = (function () {
             _this.game.load.image('Mountain-E', '../resources/textures/BG_1-L.png');
             _this.game.load.image('Sky', '../resources/textures/Sky Gradient Color Overlay-L.png');
             _this.game.load.image('Back', '../resources/textures/Background-L.png');
+            _this.game.load.image('Stars', '../resources/textures/stars.png');
             _this.game.load.physics('physicsData', '../resources/physics/mappings.json');
         };
         this.hide = function () {
@@ -71,6 +72,7 @@ var MainGame = (function () {
             $('#canvas-wrapper').css('display', "block");
         };
         this.create = function () {
+            _this.game.world.setBounds(0, 0, _this.game.width, 4200);
             _this.game.physics.startSystem(Phaser.Physics.P2JS);
             _this.cursor = _this.game.input.keyboard.createCursorKeys();
             var mainCanvas = $(_this.game.canvas);
@@ -79,6 +81,16 @@ var MainGame = (function () {
             _this.onReady(_this);
             _this.game.time.advancedTiming = true;
             _this.game.time.desiredFps = 60;
+            _this.game.camera.follow(_this.getLevel('global').getObject('Artemis').pObject);
+            _this.game.camera.bounds.top = 0;
+            _this.levelsequence.initGame();
+        };
+        this.getGravity = function () {
+            var temp = (-6.66666667e-14) * Math.pow(_this.game.world.height - _this.game.camera.view.bottom, 4) + 1;
+            if (temp < 0) {
+                return 0;
+            }
+            return temp;
         };
         this.update = function () {
             // Control
@@ -88,15 +100,11 @@ var MainGame = (function () {
                     iter.frame();
                 }
             }
+            // Per-Level
+            _this.levelsequence.getCurrent().frame();
         };
         this.render = function () {
             _this.game.debug.text('render FPS: ' + (_this.game.time.fps || '--'), 2, 14, "#00ff00");
-            if (_this.game.time.suggestedFps !== null) {
-                _this.game.debug.text('suggested FPS: ' + _this.game.time.suggestedFps, 2, 28, "#00ff00");
-                _this.game.debug.text('desired FPS: ' + _this.game.time.desiredFps, 2, 42, "#00ff00");
-            }
-            _this.game.debug.text(_this.getLevel('global').getObject('Artemis').pObject.body.velocity.y, 2, 56, "#00ff00");
-            _this.game.debug.text(_this.getLevel('global').getObject('Artemis').pObject.body.velocity.x, 2, 70, "#00ff00");
         };
         this.resize = function () {
             var height = $(window).height();

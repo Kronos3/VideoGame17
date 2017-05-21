@@ -83,11 +83,27 @@ function DoGame(game) {
             game: window.GAME,
             objects: [
                 {
+                    name: "stars",
+                    assets: "Stars",
+                    position: {
+                        x: function () { return 0; },
+                        y: function () { return 0; }
+                    }
+                },
+                {
+                    name: "stars2",
+                    assets: "Stars",
+                    position: {
+                        x: function () { return 0; },
+                        y: function () { return 1600; }
+                    }
+                },
+                {
                     name: "sky",
                     assets: "Sky",
                     position: {
                         x: function () { return 0; },
-                        y: function () { return window.GAME.game.height - 820; }
+                        y: function () { return window.GAME.game.world.height - 820; }
                     }
                 },
                 {
@@ -95,7 +111,7 @@ function DoGame(game) {
                     assets: "Mountain-E",
                     position: {
                         x: function () { return 0; },
-                        y: function () { return window.GAME.game.height - 520; }
+                        y: function () { return 0; }
                     }
                 },
                 {
@@ -103,7 +119,7 @@ function DoGame(game) {
                     assets: "Fore",
                     position: {
                         x: function () { return 0; },
-                        y: function () { return window.GAME.game.height - 120; }
+                        y: function () { return window.GAME.game.world.height - 120; }
                     }
                 },
                 {
@@ -112,11 +128,15 @@ function DoGame(game) {
                     physics: "Launch-L",
                     static: true,
                     position: {
-                        x: function () { return window.GAME.game.width / 2; },
-                        y: function () { return window.GAME.game.height - 120; }
+                        x: function () { return window.GAME.game.world.width / 2; },
+                        y: function () { return window.GAME.game.world.height - 96; }
                     }
                 },
-            ]
+            ],
+            frame: function () {
+                window.GAME.getLevel('intro').getObject('mountains').pObject.y = (window.GAME.game.world.height - 520) + 0.3 * (window.GAME.game.world.height - window.GAME.game.camera.view.bottom);
+                window.GAME.gravity = 100 * window.GAME.getGravity();
+            }
         }
     ];
     for (var _i = 0, levels_1 = levels; _i < levels_1.length; _i++) {
@@ -124,8 +144,8 @@ function DoGame(game) {
         game.addLevel(iter);
     }
     var artemis_pos = {
-        x: function () { return window.GAME.game.width / 2 + 70; },
-        y: function () { return window.GAME.game.height - 60; },
+        x: function () { return window.GAME.game.world.width / 2 + 70; },
+        y: function () { return window.GAME.game.world.height - 60; },
     };
     game.getLevel('global').addObject(new ship_2.Ship(game, 'Artemis', artemis_pos, [
         'rocket',

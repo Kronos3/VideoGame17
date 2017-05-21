@@ -67,6 +67,7 @@ export class MainGame {
         this.game.load.image('Mountain-E', '../resources/textures/BG_1-L.png');
         this.game.load.image('Sky', '../resources/textures/Sky Gradient Color Overlay-L.png');
         this.game.load.image('Back', '../resources/textures/Background-L.png');
+        this.game.load.image('Stars', '../resources/textures/stars.png');
         this.game.load.physics('physicsData', '../resources/physics/mappings.json');
     }
 
@@ -79,6 +80,7 @@ export class MainGame {
     }
 
     create = () => {
+        this.game.world.setBounds(0, 0, this.game.width, 4200);
         this.game.physics.startSystem(Phaser.Physics.P2JS);
         this.cursor = this.game.input.keyboard.createCursorKeys();
         var mainCanvas = $(this.game.canvas);
@@ -87,6 +89,17 @@ export class MainGame {
         this.onReady (this);
         this.game.time.advancedTiming = true;
         this.game.time.desiredFps = 60;
+        this.game.camera.follow(this.getLevel('global').getObject('Artemis').pObject);
+        this.game.camera.bounds.top = 0;
+        this.levelsequence.initGame ();
+    }
+
+    getGravity = () => { // Gravity at a distance
+        var temp = (-6.66666667e-14) * Math.pow (this.game.world.height - this.game.camera.view.bottom, 4) + 1;
+        if (temp < 0) {
+            return 0;
+        }
+        return temp;
     }
 
     update = () => {
@@ -96,17 +109,13 @@ export class MainGame {
                 iter.frame ();
             }
         }
+
+        // Per-Level
+        this.levelsequence.getCurrent ().frame ();
     }
 
     render = () => {
         this.game.debug.text('render FPS: ' + (this.game.time.fps || '--') , 2, 14, "#00ff00");
-        if (this.game.time.suggestedFps !== null)
-        {
-            this.game.debug.text('suggested FPS: ' + this.game.time.suggestedFps, 2, 28, "#00ff00");
-            this.game.debug.text('desired FPS: ' + this.game.time.desiredFps, 2, 42, "#00ff00");
-        }
-        this.game.debug.text(this.getLevel('global').getObject('Artemis').pObject.body.velocity.y, 2, 56, "#00ff00");
-        this.game.debug.text(this.getLevel('global').getObject('Artemis').pObject.body.velocity.x, 2, 70, "#00ff00");
     }
 
     resize = () => {
