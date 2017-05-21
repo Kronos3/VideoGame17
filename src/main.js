@@ -155,5 +155,4 @@ function DoGame(game) {
     ]));
     game.controls[0].addBinding(ship_1.ShipBinding(game, game.getLevel('global').getObject('Artemis')));
     game.setGravity(100, 0.1);
-    game.show();
 }

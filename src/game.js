@@ -65,11 +65,19 @@ var MainGame = (function () {
             _this.game.load.image('Stars', '../resources/textures/stars.png');
             _this.game.load.physics('physicsData', '../resources/physics/mappings.json');
         };
+        this.pause = function () {
+            _this.game.paused = true;
+        };
+        this.resume = function () {
+            _this.game.paused = false;
+        };
         this.hide = function () {
             $('#canvas-wrapper').css('display', "none");
+            _this.pause();
         };
         this.show = function () {
             $('#canvas-wrapper').css('display', "block");
+            _this.resume();
         };
         this.create = function () {
             _this.game.world.setBounds(0, 0, _this.game.width, 4200);

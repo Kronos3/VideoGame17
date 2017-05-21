@@ -71,12 +71,22 @@ export class MainGame {
         this.game.load.physics('physicsData', '../resources/physics/mappings.json');
     }
 
+    pause = () => {
+        this.game.paused = true;
+    }
+
+    resume = () => {
+        this.game.paused = false;
+    }
+
     hide = () => {
         $('#canvas-wrapper').css ('display', "none");
+        this.pause ();
     }
 
     show = () => {
         $('#canvas-wrapper').css ('display', "block");
+        this.resume ();
     }
 
     create = () => {

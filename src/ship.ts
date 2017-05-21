@@ -33,7 +33,7 @@ export class Ship extends DynamicSprite {
 
     thrust = (newtons) => { // Engine newtons
         var BODY = this.pObject.body;
-        var relative_thrust = newtons; // Dont subtract newtons (done in postframe)
+        var relative_thrust = newtons; // Dont subtract newtons from weight (done in postframe)
 
         var magnitude = BODY.world.pxmi(-relative_thrust);
         var angle = BODY.data.angle + Math.PI / 2;
@@ -43,10 +43,12 @@ export class Ship extends DynamicSprite {
 
     }
 
+    throttle: number = 270;
+
     engineOn = () => {
         this.switchTo ('rocket-thrust');
-        // Rocket weighs 200
-        this.thrust (270);
+        // Rocket weighs 200 (gravity * mass)
+        this.thrust (this.throttle); // Lower when in 0G
         (<any>this.extra).thrustOn = true;
     }
 
@@ -82,16 +84,8 @@ export class Ship extends DynamicSprite {
     }
 
     postframe = () => {
-        
         if ((<any>this.extra).SAS && !this.game.game.input.keyboard.isDown (Phaser.Keyboard.LEFT) && this.game.game.input.keyboard.isDown (Phaser.Keyboard.LEFT)) {
             this.SAS ();
-        }
-        if ((<any>this.extra).inSpace) {
-            this.pObject.body.applyDamping (0);
-            //this.pObject.body.rotateRight ((<any>this.extra).angularRot);
-        }
-        else {
-            this.pObject.body.applyDamping (0.001);
         }
         (<any>this.extra).thrustOn = false;
         this.gravityAction ();
@@ -99,12 +93,8 @@ export class Ship extends DynamicSprite {
 
     gravityAction = () => {
         var BODY = this.pObject.body;
-        var relative_thrust = -( this.game.gravity * this.pObject.body.mass); // Dont subtract newtons (done in postframe)
-
-        var magnitude = BODY.world.pxmi(-relative_thrust);
-        var angle = BODY.data.angle + Math.PI / 2;
+        var relative_thrust = -( this.game.gravity * this.pObject.body.mass);
         BODY.velocity.y -= relative_thrust / 100;
-        
     }
     
     calculate_velocity = (acceleration, initialVel) => {

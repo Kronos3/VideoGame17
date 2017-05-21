@@ -148,7 +148,7 @@ function DoGame (game: MainGame): void {
             frame: () => {
                 (<any>window).GAME.getLevel('intro').getObject ('mountains').pObject.y = ((<any>window).GAME.game.world.height - 520) + 0.3 * ((<any>window).GAME.game.world.height - (<any>window).GAME.game.camera.view.bottom);
                 (<any>window).GAME.gravity = 100 * (<any>window).GAME.getGravity ();
-                
+
             }
         }
     ]
@@ -173,5 +173,4 @@ function DoGame (game: MainGame): void {
         ]));
     game.controls[0].addBinding (ShipBinding(game, <Ship>game.getLevel('global').getObject ('Artemis')));
     game.setGravity (100, 0.1);
-    game.show ();
 }

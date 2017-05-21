@@ -101,11 +101,19 @@ var MainGame = (function () {
             _this.game.load.image('Stars', '../resources/textures/stars.png');
             _this.game.load.physics('physicsData', '../resources/physics/mappings.json');
         };
+        this.pause = function () {
+            _this.game.paused = true;
+        };
+        this.resume = function () {
+            _this.game.paused = false;
+        };
         this.hide = function () {
             $('#canvas-wrapper').css('display', "none");
+            _this.pause();
         };
         this.show = function () {
             $('#canvas-wrapper').css('display', "block");
+            _this.resume();
         };
         this.create = function () {
             _this.game.world.setBounds(0, 0, _this.game.width, 4200);
@@ -472,7 +480,6 @@ function DoGame(game) {
     ]));
     game.controls[0].addBinding(ship_1.ShipBinding(game, game.getLevel('global').getObject('Artemis')));
     game.setGravity(100, 0.1);
-    game.show();
 }
 
 },{"./game":2,"./ship":6}],5:[function(require,module,exports){
@@ -601,16 +608,17 @@ var Ship = (function (_super) {
         var _this = _super.call(this, game, game.levelsequence.getLevel('global'), name, pos, assets, { angularRot: 0, SAS: false, thrustOn: false, inSpace: false }) || this;
         _this.thrust = function (newtons) {
             var BODY = _this.pObject.body;
-            var relative_thrust = newtons; // Dont subtract newtons (done in postframe)
+            var relative_thrust = newtons; // Dont subtract newtons from weight (done in postframe)
             var magnitude = BODY.world.pxmi(-relative_thrust);
             var angle = BODY.data.angle + Math.PI / 2;
             BODY.velocity.x -= magnitude * Math.cos(angle);
             BODY.velocity.y -= magnitude * Math.sin(angle);
         };
+        _this.throttle = 270;
         _this.engineOn = function () {
             _this.switchTo('rocket-thrust');
-            // Rocket weighs 200
-            _this.thrust(270);
+            // Rocket weighs 200 (gravity * mass)
+            _this.thrust(_this.throttle); // Lower when in 0G
             _this.extra.thrustOn = true;
         };
         // Turn right using RCS (reaction control system)
@@ -643,21 +651,12 @@ var Ship = (function (_super) {
             if (_this.extra.SAS && !_this.game.game.input.keyboard.isDown(Phaser.Keyboard.LEFT) && _this.game.game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
                 _this.SAS();
             }
-            if (_this.extra.inSpace) {
-                _this.pObject.body.applyDamping(0);
-                //this.pObject.body.rotateRight ((<any>this.extra).angularRot);
-            }
-            else {
-                _this.pObject.body.applyDamping(0.001);
-            }
             _this.extra.thrustOn = false;
             _this.gravityAction();
         };
         _this.gravityAction = function () {
             var BODY = _this.pObject.body;
-            var relative_thrust = -(_this.game.gravity * _this.pObject.body.mass); // Dont subtract newtons (done in postframe)
-            var magnitude = BODY.world.pxmi(-relative_thrust);
-            var angle = BODY.data.angle + Math.PI / 2;
+            var relative_thrust = -(_this.game.gravity * _this.pObject.body.mass);
             BODY.velocity.y -= relative_thrust / 100;
         };
         _this.calculate_velocity = function (acceleration, initialVel) {
