@@ -1,5 +1,6 @@
 /// <reference path="../imports/phaser.d.ts" />
 import * as LEVEL from "./level"
+import {MainGame} from "./game"
 import * as UTIL from "./util"
 
 export interface _position {
@@ -10,38 +11,44 @@ export interface _position {
 export class GameSprite {
     pObject: Phaser.Sprite;
     level: LEVEL.Level;
+    game: MainGame;
     asset: LEVEL.Asset;
     extra: Object;
     name: string;
-    constructor (level: LEVEL.Level, name:string, pos: _position, asset: string | LEVEL.Asset, extra?: any) {
+    constructor (game: MainGame, level: LEVEL.Level, name:string, pos: _position, asset: string | LEVEL.Asset, extra?: any) {
         this.level = level;
         this.name = name;
+        this.game = game;
         if (typeof asset !== "string") {
             this.asset = asset;
         }
         else {
-            this.level.getAsset (asset);
+            this.game.getAsset (asset);
         }
         this.extra = $.extend ({}, this.extra, external);
-        this.pObject = this.level.game.game.add.sprite (0,0, this.asset)
+        this.pObject = this.game.game.add.sprite (pos.x, pos.y, this.asset.name);
     }
 
-    addProperty (extra: any) {
+    addToLevel (level: LEVEL.Level) {
+
+    }
+
+    addProperty = (extra: any) => {
         this.extra = $.extend ({}, this.extra, external);
     }
 
-    enablePhysics () {
+    enablePhysics = () => {
         this.level.game.game.physics.p2.enable (this.pObject);
     }
 }
 
 export class DynamicSprite extends GameSprite {
     assets: LEVEL.Asset[] = [];
-    constructor (game: LEVEL.Level, name:string, pos: _position, assets: string[] | LEVEL.Asset[], extra?: any) {
-        super (game, name, pos, assets[0], extra);
+    constructor (game: MainGame, level: LEVEL.Level, name:string, pos: _position, assets: string[] | LEVEL.Asset[], extra?: any) {
+        super (game, level, name, pos, assets[0], extra);
         for (var iter of assets) {
             if (typeof iter === "string") {
-                this.assets.push (this.level.getAsset(iter));
+                this.assets.push (this.game.getAsset(iter));
             }
             else {
                 this.assets.push (iter);

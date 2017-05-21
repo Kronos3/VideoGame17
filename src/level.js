@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var object_1 = require("./object");
+var object_2 = require("./object");
 var UTIL = require("./util");
 var LevelSequence = (function () {
     function LevelSequence() {
@@ -38,10 +39,17 @@ function createLevel(_const) {
                 // Load the assets
                 for (var _b = 0, _c = iter.assets; _b < _c.length; _b++) {
                     var asset_iter = _c[_b];
-                    out.loadAsset(asset_iter.name, asset_iter.path);
+                    out.game.loadAsset(asset_iter.name, asset_iter.path);
                 }
                 // Generate the object
-                object_1.DynamicSprite;
+                out.addObject(new object_2.DynamicSprite(out.game, out, iter.name, iter.position, iter.assets, iter.extra));
+            }
+            else {
+                // Static Object
+                // Load the asset
+                out.game.loadAsset(iter.assets.name, iter.assets.path);
+                // Add the object
+                out.addObject(new object_1.GameSprite(out.game, out, iter.name, iter.position, iter.assets, iter.extra));
             }
         }
     }
@@ -51,24 +59,22 @@ var Level = (function () {
     function Level(game, name) {
         var _this = this;
         this.objects = [];
-        this.assets = [];
         this.enable = function () {
         };
-        /* MOVE TO GAME SCOPE
-        addObjectFromAsset = (assetName: string, _pos = {x: 0, y: 0}, extra?: any) => {
-            if (UTIL.find(assetName, this.assets) != -1) {
-                this.objects.push ({name: assetName, object: new GameSprite (this.game, _pos, assetName, extra)});
+        this.addObjectFromAsset = function (name, _pos, extra) {
+            if (_pos === void 0) { _pos = { x: 0, y: 0 }; }
+            if (UTIL.find(name, _this.game.assets) != -1) {
+                _this.objects.push(new object_1.GameSprite(_this.game, _this, name, _pos, _this.game.assets[UTIL.find(name, _this.game.assets)], extra));
             }
             else {
-                UTIL.error('Asset {0} has not been preloaded, use newObject()'.format (assetName));
+                UTIL.error('Asset {0} has not been preloaded, use newObject()'.format(name));
             }
-        }
-    
-        newObject = (name: string, path: string, _pos = {x: 0, y: 0}, extra?: any) => {
-            this.loadAsset (name, path);
-            this.addObjectFromAsset (name, _pos, extra);
-        }
-        */
+        };
+        this.newObject = function (name, path, _pos, extra) {
+            if (_pos === void 0) { _pos = { x: 0, y: 0 }; }
+            _this.game.loadAsset(name, path);
+            _this.addObjectFromAsset(name, _pos, extra);
+        };
         this.getObject = function (name) {
             for (var _i = 0, _a = _this.objects; _i < _a.length; _i++) {
                 var i = _a[_i];
@@ -79,32 +85,12 @@ var Level = (function () {
             UTIL.error('Object {0} could not be found'.format(name));
             return null;
         };
-        this.getAsset = function (name) {
-            for (var _i = 0, _a = _this.assets; _i < _a.length; _i++) {
-                var i = _a[_i];
-                if (i.name == name) {
-                    return i;
-                }
-            }
-            UTIL.error('Asset {0} could not be found'.format(name));
-            return null;
-        };
-        this.loadAsset = function (name, path) {
-            _this.game.game.load.image(name, path);
-            var found = false;
-            for (var _i = 0, _a = _this.assets; _i < _a.length; _i++) {
-                var iter = _a[_i];
-                if (iter.path == path) {
-                    found = true;
-                }
-            }
-            if (!found) {
-                _this.assets.push({ path: path, name: name, level: _this });
-            }
-        };
         this.game = game;
         this.name = name;
     }
+    Level.prototype.addObject = function (obj) {
+        this.objects.push(obj);
+    };
     return Level;
 }());
 exports.Level = Level;

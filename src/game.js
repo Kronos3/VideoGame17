@@ -14,6 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var control_1 = require("./control");
 var level_1 = require("./level");
 var level_2 = require("./level");
+var UTIL = require("./util");
 var toggleControlScheme = (function (_super) {
     __extends(toggleControlScheme, _super);
     function toggleControlScheme(game, _bindings, captureInput, enabled) {
@@ -42,6 +43,7 @@ var MainGame = (function () {
         var _this = this;
         this.controls = [];
         this.levelsequence = new level_1.LevelSequence();
+        this.assets = [];
         this.addControlScheme = function (bindings, captureInput) {
             if (captureInput === void 0) { captureInput = true; }
             var temp = new toggleControlScheme(_this.game, bindings, captureInput);
@@ -51,32 +53,16 @@ var MainGame = (function () {
             _this.controls.push(scheme);
         };
         this.preload = function () {
-            _this.loadAsset('rocket', 'resources/textures/player/Rocket-L.png', "all");
-            _this.loadAsset('rocket-thrust', 'resources/textures/player/Rocket-L-T.png', "all");
-            _this.loadAsset('rocket-L-L', 'resources/textures/player/Rocket-L-L.png', "all");
-            _this.loadAsset('rocket-L-R', 'resources/textures/player/Rocket-L-R.png', "all");
+            _this.loadAsset('rocket', 'resources/textures/player/Rocket-L.png');
+            _this.loadAsset('rocket-thrust', 'resources/textures/player/Rocket-L-T.png');
+            _this.loadAsset('rocket-L-L', 'resources/textures/player/Rocket-L-L.png');
+            _this.loadAsset('rocket-L-R', 'resources/textures/player/Rocket-L-R.png');
         };
         this.hide = function () {
             $('#canvas-wrapper').css('display', "none");
         };
         this.show = function () {
             $('#canvas-wrapper').css('display', "block");
-        };
-        this.loadAsset = function (name, path, level) {
-            if (typeof level === "string") {
-                if (level == "all") {
-                    for (var _i = 0, _a = _this.levelsequence.levels; _i < _a.length; _i++) {
-                        var iter = _a[_i];
-                        iter.loadAsset(name, path);
-                    }
-                }
-                else {
-                    _this.levelsequence.getLevel(level).loadAsset(name, path);
-                }
-            }
-            else {
-                level.loadAsset(name, path);
-            }
         };
         this.create = function () {
             _this.game.physics.startSystem(Phaser.Physics.P2JS);
@@ -106,11 +92,30 @@ var MainGame = (function () {
             _this.levelsequence.addLevel(level);
             return level;
         };
+        this.getAsset = function (name) {
+            for (var _i = 0, _a = _this.assets; _i < _a.length; _i++) {
+                var i = _a[_i];
+                if (i.name == name) {
+                    return i;
+                }
+            }
+            UTIL.error('Asset {0} could not be found'.format(name));
+            return null;
+        };
+        this.loadAsset = function (name, path) {
+            for (var _i = 0, _a = _this.assets; _i < _a.length; _i++) {
+                var iter = _a[_i];
+                if (iter.name == name) {
+                    return;
+                }
+            }
+            _this.game.load.image(name, path);
+        };
         this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'T17', { preload: this.preload, create: this.create, update: this.update }, true);
         $(window).resize(function () {
             _this.resize();
         });
-        this.newLevel('intro');
+        this.newLevel('global');
     }
     return MainGame;
 }());

@@ -47,6 +47,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var control_1 = require("./control");
 var level_1 = require("./level");
 var level_2 = require("./level");
+var UTIL = require("./util");
 var toggleControlScheme = (function (_super) {
     __extends(toggleControlScheme, _super);
     function toggleControlScheme(game, _bindings, captureInput, enabled) {
@@ -75,6 +76,7 @@ var MainGame = (function () {
         var _this = this;
         this.controls = [];
         this.levelsequence = new level_1.LevelSequence();
+        this.assets = [];
         this.addControlScheme = function (bindings, captureInput) {
             if (captureInput === void 0) { captureInput = true; }
             var temp = new toggleControlScheme(_this.game, bindings, captureInput);
@@ -84,32 +86,16 @@ var MainGame = (function () {
             _this.controls.push(scheme);
         };
         this.preload = function () {
-            _this.loadAsset('rocket', 'resources/textures/player/Rocket-L.png', "all");
-            _this.loadAsset('rocket-thrust', 'resources/textures/player/Rocket-L-T.png', "all");
-            _this.loadAsset('rocket-L-L', 'resources/textures/player/Rocket-L-L.png', "all");
-            _this.loadAsset('rocket-L-R', 'resources/textures/player/Rocket-L-R.png', "all");
+            _this.loadAsset('rocket', 'resources/textures/player/Rocket-L.png');
+            _this.loadAsset('rocket-thrust', 'resources/textures/player/Rocket-L-T.png');
+            _this.loadAsset('rocket-L-L', 'resources/textures/player/Rocket-L-L.png');
+            _this.loadAsset('rocket-L-R', 'resources/textures/player/Rocket-L-R.png');
         };
         this.hide = function () {
             $('#canvas-wrapper').css('display', "none");
         };
         this.show = function () {
             $('#canvas-wrapper').css('display', "block");
-        };
-        this.loadAsset = function (name, path, level) {
-            if (typeof level === "string") {
-                if (level == "all") {
-                    for (var _i = 0, _a = _this.levelsequence.levels; _i < _a.length; _i++) {
-                        var iter = _a[_i];
-                        iter.loadAsset(name, path);
-                    }
-                }
-                else {
-                    _this.levelsequence.getLevel(level).loadAsset(name, path);
-                }
-            }
-            else {
-                level.loadAsset(name, path);
-            }
         };
         this.create = function () {
             _this.game.physics.startSystem(Phaser.Physics.P2JS);
@@ -139,20 +125,40 @@ var MainGame = (function () {
             _this.levelsequence.addLevel(level);
             return level;
         };
+        this.getAsset = function (name) {
+            for (var _i = 0, _a = _this.assets; _i < _a.length; _i++) {
+                var i = _a[_i];
+                if (i.name == name) {
+                    return i;
+                }
+            }
+            UTIL.error('Asset {0} could not be found'.format(name));
+            return null;
+        };
+        this.loadAsset = function (name, path) {
+            for (var _i = 0, _a = _this.assets; _i < _a.length; _i++) {
+                var iter = _a[_i];
+                if (iter.name == name) {
+                    return;
+                }
+            }
+            _this.game.load.image(name, path);
+        };
         this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'T17', { preload: this.preload, create: this.create, update: this.update }, true);
         $(window).resize(function () {
             _this.resize();
         });
-        this.newLevel('intro');
+        this.newLevel('global');
     }
     return MainGame;
 }());
 exports.MainGame = MainGame;
 
-},{"./control":1,"./level":3}],3:[function(require,module,exports){
+},{"./control":1,"./level":3,"./util":6}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var object_1 = require("./object");
+var object_2 = require("./object");
 var UTIL = require("./util");
 var LevelSequence = (function () {
     function LevelSequence() {
@@ -190,10 +196,17 @@ function createLevel(_const) {
                 // Load the assets
                 for (var _b = 0, _c = iter.assets; _b < _c.length; _b++) {
                     var asset_iter = _c[_b];
-                    out.loadAsset(asset_iter.name, asset_iter.path);
+                    out.game.loadAsset(asset_iter.name, asset_iter.path);
                 }
                 // Generate the object
-                object_1.DynamicSprite;
+                out.addObject(new object_2.DynamicSprite(out.game, out, iter.name, iter.position, iter.assets, iter.extra));
+            }
+            else {
+                // Static Object
+                // Load the asset
+                out.game.loadAsset(iter.assets.name, iter.assets.path);
+                // Add the object
+                out.addObject(new object_1.GameSprite(out.game, out, iter.name, iter.position, iter.assets, iter.extra));
             }
         }
     }
@@ -203,24 +216,22 @@ var Level = (function () {
     function Level(game, name) {
         var _this = this;
         this.objects = [];
-        this.assets = [];
         this.enable = function () {
         };
-        /* MOVE TO GAME SCOPE
-        addObjectFromAsset = (assetName: string, _pos = {x: 0, y: 0}, extra?: any) => {
-            if (UTIL.find(assetName, this.assets) != -1) {
-                this.objects.push ({name: assetName, object: new GameSprite (this.game, _pos, assetName, extra)});
+        this.addObjectFromAsset = function (name, _pos, extra) {
+            if (_pos === void 0) { _pos = { x: 0, y: 0 }; }
+            if (UTIL.find(name, _this.game.assets) != -1) {
+                _this.objects.push(new object_1.GameSprite(_this.game, _this, name, _pos, _this.game.assets[UTIL.find(name, _this.game.assets)], extra));
             }
             else {
-                UTIL.error('Asset {0} has not been preloaded, use newObject()'.format (assetName));
+                UTIL.error('Asset {0} has not been preloaded, use newObject()'.format(name));
             }
-        }
-    
-        newObject = (name: string, path: string, _pos = {x: 0, y: 0}, extra?: any) => {
-            this.loadAsset (name, path);
-            this.addObjectFromAsset (name, _pos, extra);
-        }
-        */
+        };
+        this.newObject = function (name, path, _pos, extra) {
+            if (_pos === void 0) { _pos = { x: 0, y: 0 }; }
+            _this.game.loadAsset(name, path);
+            _this.addObjectFromAsset(name, _pos, extra);
+        };
         this.getObject = function (name) {
             for (var _i = 0, _a = _this.objects; _i < _a.length; _i++) {
                 var i = _a[_i];
@@ -231,32 +242,12 @@ var Level = (function () {
             UTIL.error('Object {0} could not be found'.format(name));
             return null;
         };
-        this.getAsset = function (name) {
-            for (var _i = 0, _a = _this.assets; _i < _a.length; _i++) {
-                var i = _a[_i];
-                if (i.name == name) {
-                    return i;
-                }
-            }
-            UTIL.error('Asset {0} could not be found'.format(name));
-            return null;
-        };
-        this.loadAsset = function (name, path) {
-            _this.game.game.load.image(name, path);
-            var found = false;
-            for (var _i = 0, _a = _this.assets; _i < _a.length; _i++) {
-                var iter = _a[_i];
-                if (iter.path == path) {
-                    found = true;
-                }
-            }
-            if (!found) {
-                _this.assets.push({ path: path, name: name, level: _this });
-            }
-        };
         this.game = game;
         this.name = name;
     }
+    Level.prototype.addObject = function (obj) {
+        this.objects.push(obj);
+    };
     return Level;
 }());
 exports.Level = Level;
@@ -353,31 +344,35 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var UTIL = require("./util");
 var GameSprite = (function () {
-    function GameSprite(level, name, pos, asset, extra) {
+    function GameSprite(game, level, name, pos, asset, extra) {
+        var _this = this;
+        this.addProperty = function (extra) {
+            _this.extra = $.extend({}, _this.extra, external);
+        };
+        this.enablePhysics = function () {
+            _this.level.game.game.physics.p2.enable(_this.pObject);
+        };
         this.level = level;
         this.name = name;
+        this.game = game;
         if (typeof asset !== "string") {
             this.asset = asset;
         }
         else {
-            this.level.getAsset(asset);
+            this.game.getAsset(asset);
         }
         this.extra = $.extend({}, this.extra, external);
-        this.pObject = this.level.game.game.add.sprite(0, 0, this.asset);
+        this.pObject = this.game.game.add.sprite(pos.x, pos.y, this.asset.name);
     }
-    GameSprite.prototype.addProperty = function (extra) {
-        this.extra = $.extend({}, this.extra, external);
-    };
-    GameSprite.prototype.enablePhysics = function () {
-        this.level.game.game.physics.p2.enable(this.pObject);
+    GameSprite.prototype.addToLevel = function (level) {
     };
     return GameSprite;
 }());
 exports.GameSprite = GameSprite;
 var DynamicSprite = (function (_super) {
     __extends(DynamicSprite, _super);
-    function DynamicSprite(game, name, pos, assets, extra) {
-        var _this = _super.call(this, game, name, pos, assets[0], extra) || this;
+    function DynamicSprite(game, level, name, pos, assets, extra) {
+        var _this = _super.call(this, game, level, name, pos, assets[0], extra) || this;
         _this.assets = [];
         _this.switchToIndex = function (index) {
             _this.pObject.key = _this.assets[index].name;
@@ -392,7 +387,7 @@ var DynamicSprite = (function (_super) {
         for (var _i = 0, assets_1 = assets; _i < assets_1.length; _i++) {
             var iter = assets_1[_i];
             if (typeof iter === "string") {
-                _this.assets.push(_this.level.getAsset(iter));
+                _this.assets.push(_this.game.getAsset(iter));
             }
             else {
                 _this.assets.push(iter);
@@ -437,4 +432,4 @@ function error(message) {
 }
 exports.error = error;
 
-},{}]},{},[1,2,4,5,6]);
+},{}]},{},[1,2,3,4,5,6]);

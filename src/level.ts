@@ -36,7 +36,6 @@ export class LevelSequence {
 export interface Asset {
     path: string;
     name: string;
-    level: Level;
 }
 
 export interface ObjectAsset {
@@ -65,11 +64,19 @@ export function createLevel (_const: LevelConstructor) {
                 // Dynamic Objects
                 // Load the assets
                 for (var asset_iter of iter.assets) {
-                    out.loadAsset (asset_iter.name, asset_iter.path);
+                    out.game.loadAsset (asset_iter.name, asset_iter.path);
                 }
 
                 // Generate the object
-                DynamicSprite
+                out.addObject (new DynamicSprite (out.game, out, iter.name, iter.position, iter.assets, iter.extra));
+            }
+            else {
+                // Static Object
+                // Load the asset
+                out.game.loadAsset (iter.assets.name, iter.assets.path);
+
+                // Add the object
+                out.addObject (new GameSprite (out.game, out, iter.name, iter.position, iter.assets, iter.extra));
             }
         }
     }
@@ -80,7 +87,6 @@ export class Level {
     objects: GameSprite[] = [];
     game: MainGame;
     name: string;
-    assets: Asset[] = [];
     constructor (game: MainGame,  name: string) {
         this.game = game;
         this.name = name;
@@ -90,21 +96,19 @@ export class Level {
 
     }
 
-    /* MOVE TO GAME SCOPE
-    addObjectFromAsset = (assetName: string, _pos = {x: 0, y: 0}, extra?: any) => {
-        if (UTIL.find(assetName, this.assets) != -1) {
-            this.objects.push ({name: assetName, object: new GameSprite (this.game, _pos, assetName, extra)});
+    addObjectFromAsset = (name: string, _pos = {x: 0, y: 0}, extra?: any) => {
+        if (UTIL.find(name, this.game.assets) != -1) {
+            this.objects.push (new GameSprite (this.game, this, name, _pos, this.game.assets[UTIL.find(name, this.game.assets)], extra));
         }
         else {
-            UTIL.error('Asset {0} has not been preloaded, use newObject()'.format (assetName));
+            UTIL.error('Asset {0} has not been preloaded, use newObject()'.format (name));
         }
     }
 
     newObject = (name: string, path: string, _pos = {x: 0, y: 0}, extra?: any) => {
-        this.loadAsset (name, path);
+        this.game.loadAsset (name, path);
         this.addObjectFromAsset (name, _pos, extra);
     }
-    */
 
     getObject = (name: string): GameSprite => {
         for (var i of this.objects) {
@@ -116,26 +120,7 @@ export class Level {
         return null;
     }
 
-    getAsset = (name: string): Asset => {
-        for (var i of this.assets) {
-            if (i.name == name) {
-                return i;
-            }
-        }
-        UTIL.error ('Asset {0} could not be found'.format (name));
-        return null;
-    }
-
-    loadAsset = (name: string, path: string) => {
-        this.game.game.load.image (name, path);
-        var found = false;
-        for (var iter of this.assets) {
-            if (iter.path == path) {
-                found = true;
-            }
-        }
-        if (!found) {
-            this.assets.push ({path: path, name: name, level: this});
-        }
+    addObject (obj: GameSprite) {
+        this.objects.push (obj);
     }
 }
