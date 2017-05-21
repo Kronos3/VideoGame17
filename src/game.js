@@ -14,6 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var control_1 = require("./control");
 var level_1 = require("./level");
 var level_2 = require("./level");
+var level_3 = require("./level");
 var UTIL = require("./util");
 var toggleControlScheme = (function (_super) {
     __extends(toggleControlScheme, _super);
@@ -39,7 +40,7 @@ var toggleControlScheme = (function (_super) {
 }(control_1.ControlScheme));
 exports.toggleControlScheme = toggleControlScheme;
 var MainGame = (function () {
-    function MainGame() {
+    function MainGame(onReady) {
         var _this = this;
         this.controls = [];
         this.levelsequence = new level_1.LevelSequence();
@@ -53,10 +54,11 @@ var MainGame = (function () {
             _this.controls.push(scheme);
         };
         this.preload = function () {
-            _this.loadAsset('rocket', 'resources/textures/player/Rocket-L.png');
-            _this.loadAsset('rocket-thrust', 'resources/textures/player/Rocket-L-T.png');
-            _this.loadAsset('rocket-L-L', 'resources/textures/player/Rocket-L-L.png');
-            _this.loadAsset('rocket-L-R', 'resources/textures/player/Rocket-L-R.png');
+            _this.game.load.image('rocket', '../resources/textures/player/Rocket-L.png');
+            _this.game.load.image('rocket-thrust', '../resources/textures/player/Rocket-L-T.png');
+            _this.game.load.image('rocket-L-L', '../resources/textures/player/Rocket-L-L.png');
+            _this.game.load.image('rocket-L-R', '../resources/textures/player/Rocket-L-R.png');
+            _this.game.load.image('Launch-L', '../resources/textures/Launch-L.png');
         };
         this.hide = function () {
             $('#canvas-wrapper').css('display', "none");
@@ -70,6 +72,7 @@ var MainGame = (function () {
             var mainCanvas = $(_this.game.canvas);
             $('#canvas-wrapper').append(mainCanvas);
             _this.hide();
+            _this.onReady(_this);
         };
         this.update = function () {
             // Control
@@ -103,20 +106,24 @@ var MainGame = (function () {
             return null;
         };
         this.loadAsset = function (name, path) {
-            for (var _i = 0, _a = _this.assets; _i < _a.length; _i++) {
-                var iter = _a[_i];
-                if (iter.name == name) {
-                    return;
-                }
-            }
-            _this.game.load.image(name, path);
+            /*console.log (name + ':' + path)
+            this.game.load.image (name, path);*/
         };
         this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'T17', { preload: this.preload, create: this.create, update: this.update }, true);
         $(window).resize(function () {
             _this.resize();
         });
         this.newLevel('global');
+        this.onReady = onReady;
     }
+    MainGame.prototype.addLevel = function (l) {
+        if (l instanceof level_2.Level) {
+            this.levelsequence.addLevel(l);
+        }
+        else {
+            this.levelsequence.addLevel(level_3.createLevel(l));
+        }
+    };
     return MainGame;
 }());
 exports.MainGame = MainGame;

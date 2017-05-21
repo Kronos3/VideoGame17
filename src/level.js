@@ -53,6 +53,7 @@ function createLevel(_const) {
             }
         }
     }
+    return out;
 }
 exports.createLevel = createLevel;
 var Level = (function () {

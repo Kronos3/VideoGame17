@@ -56,7 +56,7 @@ export interface LevelConstructor {
     objects?: ObjectAsset[];
 }
 
-export function createLevel (_const: LevelConstructor) {
+export function createLevel (_const: LevelConstructor): Level {
     var out = new Level (_const.game, _const.name);
     if (typeof _const.objects !== "undefined") {
         for (var iter of _const.objects){
@@ -80,7 +80,7 @@ export function createLevel (_const: LevelConstructor) {
             }
         }
     }
-
+    return out;
 }
 
 export class Level {

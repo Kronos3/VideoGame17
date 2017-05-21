@@ -43,8 +43,9 @@ $(document).ready(function () {
 });
 // Global variables
 var game;
+window.GAME = null;
 function initGame() {
-    game = new game_1.MainGame();
+    game = new game_1.MainGame(DoGame);
     window.GAME = game;
     var testControlBindings = [
         {
@@ -72,4 +73,30 @@ function set_rot(e, x, y) {
 function setup_pos(e, x_scale, y_scale) {
     $(e).data('xfactor', x_scale);
     $(e).data('yfactor', y_scale);
+}
+function DoGame(game) {
+    var levels = [
+        {
+            name: "intro",
+            game: window.GAME,
+            objects: [
+                {
+                    name: "Launch-L",
+                    assets: {
+                        path: "../resources/textures/Launch-L.png",
+                        name: "Launch-L"
+                    },
+                    position: {
+                        x: window.GAME.game.world.centerX,
+                        y: window.GAME.game.world.height - 190
+                    }
+                }
+            ]
+        }
+    ];
+    for (var _i = 0, levels_1 = levels; _i < levels_1.length; _i++) {
+        var iter = levels_1[_i];
+        game.addLevel(iter);
+    }
+    game.show();
 }

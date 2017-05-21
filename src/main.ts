@@ -1,5 +1,6 @@
 import {toggleControlScheme} from "./game"
 import {MainGame} from "./game"
+import {LevelConstructor} from "./level"
 
 $( document ).ready(function() {
     for (var i=0; i != 50; i++) {
@@ -51,9 +52,10 @@ $( document ).ready(function() {
 
 // Global variables
 var game;
+(<any>window).GAME = null;
 
 function initGame () {
-    game = new MainGame();
+    game = new MainGame(DoGame);
     (<any>window).GAME = game;
     var testControlBindings = [
         {
@@ -82,4 +84,30 @@ function set_rot (e, x, y) { // Use negative for inverse
 function setup_pos (e, x_scale, y_scale) {
     $(e).data ('xfactor', x_scale);
     $(e).data ('yfactor', y_scale);
+}
+
+function DoGame (game: MainGame): void {
+    var levels: LevelConstructor[] = [
+        {
+            name: "intro",
+            game: (<any>window).GAME,
+            objects: [
+                {
+                    name: "Launch-L",
+                    assets: {
+                        path: "../resources/textures/Launch-L.png",
+                        name: "Launch-L"
+                    },
+                    position: {
+                        x: (<any>window).GAME.game.world.centerX,
+                        y: (<any>window).GAME.game.world.height -190
+                    }
+                }
+            ]
+        }
+    ]
+    for (var iter of levels) {
+        game.addLevel (iter);
+    }
+    game.show ();
 }

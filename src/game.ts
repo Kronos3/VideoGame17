@@ -5,6 +5,8 @@ import {GameSprite} from "./object"
 import {LevelSequence} from "./level"
 import {Level} from "./level"
 import {Asset} from "./level"
+import {LevelConstructor} from "./level"
+import {createLevel} from "./level"
 import * as UTIL from "./util"
 
 export class toggleControlScheme extends ControlScheme {
@@ -30,13 +32,15 @@ export class toggleControlScheme extends ControlScheme {
 }
 
 export class MainGame {
-
-    constructor() {
+    onReady: (game: MainGame) => void;
+    constructor(onReady: (game: MainGame) => void) {
         this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'T17', {preload: this.preload, create: this.create, update: this.update}, true);
         $(window).resize( () => {
             this.resize();
         });
         this.newLevel ('global');
+        this.onReady = onReady;
+
     }
 
     game: Phaser.Game;
@@ -55,10 +59,11 @@ export class MainGame {
     }
 
     preload = () => {
-        this.loadAsset('rocket', 'resources/textures/player/Rocket-L.png');
-        this.loadAsset('rocket-thrust', 'resources/textures/player/Rocket-L-T.png');
-        this.loadAsset('rocket-L-L', 'resources/textures/player/Rocket-L-L.png');
-        this.loadAsset('rocket-L-R', 'resources/textures/player/Rocket-L-R.png');
+        this.game.load.image('rocket', '../resources/textures/player/Rocket-L.png');
+        this.game.load.image('rocket-thrust', '../resources/textures/player/Rocket-L-T.png');
+        this.game.load.image('rocket-L-L', '../resources/textures/player/Rocket-L-L.png');
+        this.game.load.image('rocket-L-R', '../resources/textures/player/Rocket-L-R.png');
+        this.game.load.image('Launch-L', '../resources/textures/Launch-L.png');
     }
 
     hide = () => {
@@ -75,6 +80,7 @@ export class MainGame {
         var mainCanvas = $(this.game.canvas);
         $('#canvas-wrapper').append (mainCanvas);
         this.hide ();
+        this.onReady (this);
     }
 
     update = () => {
@@ -100,6 +106,15 @@ export class MainGame {
         return level;
     }
 
+    addLevel (l: Level | LevelConstructor) {
+        if (l instanceof Level) {
+            this.levelsequence.addLevel (l);
+        }
+        else {
+            this.levelsequence.addLevel (createLevel (l));
+        }
+    }
+
     getAsset = (name: string): Asset => {
         for (var i of this.assets) {
             if (i.name == name) {
@@ -111,11 +126,7 @@ export class MainGame {
     }
 
     loadAsset = (name: string, path: string) => {
-        for (var iter of this.assets) {
-            if (iter.name == name){
-                return;
-            }
-        }
-        this.game.load.image (name, path);
+        /*console.log (name + ':' + path)
+        this.game.load.image (name, path);*/
     }
 }

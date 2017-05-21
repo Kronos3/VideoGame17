@@ -27,9 +27,10 @@ var GameSprite = (function () {
             this.asset = asset;
         }
         else {
-            this.game.getAsset(asset);
+            this.asset = this.game.getAsset(asset);
         }
         this.extra = $.extend({}, this.extra, external);
+        this.game.loadAsset(this.asset.name, this.asset.path);
         this.pObject = this.game.game.add.sprite(pos.x, pos.y, this.asset.name);
     }
     GameSprite.prototype.addToLevel = function (level) {
