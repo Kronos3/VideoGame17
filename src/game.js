@@ -129,8 +129,21 @@ var MainGame = (function () {
             _this.levelsequence.addLevel(level);
             return level;
         };
+        this.addLevel = function (l) {
+            if (l instanceof level_2.Level) {
+                _this.levelsequence.addLevel(l);
+            }
+            else {
+                _this.levelsequence.addLevel(level_3.createLevel(l));
+            }
+        };
         this.getLevel = function (name) {
             return _this.levelsequence.getLevel(name);
+        };
+        this.setGravity = function (value, restitution) {
+            if (restitution === void 0) { restitution = 0.8; }
+            _this.gravity = value;
+            _this.game.physics.p2.restitution = restitution;
         };
         this.loadAsset = function (name, path) {
             /*console.log (name + ':' + path)
@@ -143,19 +156,6 @@ var MainGame = (function () {
         this.newLevel('global');
         this.onReady = onReady;
     }
-    MainGame.prototype.addLevel = function (l) {
-        if (l instanceof level_2.Level) {
-            this.levelsequence.addLevel(l);
-        }
-        else {
-            this.levelsequence.addLevel(level_3.createLevel(l));
-        }
-    };
-    MainGame.prototype.setGravity = function (value, restitution) {
-        if (restitution === void 0) { restitution = 0.8; }
-        this.gravity = value;
-        this.game.physics.p2.restitution = restitution;
-    };
     return MainGame;
 }());
 exports.MainGame = MainGame;

@@ -30,7 +30,6 @@ var GameSprite = (function () {
             _this.pObject.body.loadPolygon('physicsData', key);
         };
         this.disable = function () {
-            console.log(_this.pObject.body);
             if (_this.pObject.body != null) {
                 _this.isStatic = _this.pObject.body.static;
                 _this.pObject.body.static = true;

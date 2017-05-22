@@ -52,7 +52,6 @@ export class GameSprite {
     isStatic: boolean;
 
     disable = () => {
-        console.log (this.pObject.body)
         if (this.pObject.body != null) {
             this.isStatic = this.pObject.body.static;
             this.pObject.body.static = true;

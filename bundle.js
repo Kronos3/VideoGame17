@@ -165,8 +165,21 @@ var MainGame = (function () {
             _this.levelsequence.addLevel(level);
             return level;
         };
+        this.addLevel = function (l) {
+            if (l instanceof level_2.Level) {
+                _this.levelsequence.addLevel(l);
+            }
+            else {
+                _this.levelsequence.addLevel(level_3.createLevel(l));
+            }
+        };
         this.getLevel = function (name) {
             return _this.levelsequence.getLevel(name);
+        };
+        this.setGravity = function (value, restitution) {
+            if (restitution === void 0) { restitution = 0.8; }
+            _this.gravity = value;
+            _this.game.physics.p2.restitution = restitution;
         };
         this.loadAsset = function (name, path) {
             /*console.log (name + ':' + path)
@@ -179,19 +192,6 @@ var MainGame = (function () {
         this.newLevel('global');
         this.onReady = onReady;
     }
-    MainGame.prototype.addLevel = function (l) {
-        if (l instanceof level_2.Level) {
-            this.levelsequence.addLevel(l);
-        }
-        else {
-            this.levelsequence.addLevel(level_3.createLevel(l));
-        }
-    };
-    MainGame.prototype.setGravity = function (value, restitution) {
-        if (restitution === void 0) { restitution = 0.8; }
-        this.gravity = value;
-        this.game.physics.p2.restitution = restitution;
-    };
     return MainGame;
 }());
 exports.MainGame = MainGame;
@@ -210,7 +210,7 @@ var LevelSequence = (function () {
             _this.levels.push(_level);
         };
         this.getCurrent = function () {
-            return _this.levels[_this.current + 1];
+            return _this.levels[_this.current];
         };
         this.start = function () {
             _this.current = 0;
@@ -232,6 +232,14 @@ var LevelSequence = (function () {
                 _this.levels[i].disable();
             }
             _this.levels[_this.current + 1].enable();
+        };
+        this.nextLevel = function () {
+            _this.current++;
+            for (var i = 1; i != _this.levels.length; i++) {
+                _this.levels[i].disable();
+            }
+            _this.levels[_this.current].enable();
+            _this.levels[0].enable();
         };
         ;
     }
@@ -322,12 +330,13 @@ var Level = (function () {
 }());
 exports.Level = Level;
 
-},{"./object":5,"./util":7}],4:[function(require,module,exports){
+},{"./object":5,"./util":8}],4:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var game_1 = require("./game");
 var ship_1 = require("./ship");
 var ship_2 = require("./ship");
+var wrapper_1 = require("./wrapper");
 $(document).ready(function () {
     for (var i = 0; i != 50; i++) {
         $("<img src=\"resources/textures/Star.png\" class=\"pos\">").appendTo(".stars");
@@ -389,6 +398,10 @@ function initGame() {
         }
     ];
     game.addControlScheme(testControlBindings);
+    var story = [
+        ['2061', 'The International Space Exploration Administration (ISEA) is coming off their recent success of their manned mission to Mars.', 'Now, they have set their sights on the next stepping stone in the solar system: Jupiter\'s moons.', 'The ISEA believes that landing a spacecraft near Jupiter will reveal new information about the gas giants and the remainder of the solar system.', 'However, this journey will encounter new challenges that will threaten the lives of the astronauts and the reputation of the ISEA.'],
+    ];
+    window.MAIN = new wrapper_1.Wrapper(window.GAME, story);
 }
 ;
 function set_pos(e, x, y) {
@@ -482,7 +495,7 @@ function DoGame(game) {
     game.setGravity(100, 0.1);
 }
 
-},{"./game":2,"./ship":6}],5:[function(require,module,exports){
+},{"./game":2,"./ship":6,"./wrapper":9}],5:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -515,7 +528,6 @@ var GameSprite = (function () {
             _this.pObject.body.loadPolygon('physicsData', key);
         };
         this.disable = function () {
-            console.log(_this.pObject.body);
             if (_this.pObject.body != null) {
                 _this.isStatic = _this.pObject.body.static;
                 _this.pObject.body.static = true;
@@ -568,7 +580,7 @@ var DynamicSprite = (function (_super) {
 }(GameSprite));
 exports.DynamicSprite = DynamicSprite;
 
-},{"./util":7}],6:[function(require,module,exports){
+},{"./util":8}],6:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -674,6 +686,57 @@ exports.Ship = Ship;
 },{"./object":5}],7:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var TextDisplay = (function () {
+    function TextDisplay(element, text, onDone) {
+        var _this = this;
+        this.skip = false;
+        this.typeWriter = function (text, i, fnCallback) {
+            // check if text isn't finished yet
+            if (i < (text.length)) {
+                // add next character to h1
+                _this.element.innerHTML = text.substring(0, i + 1) + '<span aria-hidden="true"></span>';
+                // wait for a while and call this function again for next character
+                if (!_this.skip) {
+                    setTimeout(function () {
+                        _this.typeWriter(text, i + 1, fnCallback);
+                    }, (Math.random() * (60 - 30) + 30).toFixed(0));
+                }
+                else {
+                    _this.typeWriter(text, i + 1, fnCallback);
+                }
+            }
+            else if (typeof fnCallback == 'function') {
+                // call callback after timeout
+                setTimeout(fnCallback, 1800);
+            }
+        };
+        this.start = function (i) {
+            if (i === void 0) { i = 0; }
+            if (typeof _this.text[i] == 'undefined') {
+                _this.onDone();
+                return;
+            }
+            if (i < _this.text[i].length) {
+                // text exists! start typewriter animation
+                _this.typeWriter(_this.text[i], 0, function () {
+                    // after callback (and whole text has been animated), start next text
+                    _this.skip = false;
+                    _this.start(i + 1);
+                });
+            }
+        };
+        this.text = text;
+        this.onDone = onDone;
+        this.element = element;
+        document.querySelector(".scene.scene1").addEventListener("click", function () { _this.skip = true; });
+    }
+    return TextDisplay;
+}());
+exports.TextDisplay = TextDisplay;
+
+},{}],8:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 function find(a, b) {
     for (var i = 0; i != b.length; i++) {
         if (b[i] == a) {
@@ -704,4 +767,50 @@ function error(message) {
 }
 exports.error = error;
 
-},{}]},{},[1,2,3,4,5,7]);
+},{}],9:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var type_1 = require("./type");
+var Wrapper = (function () {
+    function Wrapper(game, scene_text) {
+        var _this = this;
+        this.scenes = [];
+        this.order = [
+            // 0: level
+            // 1: TextScene
+            1,
+            0
+        ];
+        this.currentTotal = 0;
+        this.currentText = 0;
+        this.textDone = function () {
+            _this.handleNext();
+        };
+        this.game = game;
+        scene_text.forEach(function (element) {
+            _this.scenes.push(new type_1.TextDisplay($('.buf.anim-typewriter').get(0), element, _this.textDone));
+            _this.game.levelsequence.current = -1;
+        });
+    }
+    Wrapper.prototype.handleNext = function () {
+        if (this.order[this.currentTotal]) {
+            $('.scene-wrapper').removeClass('title');
+            $('.scene-wrapper').removeClass('game');
+            $('.scene-wrapper').addClass('text');
+            this.scenes[this.currentText].start();
+            this.currentText++;
+        }
+        else {
+            $('.scene-wrapper').removeClass('title');
+            $('.scene-wrapper').removeClass('text');
+            $('.scene-wrapper').addClass('game');
+            this.game.show();
+            this.game.levelsequence.nextLevel();
+        }
+        this.currentTotal++;
+    };
+    return Wrapper;
+}());
+exports.Wrapper = Wrapper;
+
+},{"./type":7}]},{},[1,2,3,4,5,8]);

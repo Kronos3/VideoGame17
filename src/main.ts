@@ -3,6 +3,8 @@ import {MainGame} from "./game"
 import {LevelConstructor} from "./level"
 import {ShipBinding} from "./ship"
 import {Ship} from "./ship"
+import {TextDisplay} from "./type"
+import {Wrapper} from "./wrapper"
 
 $( document ).ready(function() {
     for (var i=0; i != 50; i++) {
@@ -74,6 +76,10 @@ function initGame () {
         }
     ];
     game.addControlScheme(testControlBindings);
+    var story = [
+        ['2061', 'The International Space Exploration Administration (ISEA) is coming off their recent success of their manned mission to Mars.', 'Now, they have set their sights on the next stepping stone in the solar system: Jupiter\'s moons.', 'The ISEA believes that landing a spacecraft near Jupiter will reveal new information about the gas giants and the remainder of the solar system.', 'However, this journey will encounter new challenges that will threaten the lives of the astronauts and the reputation of the ISEA.'],
+    ];
+    (<any>window).MAIN = new Wrapper ((<any>window).GAME, story);
 };
 
 function set_pos (e, x, y) { // Use negative for inverse

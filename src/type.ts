@@ -1,0 +1,51 @@
+export class TextDisplay {
+    text: string[];
+    skip: boolean = false;
+    element: Element;
+    onDone: () => void;
+    constructor (element: Element, text: string[], onDone: () => void) {
+        this.text = text;
+        this.onDone = onDone;
+        this.element = element;
+        document.querySelector(".scene.scene1").addEventListener("click", () => {this.skip = true});
+    }
+
+    typeWriter = (text:string, i, fnCallback: () => void) => {
+        // check if text isn't finished yet
+        if (i < (text.length)) {
+            // add next character to h1
+            this.element.innerHTML = text.substring(0, i+1) +'<span aria-hidden="true"></span>';
+    
+            // wait for a while and call this function again for next character
+            if (!this.skip) {
+                setTimeout(() => {
+                    this.typeWriter(text, i + 1, fnCallback)
+                }, (Math.random() * (60 - 30) + 30).toFixed(0));
+            }
+            else {
+                this.typeWriter(text, i + 1, fnCallback);
+            }
+        }
+        // text finished, call callback if there is a callback function
+        else if (typeof fnCallback == 'function') {
+            // call callback after timeout
+            setTimeout(fnCallback, 1800);
+        }
+    }
+
+    start = (i = 0) => {
+        if (typeof this.text[i] == 'undefined'){
+            this.onDone ();
+            return
+        }
+        if (i < this.text[i].length) {
+            // text exists! start typewriter animation
+            this.typeWriter(this.text[i], 0, () =>{
+                // after callback (and whole text has been animated), start next text
+                this.skip = false;
+                this.start(i + 1);
+            });
+        }
+    }
+
+}

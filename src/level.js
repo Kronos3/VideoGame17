@@ -11,7 +11,7 @@ var LevelSequence = (function () {
             _this.levels.push(_level);
         };
         this.getCurrent = function () {
-            return _this.levels[_this.current + 1];
+            return _this.levels[_this.current];
         };
         this.start = function () {
             _this.current = 0;
@@ -33,6 +33,14 @@ var LevelSequence = (function () {
                 _this.levels[i].disable();
             }
             _this.levels[_this.current + 1].enable();
+        };
+        this.nextLevel = function () {
+            _this.current++;
+            for (var i = 1; i != _this.levels.length; i++) {
+                _this.levels[i].disable();
+            }
+            _this.levels[_this.current].enable();
+            _this.levels[0].enable();
         };
         ;
     }

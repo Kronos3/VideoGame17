@@ -18,7 +18,7 @@ export class LevelSequence {
     }
 
     getCurrent = () => {
-        return this.levels[this.current + 1];
+        return this.levels[this.current];
     }
 
     start = () => {
@@ -42,6 +42,15 @@ export class LevelSequence {
             this.levels[i].disable ();
         }
         this.levels[this.current + 1].enable ();
+    }
+
+    nextLevel = () => {
+        this.current++;
+        for (var i = 1; i!= this.levels.length; i++) {
+            this.levels[i].disable ();
+        }
+        this.levels[this.current].enable ();
+        this.levels[0].enable ();
     }
 }
 

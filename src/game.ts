@@ -145,7 +145,7 @@ export class MainGame {
         return level;
     }
 
-    addLevel (l: Level | LevelConstructor) {
+    addLevel = (l: Level | LevelConstructor) => {
         if (l instanceof Level) {
             this.levelsequence.addLevel (l);
         }
@@ -158,7 +158,7 @@ export class MainGame {
         return this.levelsequence.getLevel (name);
     }
 
-    setGravity (value: number, restitution = 0.8) {
+    setGravity = (value: number, restitution = 0.8) => {
         this.gravity = value;
         this.game.physics.p2.restitution = restitution;
     }
