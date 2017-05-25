@@ -38,8 +38,8 @@ export class Ship extends DynamicSprite {
         var magnitude = BODY.world.pxmi(-relative_thrust);
         var angle = BODY.data.angle + Math.PI / 2;
 
-        BODY.velocity.x -= magnitude * Math.cos(angle);
-        BODY.velocity.y -= magnitude * Math.sin(angle);
+        BODY.velocity.x -= magnitude * Math.cos(angle) * this.game.get_ratio();
+        BODY.velocity.y -= magnitude * Math.sin(angle) * this.game.get_ratio();
 
     }
 
@@ -94,10 +94,10 @@ export class Ship extends DynamicSprite {
     gravityAction = () => {
         var BODY = this.pObject.body;
         var relative_thrust = -( this.game.gravity * this.pObject.body.mass);
-        BODY.velocity.y -= relative_thrust / 100;
+        BODY.velocity.y -= (relative_thrust / 100) * this.game.get_ratio();
     }
     
     calculate_velocity = (acceleration, initialVel) => {
-        return acceleration + initialVel();
+        return (acceleration * this.game.get_ratio()) + initialVel();
     }
 }

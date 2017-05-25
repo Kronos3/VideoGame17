@@ -129,7 +129,7 @@ function DoGame (game: MainGame): void {
                     assets: "Mountain-E",
                     position: {
                         x: ():number => {return 0},
-                        y: ():number => {return 0}
+                        y: ():number => {return (<any>window).GAME.game.world.height - 520}
                     }
                 },
                 {
@@ -152,9 +152,9 @@ function DoGame (game: MainGame): void {
                 },
             ],
             frame: () => {
-                (<any>window).GAME.getLevel('intro').getObject ('mountains').pObject.y = ((<any>window).GAME.game.world.height - 520) + 0.3 * ((<any>window).GAME.game.world.height - (<any>window).GAME.game.camera.view.bottom);
-                (<any>window).GAME.gravity = 100 * (<any>window).GAME.getGravity ();
-
+               if ((<any>window).GAME.game.camera.view.top > 500) {
+                   
+               }
             }
         }
     ]
@@ -163,7 +163,7 @@ function DoGame (game: MainGame): void {
     }
 
     var artemis_pos = {
-        x: ():number => {return (<any>window).GAME.game.world.width / 2 + 70},
+        x: ():number => {return (<any>window).GAME.game.world.width / 2 - 70},
         y: ():number => {return (<any>window).GAME.game.world.height - 60},
     }
 

@@ -5,6 +5,8 @@ var TextDisplay = (function () {
         var _this = this;
         this.skip = false;
         this.typeWriter = function (text, i, fnCallback) {
+            _this.fnCall = fnCallback;
+            _this.betweenTimeout = -1;
             // check if text isn't finished yet
             if (i < (text.length)) {
                 // add next character to h1
@@ -21,13 +23,17 @@ var TextDisplay = (function () {
             }
             else if (typeof fnCallback == 'function') {
                 // call callback after timeout
-                setTimeout(fnCallback, 1800);
+                _this.betweenTimeout = setTimeout(fnCallback, 1800);
             }
         };
+        this.done = false;
         this.start = function (i) {
             if (i === void 0) { i = 0; }
             if (typeof _this.text[i] == 'undefined') {
-                _this.onDone();
+                if (!_this.done) {
+                    _this.done = true;
+                    _this.onDone();
+                }
                 return;
             }
             if (i < _this.text[i].length) {
@@ -42,7 +48,13 @@ var TextDisplay = (function () {
         this.text = text;
         this.onDone = onDone;
         this.element = element;
-        document.querySelector(".scene.scene1").addEventListener("click", function () { _this.skip = true; });
+        document.querySelector(".scene.scene1").addEventListener("click", function () {
+            _this.skip = true;
+            if (_this.betweenTimeout != -1) {
+                clearTimeout(_this.betweenTimeout);
+                _this.fnCall();
+            }
+        });
     }
     return TextDisplay;
 }());

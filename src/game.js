@@ -94,11 +94,7 @@ var MainGame = (function () {
             _this.levelsequence.initGame();
         };
         this.getGravity = function () {
-            var temp = (-6.66666667e-14) * Math.pow(_this.game.world.height - _this.game.camera.view.bottom, 4) + 1;
-            if (temp < 0) {
-                return 0;
-            }
-            return temp;
+            return 1;
         };
         this.update = function () {
             // Control
@@ -111,15 +107,18 @@ var MainGame = (function () {
             // Per-Level
             _this.levelsequence.getCurrent().frame();
         };
+        this.get_ratio = function () {
+            return 60 / _this.game.time.fps;
+        };
         this.render = function () {
             _this.game.debug.text('render FPS: ' + (_this.game.time.fps || '--'), 2, 14, "#00ff00");
         };
         this.resize = function () {
-            var height = $(window).height();
-            var width = $(window).width();
-            _this.game.width = width;
-            _this.game.height = height;
-            _this.game.renderer.resize(width, height);
+            //var height = $(window).height();
+            //var width = $(window).width();
+            //this.game.width = width;
+            //this.game.height = height;
+            //this.game.renderer.resize(width, height);
             _this.levelsequence.levels.forEach(function (element) {
                 element.resetPositions();
             });

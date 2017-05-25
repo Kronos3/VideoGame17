@@ -105,11 +105,7 @@ export class MainGame {
     }
 
     getGravity = () => { // Gravity at a distance
-        var temp = (-6.66666667e-14) * Math.pow (this.game.world.height - this.game.camera.view.bottom, 4) + 1;
-        if (temp < 0) {
-            return 0;
-        }
-        return temp;
+        return 1;
     }
 
     update = () => {
@@ -124,16 +120,20 @@ export class MainGame {
         this.levelsequence.getCurrent ().frame ();
     }
 
+    get_ratio = () => {
+        return 60 / this.game.time.fps;
+    }
+
     render = () => {
         this.game.debug.text('render FPS: ' + (this.game.time.fps || '--') , 2, 14, "#00ff00");
     }
 
     resize = () => {
-        var height = $(window).height();
-        var width = $(window).width();
-        this.game.width = width;
-        this.game.height = height;
-        this.game.renderer.resize(width, height);
+        //var height = $(window).height();
+        //var width = $(window).width();
+        //this.game.width = width;
+        //this.game.height = height;
+        //this.game.renderer.resize(width, height);
         this.levelsequence.levels.forEach(element => {
             element.resetPositions ();
         });

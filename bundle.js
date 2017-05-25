@@ -130,11 +130,7 @@ var MainGame = (function () {
             _this.levelsequence.initGame();
         };
         this.getGravity = function () {
-            var temp = (-6.66666667e-14) * Math.pow(_this.game.world.height - _this.game.camera.view.bottom, 4) + 1;
-            if (temp < 0) {
-                return 0;
-            }
-            return temp;
+            return 1;
         };
         this.update = function () {
             // Control
@@ -147,15 +143,18 @@ var MainGame = (function () {
             // Per-Level
             _this.levelsequence.getCurrent().frame();
         };
+        this.get_ratio = function () {
+            return 60 / _this.game.time.fps;
+        };
         this.render = function () {
             _this.game.debug.text('render FPS: ' + (_this.game.time.fps || '--'), 2, 14, "#00ff00");
         };
         this.resize = function () {
-            var height = $(window).height();
-            var width = $(window).width();
-            _this.game.width = width;
-            _this.game.height = height;
-            _this.game.renderer.resize(width, height);
+            //var height = $(window).height();
+            //var width = $(window).width();
+            //this.game.width = width;
+            //this.game.height = height;
+            //this.game.renderer.resize(width, height);
             _this.levelsequence.levels.forEach(function (element) {
                 element.resetPositions();
             });
@@ -449,7 +448,7 @@ function DoGame(game) {
                     assets: "Mountain-E",
                     position: {
                         x: function () { return 0; },
-                        y: function () { return 0; }
+                        y: function () { return window.GAME.game.world.height - 520; }
                     }
                 },
                 {
@@ -472,8 +471,8 @@ function DoGame(game) {
                 },
             ],
             frame: function () {
-                window.GAME.getLevel('intro').getObject('mountains').pObject.y = (window.GAME.game.world.height - 520) + 0.3 * (window.GAME.game.world.height - window.GAME.game.camera.view.bottom);
-                window.GAME.gravity = 100 * window.GAME.getGravity();
+                if (window.GAME.game.camera.view.top > 500) {
+                }
             }
         }
     ];
@@ -482,7 +481,7 @@ function DoGame(game) {
         game.addLevel(iter);
     }
     var artemis_pos = {
-        x: function () { return window.GAME.game.world.width / 2 + 70; },
+        x: function () { return window.GAME.game.world.width / 2 - 70; },
         y: function () { return window.GAME.game.world.height - 60; },
     };
     game.getLevel('global').addObject(new ship_2.Ship(game, 'Artemis', artemis_pos, [
@@ -623,8 +622,8 @@ var Ship = (function (_super) {
             var relative_thrust = newtons; // Dont subtract newtons from weight (done in postframe)
             var magnitude = BODY.world.pxmi(-relative_thrust);
             var angle = BODY.data.angle + Math.PI / 2;
-            BODY.velocity.x -= magnitude * Math.cos(angle);
-            BODY.velocity.y -= magnitude * Math.sin(angle);
+            BODY.velocity.x -= magnitude * Math.cos(angle) * _this.game.get_ratio();
+            BODY.velocity.y -= magnitude * Math.sin(angle) * _this.game.get_ratio();
         };
         _this.throttle = 270;
         _this.engineOn = function () {
@@ -669,10 +668,10 @@ var Ship = (function (_super) {
         _this.gravityAction = function () {
             var BODY = _this.pObject.body;
             var relative_thrust = -(_this.game.gravity * _this.pObject.body.mass);
-            BODY.velocity.y -= relative_thrust / 100;
+            BODY.velocity.y -= (relative_thrust / 100) * _this.game.get_ratio();
         };
         _this.calculate_velocity = function (acceleration, initialVel) {
-            return acceleration + initialVel();
+            return (acceleration * _this.game.get_ratio()) + initialVel();
         };
         _this.enablePhysics();
         _this.pObject.body.mass = 5;
@@ -691,6 +690,8 @@ var TextDisplay = (function () {
         var _this = this;
         this.skip = false;
         this.typeWriter = function (text, i, fnCallback) {
+            _this.fnCall = fnCallback;
+            _this.betweenTimeout = -1;
             // check if text isn't finished yet
             if (i < (text.length)) {
                 // add next character to h1
@@ -707,13 +708,17 @@ var TextDisplay = (function () {
             }
             else if (typeof fnCallback == 'function') {
                 // call callback after timeout
-                setTimeout(fnCallback, 1800);
+                _this.betweenTimeout = setTimeout(fnCallback, 1800);
             }
         };
+        this.done = false;
         this.start = function (i) {
             if (i === void 0) { i = 0; }
             if (typeof _this.text[i] == 'undefined') {
-                _this.onDone();
+                if (!_this.done) {
+                    _this.done = true;
+                    _this.onDone();
+                }
                 return;
             }
             if (i < _this.text[i].length) {
@@ -728,7 +733,13 @@ var TextDisplay = (function () {
         this.text = text;
         this.onDone = onDone;
         this.element = element;
-        document.querySelector(".scene.scene1").addEventListener("click", function () { _this.skip = true; });
+        document.querySelector(".scene.scene1").addEventListener("click", function () {
+            _this.skip = true;
+            if (_this.betweenTimeout != -1) {
+                clearTimeout(_this.betweenTimeout);
+                _this.fnCall();
+            }
+        });
     }
     return TextDisplay;
 }());
@@ -778,7 +789,7 @@ var Wrapper = (function () {
         this.order = [
             // 0: level
             // 1: TextScene
-            1,
+            0,
             0
         ];
         this.currentTotal = 0;

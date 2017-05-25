@@ -40,8 +40,8 @@ var Ship = (function (_super) {
             var relative_thrust = newtons; // Dont subtract newtons from weight (done in postframe)
             var magnitude = BODY.world.pxmi(-relative_thrust);
             var angle = BODY.data.angle + Math.PI / 2;
-            BODY.velocity.x -= magnitude * Math.cos(angle);
-            BODY.velocity.y -= magnitude * Math.sin(angle);
+            BODY.velocity.x -= magnitude * Math.cos(angle) * _this.game.get_ratio();
+            BODY.velocity.y -= magnitude * Math.sin(angle) * _this.game.get_ratio();
         };
         _this.throttle = 270;
         _this.engineOn = function () {
@@ -86,10 +86,10 @@ var Ship = (function (_super) {
         _this.gravityAction = function () {
             var BODY = _this.pObject.body;
             var relative_thrust = -(_this.game.gravity * _this.pObject.body.mass);
-            BODY.velocity.y -= relative_thrust / 100;
+            BODY.velocity.y -= (relative_thrust / 100) * _this.game.get_ratio();
         };
         _this.calculate_velocity = function (acceleration, initialVel) {
-            return acceleration + initialVel();
+            return (acceleration * _this.game.get_ratio()) + initialVel();
         };
         _this.enablePhysics();
         _this.pObject.body.mass = 5;

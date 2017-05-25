@@ -2,15 +2,25 @@ export class TextDisplay {
     text: string[];
     skip: boolean = false;
     element: Element;
+    betweenTimeout;
+    fnCall: () => void;
     onDone: () => void;
     constructor (element: Element, text: string[], onDone: () => void) {
         this.text = text;
         this.onDone = onDone;
         this.element = element;
-        document.querySelector(".scene.scene1").addEventListener("click", () => {this.skip = true});
+        document.querySelector(".scene.scene1").addEventListener("click", () => {
+            this.skip = true;
+            if (this.betweenTimeout != -1) {
+                clearTimeout (this.betweenTimeout);
+                this.fnCall ();
+            }
+        });
     }
 
     typeWriter = (text:string, i, fnCallback: () => void) => {
+        this.fnCall = fnCallback;
+        this.betweenTimeout = -1;
         // check if text isn't finished yet
         if (i < (text.length)) {
             // add next character to h1
@@ -29,13 +39,19 @@ export class TextDisplay {
         // text finished, call callback if there is a callback function
         else if (typeof fnCallback == 'function') {
             // call callback after timeout
-            setTimeout(fnCallback, 1800);
+            
+            this.betweenTimeout = setTimeout(fnCallback, 1800);
         }
     }
 
+    done: boolean = false;
+
     start = (i = 0) => {
         if (typeof this.text[i] == 'undefined'){
-            this.onDone ();
+            if (!this.done) {
+                this.done = true;
+                this.onDone ();
+            }
             return
         }
         if (i < this.text[i].length) {

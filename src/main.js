@@ -116,7 +116,7 @@ function DoGame(game) {
                     assets: "Mountain-E",
                     position: {
                         x: function () { return 0; },
-                        y: function () { return 0; }
+                        y: function () { return window.GAME.game.world.height - 520; }
                     }
                 },
                 {
@@ -139,8 +139,8 @@ function DoGame(game) {
                 },
             ],
             frame: function () {
-                window.GAME.getLevel('intro').getObject('mountains').pObject.y = (window.GAME.game.world.height - 520) + 0.3 * (window.GAME.game.world.height - window.GAME.game.camera.view.bottom);
-                window.GAME.gravity = 100 * window.GAME.getGravity();
+                if (window.GAME.game.camera.view.top > 500) {
+                }
             }
         }
     ];
@@ -149,7 +149,7 @@ function DoGame(game) {
         game.addLevel(iter);
     }
     var artemis_pos = {
-        x: function () { return window.GAME.game.world.width / 2 + 70; },
+        x: function () { return window.GAME.game.world.width / 2 - 70; },
         y: function () { return window.GAME.game.world.height - 60; },
     };
     game.getLevel('global').addObject(new ship_2.Ship(game, 'Artemis', artemis_pos, [

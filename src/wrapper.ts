@@ -7,7 +7,7 @@ export class Wrapper {
     order: number[] = [
         // 0: level
         // 1: TextScene
-        1,
+        0,
         0
     ];
     currentTotal: number = 0;

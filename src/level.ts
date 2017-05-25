@@ -61,6 +61,7 @@ export interface ObjectAsset {
     physics?: string;
     static?: boolean;
     extra?: any;
+    tile?: boolean;
 }
 
 export interface BasicAsset {
