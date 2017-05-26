@@ -101,6 +101,7 @@ export class MainGame {
         this.game.time.desiredFps = 60;
         this.game.camera.follow(this.getLevel('global').getObject('Artemis').pObject);
         this.game.camera.bounds.top = 0;
+        this.game.physics.p2.boundsCollidesWith = [];
         this.levelsequence.initGame ();
     }
 

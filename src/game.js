@@ -91,6 +91,7 @@ var MainGame = (function () {
             _this.game.time.desiredFps = 60;
             _this.game.camera.follow(_this.getLevel('global').getObject('Artemis').pObject);
             _this.game.camera.bounds.top = 0;
+            _this.game.physics.p2.boundsCollidesWith = [];
             _this.levelsequence.initGame();
         };
         this.getGravity = function () {
