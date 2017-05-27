@@ -1,5 +1,6 @@
 {
     "name": "VideoGame17",
+     "main"    : "main.js",
     "version": "1.0.0",
     "description": "TSA Game 2017",
     "repository": {

@@ -10,11 +10,12 @@ export class ControlScheme {
   bindings: KeyBinding[] = [];
   game: Phaser.Game;
   captureInput: boolean;
+  keys: Phaser.Key[] = [];
   constructor (game: Phaser.Game, _bindings: KeyBinding[], captureInput = true, enabled = true) {
     this.game = game;
     this.captureInput = captureInput;
     for (var i = 0; i != _bindings.length; i++) {
-      this.bindings.push(_bindings[i]);
+      this.addBinding (_bindings[i]);
     }
   }
 
@@ -33,6 +34,13 @@ export class ControlScheme {
   }
 
   addBinding (binding: KeyBinding) {
-    this.bindings.push(binding);
+    if (binding.press) {
+        var key1 = this.game.input.keyboard.addKey(binding.key);
+        key1.onDown.add(binding.callback);
+        this.keys.push (key1);
+      }
+      else {
+        this.bindings.push(binding);
+      }
   }
 }

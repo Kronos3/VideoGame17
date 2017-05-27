@@ -7,10 +7,11 @@ var ControlScheme = (function () {
         if (captureInput === void 0) { captureInput = true; }
         if (enabled === void 0) { enabled = true; }
         this.bindings = [];
+        this.keys = [];
         this.game = game;
         this.captureInput = captureInput;
         for (var i = 0; i != _bindings.length; i++) {
-            this.bindings.push(_bindings[i]);
+            this.addBinding(_bindings[i]);
         }
     }
     ControlScheme.prototype.frame = function (_args) {
@@ -27,7 +28,14 @@ var ControlScheme = (function () {
         }
     };
     ControlScheme.prototype.addBinding = function (binding) {
-        this.bindings.push(binding);
+        if (binding.press) {
+            var key1 = this.game.input.keyboard.addKey(binding.key);
+            key1.onDown.add(binding.callback);
+            this.keys.push(key1);
+        }
+        else {
+            this.bindings.push(binding);
+        }
     };
     return ControlScheme;
 }());
@@ -99,6 +107,7 @@ var MainGame = (function () {
             _this.game.load.image('Sky', '../resources/textures/Sky Gradient Color Overlay-L.png');
             _this.game.load.image('Back', '../resources/textures/Background-L.png');
             _this.game.load.image('Stars', '../resources/textures/stars.png');
+            _this.game.load.image('Explosion', '../resources/textures/explosion.png');
             _this.game.load.physics('physicsData', '../resources/physics/mappings.json');
         };
         this.pause = function () {
@@ -489,9 +498,17 @@ function DoGame(game) {
         'rocket',
         'rocket-thrust',
         'rocket-L-L',
-        'rocket-L-R'
+        'rocket-L-R',
+        'Explosion'
     ]));
     game.controls[0].addBinding(ship_1.ShipBinding(game, game.getLevel('global').getObject('Artemis')));
+    game.controls[0].addBinding({
+        key: Phaser.KeyCode.R,
+        callback: function () {
+            game.getLevel('global').getObject('Artemis').reset();
+        },
+        press: true
+    });
     game.setGravity(100, 0.1);
 }
 
@@ -600,24 +617,60 @@ exports.ShipBinding = function (game, ship) {
     return {
         key: -1,
         callback: function () {
-            ship.preframe();
-            if (game.game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
-                ship.rightRCS();
+            if (!ship.isDead) {
+                ship.preframe();
+                if (game.game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
+                    ship.rightRCS();
+                }
+                if (game.game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
+                    ship.leftRCS();
+                }
+                if (game.game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
+                    ship.engineOn();
+                }
+                ship.postframe();
             }
-            if (game.game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
-                ship.leftRCS();
+            else {
+                ship.pObject.body.setZeroForce();
+                ship.pObject.body.setZeroRotation();
+                ship.pObject.body.setZeroVelocity();
             }
-            if (game.game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
-                ship.engineOn();
-            }
-            ship.postframe();
         }
     };
 };
 var Ship = (function (_super) {
     __extends(Ship, _super);
-    function Ship(game, name, pos, assets) {
-        var _this = _super.call(this, game, game.levelsequence.getLevel('global'), name, pos, assets, { angularRot: 0, SAS: false, thrustOn: false, inSpace: false }) || this;
+    function Ship(game, name, pos, assets, level) {
+        if (level === void 0) { level = game.levelsequence.getLevel('global'); }
+        var _this = _super.call(this, game, level, name, pos, assets, { angularRot: 0, SAS: false, thrustOn: false, inSpace: false }) || this;
+        _this.collide = function (target, this_target, shapeA, shapeB, contactEquation) {
+            if (contactEquation[0] != null) {
+                var res = Phaser.Point.distance(new Phaser.Point(contactEquation[0].bodyB.velocity[0], contactEquation[0].bodyB.velocity[1]), new Phaser.Point(0, 0));
+                if (res > 30) {
+                    _this.explode();
+                    _this.game.game.time.events.add(300, _this.reset, _this);
+                }
+            }
+        };
+        _this.isDead = false;
+        _this.reset = function () {
+            _this.pObject.body.setZeroForce();
+            _this.pObject.body.setZeroRotation();
+            _this.pObject.body.setZeroVelocity();
+            _this.pObject.body.x = _this.pos.x();
+            _this.pObject.body.y = _this.pos.y();
+            _this.pObject.body.rotation = 0;
+            _this.isDead = false;
+            _this.game.game.camera.follow(_this.pObject);
+        };
+        _this.explode = function () {
+            _this.switchTo('Explosion');
+            _this.isDead = true;
+            _this.game.game.camera.follow(null);
+            _this.pObject.body.setZeroForce();
+            _this.pObject.body.setZeroRotation();
+            _this.pObject.body.setZeroVelocity();
+        };
         _this.thrust = function (newtons) {
             var BODY = _this.pObject.body;
             var relative_thrust = newtons; // Dont subtract newtons from weight (done in postframe)
@@ -628,7 +681,7 @@ var Ship = (function (_super) {
         };
         _this.throttle = 270;
         _this.engineOn = function () {
-            _this.switchTo('rocket-thrust');
+            _this.switchTo(_this.assets[1]);
             // Rocket weighs 200 (gravity * mass)
             _this.thrust(_this.throttle); // Lower when in 0G
             _this.extra.thrustOn = true;
@@ -639,14 +692,14 @@ var Ship = (function (_super) {
             var tempVel = _this.calculate_velocity(0.7, angularVelocity);
             _this.pObject.body.rotateRight(tempVel);
             _this.extra.angularRot = tempVel;
-            _this.switchTo('rocket-L-L');
+            _this.switchTo(_this.assets[2]);
         };
         _this.leftRCS = function () {
             var angularVelocity = function () { return _this.pObject.body.angularVelocity / 0.05; }; // Convert to correct unit
             var tempVel = _this.calculate_velocity(-0.7, angularVelocity);
             _this.pObject.body.rotateRight(tempVel);
             _this.extra.angularRot = tempVel;
-            _this.switchTo('rocket-L-R');
+            _this.switchTo(_this.assets[3]);
         };
         // Dampen rotation using SAS (stability assist system)
         _this.SAS = function () {
@@ -657,7 +710,7 @@ var Ship = (function (_super) {
         };
         // Ran before the control function in the frame
         _this.preframe = function () {
-            _this.switchTo('rocket');
+            _this.switchTo(_this.assets[0]);
         };
         _this.postframe = function () {
             if (_this.extra.SAS && !_this.game.game.input.keyboard.isDown(Phaser.Keyboard.LEFT) && _this.game.game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
@@ -674,14 +727,29 @@ var Ship = (function (_super) {
         _this.calculate_velocity = function (acceleration, initialVel) {
             return (acceleration * _this.game.get_ratio()) + initialVel();
         };
+        _this.addBooster = function (booster) {
+            _this.booster = booster;
+            _this.game.game.physics.p2.createLockConstraint(_this.pObject, _this.booster.pObject, [-20, 0], 0);
+        };
         _this.enablePhysics();
         _this.pObject.body.mass = 5;
         _this.loadBody('Rocket-L');
         return _this;
+        //this.pObject.body.onBeginContact.add(this.collide, this);
     }
     return Ship;
 }(object_1.DynamicSprite));
 exports.Ship = Ship;
+var Booster = (function (_super) {
+    __extends(Booster, _super);
+    function Booster(game, level, name, pos, assets) {
+        var _this = _super.call(this, game, name, pos, assets, level) || this;
+        _this.attached = true;
+        return _this;
+    }
+    return Booster;
+}(Ship));
+exports.Booster = Booster;
 
 },{"./object":5}],7:[function(require,module,exports){
 "use strict";
@@ -825,4 +893,4 @@ var Wrapper = (function () {
 }());
 exports.Wrapper = Wrapper;
 
-},{"./type":7}]},{},[1,2,3,4,5,8]);
+},{"./type":7}]},{},[1,2,3,4,5,6,7,8,9]);

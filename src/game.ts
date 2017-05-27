@@ -68,6 +68,7 @@ export class MainGame {
         this.game.load.image('Sky', '../resources/textures/Sky Gradient Color Overlay-L.png');
         this.game.load.image('Back', '../resources/textures/Background-L.png');
         this.game.load.image('Stars', '../resources/textures/stars.png');
+        this.game.load.image('Explosion', '../resources/textures/explosion.png');
         this.game.load.physics('physicsData', '../resources/physics/mappings.json');
     }
 

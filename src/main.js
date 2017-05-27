@@ -156,8 +156,16 @@ function DoGame(game) {
         'rocket',
         'rocket-thrust',
         'rocket-L-L',
-        'rocket-L-R'
+        'rocket-L-R',
+        'Explosion'
     ]));
     game.controls[0].addBinding(ship_1.ShipBinding(game, game.getLevel('global').getObject('Artemis')));
+    game.controls[0].addBinding({
+        key: Phaser.KeyCode.R,
+        callback: function () {
+            game.getLevel('global').getObject('Artemis').reset();
+        },
+        press: true
+    });
     game.setGravity(100, 0.1);
 }

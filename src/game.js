@@ -63,6 +63,7 @@ var MainGame = (function () {
             _this.game.load.image('Sky', '../resources/textures/Sky Gradient Color Overlay-L.png');
             _this.game.load.image('Back', '../resources/textures/Background-L.png');
             _this.game.load.image('Stars', '../resources/textures/stars.png');
+            _this.game.load.image('Explosion', '../resources/textures/explosion.png');
             _this.game.load.physics('physicsData', '../resources/physics/mappings.json');
         };
         this.pause = function () {

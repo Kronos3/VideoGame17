@@ -3,7 +3,11 @@
 html {
     height: 100%;
     width: 100%;
-    user-select: none;
+    -webkit-user-select: none;
+}
+
+img {
+    pointer-events: none;
 }
 
 * {
@@ -291,7 +295,8 @@ body {
 }
 
 .console {
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 15% 100%, 0 90%);
+    -webkit-clip-path: polygon(100% 0, 100% 100%, 15% 100%, 0 90%, 0 0);
+    clip-path: polygon(100% 0, 100% 100%, 15% 100%, 0 90%, 0 0);
     max-width: 350px;
     max-height: 400px;
     width: 25%;
@@ -309,6 +314,9 @@ body {
     margin: 0 auto;
     display: block;
 }
+
+/*301 trumansburg rd 
+ 607 257 2920 tu m 30 8am*/
 
 .target-status {
     text-align: center;

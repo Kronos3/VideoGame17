@@ -6,10 +6,11 @@ var ControlScheme = (function () {
         if (captureInput === void 0) { captureInput = true; }
         if (enabled === void 0) { enabled = true; }
         this.bindings = [];
+        this.keys = [];
         this.game = game;
         this.captureInput = captureInput;
         for (var i = 0; i != _bindings.length; i++) {
-            this.bindings.push(_bindings[i]);
+            this.addBinding(_bindings[i]);
         }
     }
     ControlScheme.prototype.frame = function (_args) {
@@ -26,7 +27,14 @@ var ControlScheme = (function () {
         }
     };
     ControlScheme.prototype.addBinding = function (binding) {
-        this.bindings.push(binding);
+        if (binding.press) {
+            var key1 = this.game.input.keyboard.addKey(binding.key);
+            key1.onDown.add(binding.callback);
+            this.keys.push(key1);
+        }
+        else {
+            this.bindings.push(binding);
+        }
     };
     return ControlScheme;
 }());
