@@ -11,7 +11,6 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 /// <reference path="../imports/phaser.d.ts" />
-/// <reference path="../imports/watch.min.js" />
 var control_1 = require("./control");
 var level_1 = require("./level");
 var level_2 = require("./level");

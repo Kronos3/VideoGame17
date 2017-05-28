@@ -1,5 +1,4 @@
 /// <reference path="../imports/phaser.d.ts" />
-/// <reference path="../imports/watch.min.js" />
 import {ControlScheme} from "./control"
 import {KeyBinding} from "./control"
 import {GameSprite} from "./object"
