@@ -295,30 +295,52 @@ body {
 }
 
 .console {
-    -webkit-clip-path: polygon(100% 0, 100% 100%, 15% 100%, 0 90%, 0 0);
-    clip-path: polygon(100% 0, 100% 100%, 15% 100%, 0 90%, 0 0);
-    max-width: 350px;
-    max-height: 400px;
-    width: 25%;
-    height: 50vw;
+    width: 350px;
+    height: 170px;
     right: 0;
     font-size: 2vw;
-    top: 0;
-    background: rgba(13, 23, 25, 0.8);
+    bottom: 0;
+    font-family: 'Open Sans';
 }
 
 .console img {
-    height: auto;   
-    max-width: 80%;
-    width: 250px;
-    margin: 0 auto;
+    height: auto;
+    width: 150px;
     display: block;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
 }
-
-/*301 trumansburg rd 
- 607 257 2920 tu m 30 8am*/
 
 .target-status {
     text-align: center;
     color: #fff;
+}
+
+.ui-ob::before,
+.ui-ob::after {
+    width: 5px;
+    height: 5px;
+    content: '';
+    position: absolute;
+    left: -3.5px;
+    background: #fff;
+    display: block;
+}
+
+.ui-ob::before {
+    top: -2.5px;
+}
+
+.ui-ob::after {
+    bottom: -2.5px;
+}
+
+.ui-ob {
+    width: 150px;
+    margin-top: 5px;
+    height: 60px;
+    border-left: solid #fff 1px;
+    background: rgba(255,255,255,0.2);
+    position: relative;
 }
