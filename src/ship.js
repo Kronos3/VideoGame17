@@ -53,6 +53,7 @@ var Ship = (function (_super) {
             }
         };
         _this.isDead = false;
+        //LFO: flo = 1000.0;
         _this.reset = function () {
             _this.pObject.body.setZeroForce();
             _this.pObject.body.setZeroRotation();

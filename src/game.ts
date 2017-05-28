@@ -1,4 +1,5 @@
 /// <reference path="../imports/phaser.d.ts" />
+/// <reference path="../imports/watch.min.js" />
 import {ControlScheme} from "./control"
 import {KeyBinding} from "./control"
 import {GameSprite} from "./object"
@@ -6,6 +7,7 @@ import {LevelSequence} from "./level"
 import {Level} from "./level"
 import {LevelConstructor} from "./level"
 import {createLevel} from "./level"
+import {UIController} from "./ui"
 import * as UTIL from "./util"
 
 export class toggleControlScheme extends ControlScheme {
@@ -30,15 +32,28 @@ export class toggleControlScheme extends ControlScheme {
     }
 }
 
+Object.defineProperty(Object.prototype, 'watch', {
+    value: function(prop, handler){
+        var setter = function(val){
+            return val = handler.call(this, val);
+        };
+        Object.defineProperty(this, prop, {
+            set: setter
+        });
+    }
+});
+
 export class MainGame {
     onReady: (game: MainGame) => void;
     constructor(onReady: (game: MainGame) => void) {
         this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'T17', {preload: this.preload, create: this.create, update: this.update, render: this.render}, true);
-        $(window).resize( () => {
-            this.resize();
-        });
         this.newLevel ('global');
         this.onReady = onReady;
+        setTimeout (() => {
+            this.isLoaded = true;
+            $('.loading').css('display', 'none');
+        }, 1000);
+        this.uicontroller = new UIController ();
     }
 
     game: Phaser.Game;
@@ -47,6 +62,7 @@ export class MainGame {
     levelsequence: LevelSequence = new LevelSequence ();
     assets: string[] = [];
     gravity: number;
+    uicontroller: UIController;
 
     addControlScheme = (bindings: KeyBinding[], captureInput = true) => {
         var temp: toggleControlScheme = new toggleControlScheme (this.game, bindings, captureInput);
@@ -91,11 +107,12 @@ export class MainGame {
     }
 
     create = () => {
+        var mainCanvas = $(this.game.canvas);
+        mainCanvas.detach();
+        $('#canvas-wrapper').append (mainCanvas);
         this.game.world.setBounds(0, 0, this.game.width, 4200);
         this.game.physics.startSystem(Phaser.Physics.P2JS);
         this.cursor = this.game.input.keyboard.createCursorKeys();
-        var mainCanvas = $(this.game.canvas);
-        $('#canvas-wrapper').append (mainCanvas);
         this.hide ();
         this.onReady (this);
         this.game.time.advancedTiming = true;
@@ -104,7 +121,10 @@ export class MainGame {
         this.game.camera.bounds.top = 0;
         this.game.physics.p2.boundsCollidesWith = [];
         this.levelsequence.initGame ();
+
     }
+
+    isLoaded:boolean = false;
 
     getGravity = () => { // Gravity at a distance
         return 1;

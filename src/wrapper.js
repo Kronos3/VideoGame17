@@ -31,6 +31,9 @@ var Wrapper = (function () {
             this.currentText++;
         }
         else {
+            if (!this.game.isLoaded) {
+                return;
+            }
             $('.scene-wrapper').removeClass('title');
             $('.scene-wrapper').removeClass('text');
             $('.scene-wrapper').addClass('game');

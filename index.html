@@ -1,17 +1,20 @@
 <html>
 <head>
-<link href="https://fonts.googleapis.com/css?family=Black+Ops+One" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400" rel="stylesheet">
-<link href="main.css" rel="stylesheet">
-<script src="imports/jquery-3.1.1.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
-<script type="text/javascript" src="imports/phaser.min.js"></script>
-<script type="text/javascript" src="imports/jquery-3.1.1.min.js"></script>
-<script type="text/javascript" src="bundle.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Black+Ops+One" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400" rel="stylesheet">
+    <link href="main.css" rel="stylesheet">
+    <script src="imports/jquery-3.1.1.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
+    <script type="text/javascript" src="imports/phaser.min.js"></script>
+    <script type="text/javascript" src="imports/watch.min.js"></script>
+    <script type="text/javascript" src="imports/mustache.min.js"></script>
+    <script type="text/javascript" src="imports/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="bundle.js"></script>
 </head>
 
 <body>
 <div class="scene-wrapper title">
     <div class="scene">
+        <p class="loading">loading...</p>
         <div class="stars"></div>
         <img id="mars" class="pos" src="resources/textures/Mars-L.png">
         <img id="moon" class="pos" src="resources/textures/moon.png">
@@ -27,8 +30,18 @@
     <div id="canvas-wrapper" class="scene">
         <div class="game-ui">
             <div class="console object">
+                <p>ship status</p>
                 <img src="resources/blender/images/earth.png">
-                <div class="ui-ob"></div>
+                <div class="ui-ob warning">
+                    <img src="resources/textures/UI/fuel.png">
+                    <div class="bar"><span></span></div>
+                    <span>100</span>
+                </div>
+                <div class="ui-ob">
+                    <img src="resources/textures/UI/monoprope.png">
+                    <div class="bar"><span></span></div>
+                    <span>100</span>
+                </div>
             </div>
         </div>
     </div>

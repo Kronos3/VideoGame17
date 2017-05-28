@@ -11,10 +11,12 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 /// <reference path="../imports/phaser.d.ts" />
+/// <reference path="../imports/watch.min.js" />
 var control_1 = require("./control");
 var level_1 = require("./level");
 var level_2 = require("./level");
 var level_3 = require("./level");
+var ui_1 = require("./ui");
 var toggleControlScheme = (function (_super) {
     __extends(toggleControlScheme, _super);
     function toggleControlScheme(game, _bindings, captureInput, enabled) {
@@ -38,6 +40,16 @@ var toggleControlScheme = (function (_super) {
     return toggleControlScheme;
 }(control_1.ControlScheme));
 exports.toggleControlScheme = toggleControlScheme;
+Object.defineProperty(Object.prototype, 'watch', {
+    value: function (prop, handler) {
+        var setter = function (val) {
+            return val = handler.call(this, val);
+        };
+        Object.defineProperty(this, prop, {
+            set: setter
+        });
+    }
+});
 var MainGame = (function () {
     function MainGame(onReady) {
         var _this = this;
@@ -81,11 +93,12 @@ var MainGame = (function () {
             _this.resume();
         };
         this.create = function () {
+            var mainCanvas = $(_this.game.canvas);
+            mainCanvas.detach();
+            $('#canvas-wrapper').append(mainCanvas);
             _this.game.world.setBounds(0, 0, _this.game.width, 4200);
             _this.game.physics.startSystem(Phaser.Physics.P2JS);
             _this.cursor = _this.game.input.keyboard.createCursorKeys();
-            var mainCanvas = $(_this.game.canvas);
-            $('#canvas-wrapper').append(mainCanvas);
             _this.hide();
             _this.onReady(_this);
             _this.game.time.advancedTiming = true;
@@ -95,6 +108,7 @@ var MainGame = (function () {
             _this.game.physics.p2.boundsCollidesWith = [];
             _this.levelsequence.initGame();
         };
+        this.isLoaded = false;
         this.getGravity = function () {
             return 1;
         };
@@ -151,11 +165,13 @@ var MainGame = (function () {
             this.game.load.image (name, path);*/
         };
         this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'T17', { preload: this.preload, create: this.create, update: this.update, render: this.render }, true);
-        $(window).resize(function () {
-            _this.resize();
-        });
         this.newLevel('global');
         this.onReady = onReady;
+        setTimeout(function () {
+            _this.isLoaded = true;
+            $('.loading').css('display', 'none');
+        }, 1000);
+        this.uicontroller = new ui_1.UIController();
     }
     return MainGame;
 }());

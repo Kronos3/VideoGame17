@@ -55,10 +55,12 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 /// <reference path="../imports/phaser.d.ts" />
+/// <reference path="../imports/watch.min.js" />
 var control_1 = require("./control");
 var level_1 = require("./level");
 var level_2 = require("./level");
 var level_3 = require("./level");
+var ui_1 = require("./ui");
 var toggleControlScheme = (function (_super) {
     __extends(toggleControlScheme, _super);
     function toggleControlScheme(game, _bindings, captureInput, enabled) {
@@ -82,6 +84,16 @@ var toggleControlScheme = (function (_super) {
     return toggleControlScheme;
 }(control_1.ControlScheme));
 exports.toggleControlScheme = toggleControlScheme;
+Object.defineProperty(Object.prototype, 'watch', {
+    value: function (prop, handler) {
+        var setter = function (val) {
+            return val = handler.call(this, val);
+        };
+        Object.defineProperty(this, prop, {
+            set: setter
+        });
+    }
+});
 var MainGame = (function () {
     function MainGame(onReady) {
         var _this = this;
@@ -125,11 +137,12 @@ var MainGame = (function () {
             _this.resume();
         };
         this.create = function () {
+            var mainCanvas = $(_this.game.canvas);
+            mainCanvas.detach();
+            $('#canvas-wrapper').append(mainCanvas);
             _this.game.world.setBounds(0, 0, _this.game.width, 4200);
             _this.game.physics.startSystem(Phaser.Physics.P2JS);
             _this.cursor = _this.game.input.keyboard.createCursorKeys();
-            var mainCanvas = $(_this.game.canvas);
-            $('#canvas-wrapper').append(mainCanvas);
             _this.hide();
             _this.onReady(_this);
             _this.game.time.advancedTiming = true;
@@ -139,6 +152,7 @@ var MainGame = (function () {
             _this.game.physics.p2.boundsCollidesWith = [];
             _this.levelsequence.initGame();
         };
+        this.isLoaded = false;
         this.getGravity = function () {
             return 1;
         };
@@ -195,17 +209,19 @@ var MainGame = (function () {
             this.game.load.image (name, path);*/
         };
         this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'T17', { preload: this.preload, create: this.create, update: this.update, render: this.render }, true);
-        $(window).resize(function () {
-            _this.resize();
-        });
         this.newLevel('global');
         this.onReady = onReady;
+        setTimeout(function () {
+            _this.isLoaded = true;
+            $('.loading').css('display', 'none');
+        }, 1000);
+        this.uicontroller = new ui_1.UIController();
     }
     return MainGame;
 }());
 exports.MainGame = MainGame;
 
-},{"./control":1,"./level":3}],3:[function(require,module,exports){
+},{"./control":1,"./level":3,"./ui":8}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var object_1 = require("./object");
@@ -339,7 +355,7 @@ var Level = (function () {
 }());
 exports.Level = Level;
 
-},{"./object":5,"./util":8}],4:[function(require,module,exports){
+},{"./object":5,"./util":9}],4:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var game_1 = require("./game");
@@ -512,7 +528,7 @@ function DoGame(game) {
     game.setGravity(100, 0.1);
 }
 
-},{"./game":2,"./ship":6,"./wrapper":9}],5:[function(require,module,exports){
+},{"./game":2,"./ship":6,"./wrapper":10}],5:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -597,7 +613,7 @@ var DynamicSprite = (function (_super) {
 }(GameSprite));
 exports.DynamicSprite = DynamicSprite;
 
-},{"./util":8}],6:[function(require,module,exports){
+},{"./util":9}],6:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -653,6 +669,7 @@ var Ship = (function (_super) {
             }
         };
         _this.isDead = false;
+        //LFO: flo = 1000.0;
         _this.reset = function () {
             _this.pObject.body.setZeroForce();
             _this.pObject.body.setZeroRotation();
@@ -817,6 +834,26 @@ exports.TextDisplay = TextDisplay;
 },{}],8:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var UIController = (function () {
+    function UIController() {
+        var _this = this;
+        this.UIElements = [];
+        this.setElement = function (index, value) {
+            $(_this.UIElements[index])
+                .children('.bar')
+                .children('span')
+                .css('width', value.toString() + '%');
+            $(_this.UIElements[index]).children('span').text(value.toFixed(0));
+        };
+        this.UIElements = document.querySelectorAll('.ui-ob');
+    }
+    return UIController;
+}());
+exports.UIController = UIController;
+
+},{}],9:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 function find(a, b) {
     for (var i = 0; i != b.length; i++) {
         if (b[i] == a) {
@@ -847,7 +884,7 @@ function error(message) {
 }
 exports.error = error;
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var type_1 = require("./type");
@@ -881,6 +918,9 @@ var Wrapper = (function () {
             this.currentText++;
         }
         else {
+            if (!this.game.isLoaded) {
+                return;
+            }
             $('.scene-wrapper').removeClass('title');
             $('.scene-wrapper').removeClass('text');
             $('.scene-wrapper').addClass('game');
@@ -893,4 +933,4 @@ var Wrapper = (function () {
 }());
 exports.Wrapper = Wrapper;
 
-},{"./type":7}]},{},[1,2,3,4,5,6,7,8,9]);
+},{"./type":7}]},{},[1,2,3,4,5,6,7,9,10]);

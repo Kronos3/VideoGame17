@@ -56,6 +56,7 @@ export class Ship extends DynamicSprite {
     }
 
     isDead: boolean = false;
+    //LFO: flo = 1000.0;
 
     reset = () => {
         this.pObject.body.setZeroForce();
