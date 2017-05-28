@@ -74,10 +74,11 @@ export interface LevelConstructor {
     game: MainGame;
     objects?: ObjectAsset[];
     frame?: () => void;
+    init?: () => void;
 }
 
 export function createLevel (_const: LevelConstructor): Level {
-    var out = new Level (_const.game, _const.name, _const.frame);
+    var out = new Level (_const.game, _const.name, _const.frame, _const.init);
     if (typeof _const.objects !== "undefined") {
         for (var iter of _const.objects){
             var OBJ: GameSprite;
@@ -108,16 +109,19 @@ export class Level {
     game: MainGame;
     name: string;
     frame: () => void = () => {return};
-    constructor (game: MainGame,  name: string, frame = () => {return} ) {
+    init: () => void;
+    constructor (game: MainGame,  name: string, frame = () => {return}, init = () => {return}) {
         this.game = game;
         this.name = name;
         this.frame = frame;
+        this.init = init;
     }
 
     enable = () => {
         this.objects.forEach(element => {
             element.enable ();
         });
+        this.init ();
     }
 
     disable = () => {

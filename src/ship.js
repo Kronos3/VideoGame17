@@ -65,11 +65,13 @@ var Ship = (function (_super) {
         };
         _this.fuelFlow = function () {
             _this.LFO -= _this.calcUsage(_this.Isp);
+        };
+        _this.setResources = function () {
             _this.game.uicontroller.setElement(0, (_this.LFO / _this.maxLFO) * 100);
+            _this.game.uicontroller.setElement(1, (_this.monoProp / _this.maxMono) * 100);
         };
         _this.monoFlow = function () {
             _this.monoProp -= _this.calcUsage(_this.monoIsp);
-            _this.game.uicontroller.setElement(1, (_this.monoProp / _this.maxMono) * 100);
         };
         _this.reset = function () {
             _this.pObject.body.setZeroForce();
@@ -79,6 +81,8 @@ var Ship = (function (_super) {
             _this.pObject.body.y = _this.pos.y();
             _this.pObject.body.rotation = 0;
             _this.isDead = false;
+            _this.LFO = _this.maxLFO;
+            _this.monoProp = _this.maxMono;
             _this.game.game.camera.follow(_this.pObject);
         };
         _this.explode = function () {
@@ -148,6 +152,7 @@ var Ship = (function (_super) {
             }
             _this.extra.thrustOn = false;
             _this.gravityAction();
+            _this.setResources();
         };
         _this.gravityAction = function () {
             var BODY = _this.pObject.body;

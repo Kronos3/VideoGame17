@@ -48,7 +48,7 @@ var LevelSequence = (function () {
 }());
 exports.LevelSequence = LevelSequence;
 function createLevel(_const) {
-    var out = new Level(_const.game, _const.name, _const.frame);
+    var out = new Level(_const.game, _const.name, _const.frame, _const.init);
     if (typeof _const.objects !== "undefined") {
         for (var _i = 0, _a = _const.objects; _i < _a.length; _i++) {
             var iter = _a[_i];
@@ -76,8 +76,9 @@ function createLevel(_const) {
 }
 exports.createLevel = createLevel;
 var Level = (function () {
-    function Level(game, name, frame) {
+    function Level(game, name, frame, init) {
         if (frame === void 0) { frame = function () { return; }; }
+        if (init === void 0) { init = function () { return; }; }
         var _this = this;
         this.objects = [];
         this.frame = function () { return; };
@@ -85,6 +86,7 @@ var Level = (function () {
             _this.objects.forEach(function (element) {
                 element.enable();
             });
+            _this.init();
         };
         this.disable = function () {
             _this.objects.forEach(function (element) {
@@ -126,6 +128,7 @@ var Level = (function () {
         this.game = game;
         this.name = name;
         this.frame = frame;
+        this.init = init;
     }
     return Level;
 }());

@@ -71,12 +71,15 @@ export class Ship extends DynamicSprite {
 
     fuelFlow = () => {
         this.LFO -= this.calcUsage (this.Isp);
+    }
+
+    setResources = () => {
         this.game.uicontroller.setElement (0, (this.LFO / this.maxLFO) * 100);
+        this.game.uicontroller.setElement (1, (this.monoProp / this.maxMono) * 100);
     }
 
     monoFlow = () => {
         this.monoProp -= this.calcUsage (this.monoIsp);
-        this.game.uicontroller.setElement (1, (this.monoProp / this.maxMono) * 100);
     }
 
     reset = () => {
@@ -87,6 +90,8 @@ export class Ship extends DynamicSprite {
         this.pObject.body.y = this.pos.y();
         this.pObject.body.rotation = 0;
         this.isDead = false;
+        this.LFO = this.maxLFO;
+        this.monoProp = this.maxMono;
         this.game.game.camera.follow (this.pObject);
     }
 
@@ -169,6 +174,7 @@ export class Ship extends DynamicSprite {
         }
         (<any>this.extra).thrustOn = false;
         this.gravityAction ();
+        this.setResources ();
     }
 
     gravityAction = () => {

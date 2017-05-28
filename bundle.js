@@ -1,5 +1,31 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var Task = (function () {
+    function Task(fn, repeat, interval) {
+        if (repeat === void 0) { repeat = true; }
+        if (interval === void 0) { interval = 60; }
+        this.fn = fn;
+        this.repeat = repeat;
+        this.interval = interval;
+    }
+    Task.prototype.start = function () {
+        if (this.repeat) {
+            this.timer = setInterval(this.fn, this.interval);
+        }
+        else {
+            this.timer = setTimeout(this.fn, 0);
+        }
+    };
+    Task.prototype.end = function () {
+        clearInterval(this.timer);
+    };
+    return Task;
+}());
+exports.Task = Task;
+
+},{}],2:[function(require,module,exports){
+"use strict";
 /// <reference path="../imports/phaser.d.ts" />
 Object.defineProperty(exports, "__esModule", { value: true });
 var ControlScheme = (function () {
@@ -41,7 +67,7 @@ var ControlScheme = (function () {
 }());
 exports.ControlScheme = ControlScheme;
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -220,7 +246,7 @@ var MainGame = (function () {
 }());
 exports.MainGame = MainGame;
 
-},{"./control":1,"./level":3,"./ui":8}],3:[function(require,module,exports){
+},{"./control":2,"./level":4,"./ui":9}],4:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var object_1 = require("./object");
@@ -271,7 +297,7 @@ var LevelSequence = (function () {
 }());
 exports.LevelSequence = LevelSequence;
 function createLevel(_const) {
-    var out = new Level(_const.game, _const.name, _const.frame);
+    var out = new Level(_const.game, _const.name, _const.frame, _const.init);
     if (typeof _const.objects !== "undefined") {
         for (var _i = 0, _a = _const.objects; _i < _a.length; _i++) {
             var iter = _a[_i];
@@ -299,8 +325,9 @@ function createLevel(_const) {
 }
 exports.createLevel = createLevel;
 var Level = (function () {
-    function Level(game, name, frame) {
+    function Level(game, name, frame, init) {
         if (frame === void 0) { frame = function () { return; }; }
+        if (init === void 0) { init = function () { return; }; }
         var _this = this;
         this.objects = [];
         this.frame = function () { return; };
@@ -308,6 +335,7 @@ var Level = (function () {
             _this.objects.forEach(function (element) {
                 element.enable();
             });
+            _this.init();
         };
         this.disable = function () {
             _this.objects.forEach(function (element) {
@@ -349,18 +377,55 @@ var Level = (function () {
         this.game = game;
         this.name = name;
         this.frame = frame;
+        this.init = init;
     }
     return Level;
 }());
 exports.Level = Level;
 
-},{"./object":5,"./util":9}],4:[function(require,module,exports){
+},{"./object":6,"./util":10}],5:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var game_1 = require("./game");
 var ship_1 = require("./ship");
 var ship_2 = require("./ship");
 var wrapper_1 = require("./wrapper");
+var background_1 = require("./background");
+function getlength(number) {
+    return number.toString().length;
+}
+function genImgList(startFrame, endFrame, numlen, prefix, suffix) {
+    if (numlen === void 0) { numlen = 4; }
+    if (prefix === void 0) { prefix = 'resources/blender/earth_holo/'; }
+    if (suffix === void 0) { suffix = '.png'; }
+    var out = [];
+    for (var i = startFrame; i != endFrame; i++) {
+        out.push(prefix + Array(numlen - getlength(i) + 1).join('0') + i.toString() + suffix);
+    }
+    return out;
+}
+function GIF(images, element, repeat) {
+    if (repeat === void 0) { repeat = true; }
+    var n = 0;
+    var preLOAD = [];
+    images.forEach(function (element) {
+        var temp = new Image();
+        temp.onload = function () {
+            preLOAD.push(temp);
+        };
+        temp.src = element;
+    });
+    var task = new background_1.Task(function () {
+        console.log(n);
+        $(element).attr('src', images[n]);
+        if (repeat && n == images.length) {
+            n = 0;
+            return;
+        }
+        n++;
+    }, true, 60);
+    task.start();
+}
 $(document).ready(function () {
     for (var i = 0; i != 50; i++) {
         $("<img src=\"resources/textures/Star.png\" class=\"pos\">").appendTo(".stars");
@@ -484,6 +549,7 @@ function DoGame(game) {
             ],
             frame: function () {
                 if (window.GAME.game.camera.view.top > 500) {
+                    // Out of atmo
                 }
             }
         }
@@ -514,7 +580,7 @@ function DoGame(game) {
     game.setGravity(100, 0.1);
 }
 
-},{"./game":2,"./ship":6,"./wrapper":10}],5:[function(require,module,exports){
+},{"./background":1,"./game":3,"./ship":7,"./wrapper":11}],6:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -599,7 +665,7 @@ var DynamicSprite = (function (_super) {
 }(GameSprite));
 exports.DynamicSprite = DynamicSprite;
 
-},{"./util":9}],6:[function(require,module,exports){
+},{"./util":10}],7:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -667,11 +733,13 @@ var Ship = (function (_super) {
         };
         _this.fuelFlow = function () {
             _this.LFO -= _this.calcUsage(_this.Isp);
+        };
+        _this.setResources = function () {
             _this.game.uicontroller.setElement(0, (_this.LFO / _this.maxLFO) * 100);
+            _this.game.uicontroller.setElement(1, (_this.monoProp / _this.maxMono) * 100);
         };
         _this.monoFlow = function () {
             _this.monoProp -= _this.calcUsage(_this.monoIsp);
-            _this.game.uicontroller.setElement(1, (_this.monoProp / _this.maxMono) * 100);
         };
         _this.reset = function () {
             _this.pObject.body.setZeroForce();
@@ -681,6 +749,8 @@ var Ship = (function (_super) {
             _this.pObject.body.y = _this.pos.y();
             _this.pObject.body.rotation = 0;
             _this.isDead = false;
+            _this.LFO = _this.maxLFO;
+            _this.monoProp = _this.maxMono;
             _this.game.game.camera.follow(_this.pObject);
         };
         _this.explode = function () {
@@ -750,6 +820,7 @@ var Ship = (function (_super) {
             }
             _this.extra.thrustOn = false;
             _this.gravityAction();
+            _this.setResources();
         };
         _this.gravityAction = function () {
             var BODY = _this.pObject.body;
@@ -783,7 +854,7 @@ var Booster = (function (_super) {
 }(Ship));
 exports.Booster = Booster;
 
-},{"./object":5}],7:[function(require,module,exports){
+},{"./object":6}],8:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var TextDisplay = (function () {
@@ -846,7 +917,7 @@ var TextDisplay = (function () {
 }());
 exports.TextDisplay = TextDisplay;
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var UIController = (function () {
@@ -883,7 +954,7 @@ var UIController = (function () {
 }());
 exports.UIController = UIController;
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 function find(a, b) {
@@ -916,7 +987,7 @@ function error(message) {
 }
 exports.error = error;
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var type_1 = require("./type");
@@ -965,4 +1036,4 @@ var Wrapper = (function () {
 }());
 exports.Wrapper = Wrapper;
 
-},{"./type":7}]},{},[1,2,3,4,5,6,7,9,10]);
+},{"./type":8}]},{},[2,3,4,5,6,7,8,10,11]);

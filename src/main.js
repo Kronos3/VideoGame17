@@ -4,6 +4,42 @@ var game_1 = require("./game");
 var ship_1 = require("./ship");
 var ship_2 = require("./ship");
 var wrapper_1 = require("./wrapper");
+var background_1 = require("./background");
+function getlength(number) {
+    return number.toString().length;
+}
+function genImgList(startFrame, endFrame, numlen, prefix, suffix) {
+    if (numlen === void 0) { numlen = 4; }
+    if (prefix === void 0) { prefix = 'resources/blender/earth_holo/'; }
+    if (suffix === void 0) { suffix = '.png'; }
+    var out = [];
+    for (var i = startFrame; i != endFrame; i++) {
+        out.push(prefix + Array(numlen - getlength(i) + 1).join('0') + i.toString() + suffix);
+    }
+    return out;
+}
+function GIF(images, element, repeat) {
+    if (repeat === void 0) { repeat = true; }
+    var n = 0;
+    var preLOAD = [];
+    images.forEach(function (element) {
+        var temp = new Image();
+        temp.onload = function () {
+            preLOAD.push(temp);
+        };
+        temp.src = element;
+    });
+    var task = new background_1.Task(function () {
+        console.log(n);
+        $(element).attr('src', images[n]);
+        if (repeat && n == images.length) {
+            n = 0;
+            return;
+        }
+        n++;
+    }, true, 60);
+    task.start();
+}
 $(document).ready(function () {
     for (var i = 0; i != 50; i++) {
         $("<img src=\"resources/textures/Star.png\" class=\"pos\">").appendTo(".stars");
@@ -127,6 +163,7 @@ function DoGame(game) {
             ],
             frame: function () {
                 if (window.GAME.game.camera.view.top > 500) {
+                    // Out of atmo
                 }
             }
         }
