@@ -56,7 +56,28 @@ export class Ship extends DynamicSprite {
     }
 
     isDead: boolean = false;
-    //LFO: flo = 1000.0;
+    maxLFO: number = 1000;
+    LFO: number = this.maxLFO; // Liquid Fuel and Oxidizer (C10H16)
+    Isp: number = 250; // Ratio of thrust to fuel flow for every minute of burn
+                       // At max thrust, use 250 LFO after a minute of burn
+    
+    maxMono:number = 50;
+    monoProp:number = this.maxMono;
+    monoIsp: number = 100;
+
+    calcUsage = (isp: number) => {
+        return isp / (this.game.game.time.fps * 60)
+    }
+
+    fuelFlow = () => {
+        this.LFO -= this.calcUsage (this.Isp);
+        this.game.uicontroller.setElement (0, (this.LFO / this.maxLFO) * 100);
+    }
+
+    monoFlow = () => {
+        this.monoProp -= this.calcUsage (this.monoIsp);
+        this.game.uicontroller.setElement (1, (this.monoProp / this.maxMono) * 100);
+    }
 
     reset = () => {
         this.pObject.body.setZeroForce();
@@ -88,11 +109,15 @@ export class Ship extends DynamicSprite {
         BODY.velocity.x -= magnitude * Math.cos(angle) * this.game.get_ratio();
         BODY.velocity.y -= magnitude * Math.sin(angle) * this.game.get_ratio();
 
+        this.fuelFlow ();
     }
 
     throttle: number = 270;
 
     engineOn = () => {
+        if (this.LFO <= 0) {
+            return;
+        }
         this.switchTo (this.assets[1]);
         // Rocket weighs 200 (gravity * mass)
         this.thrust (this.throttle); // Lower when in 0G
@@ -101,6 +126,10 @@ export class Ship extends DynamicSprite {
 
     // Turn right using RCS (reaction control system)
     rightRCS = () => {
+        if (this.monoProp <= 0) {
+            return;
+        }
+        this.monoFlow ();
         var angularVelocity = () => {return this.pObject.body.angularVelocity / 0.05} // Convert to correct unit
         var tempVel = this.calculate_velocity (0.7, angularVelocity);
         this.pObject.body.rotateRight (tempVel);
@@ -109,6 +138,10 @@ export class Ship extends DynamicSprite {
     }
 
     leftRCS = () => {
+        if (this.monoProp <= 0) {
+            return;
+        }
+        this.monoFlow ();
         var angularVelocity = () => {return this.pObject.body.angularVelocity / 0.05} // Convert to correct unit
         var tempVel = this.calculate_velocity (-0.7, angularVelocity);
         this.pObject.body.rotateRight (tempVel);

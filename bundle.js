@@ -407,20 +407,7 @@ window.GAME = null;
 function initGame() {
     game = new game_1.MainGame(DoGame);
     window.GAME = game;
-    var testControlBindings = [
-        {
-            key: Phaser.Keyboard.SPACEBAR,
-            callback: function () {
-                console.log('pressed space');
-            }
-        },
-        {
-            key: Phaser.Keyboard.SHIFT,
-            callback: function () {
-                console.log('pressed shift');
-            }
-        }
-    ];
+    var testControlBindings = [];
     game.addControlScheme(testControlBindings);
     var story = [
         ['2061', 'The International Space Exploration Administration (ISEA) is coming off their recent success of their manned mission to Mars.', 'Now, they have set their sights on the next stepping stone in the solar system: Jupiter\'s moons.', 'The ISEA believes that landing a spacecraft near Jupiter will reveal new information about the gas giants and the remainder of the solar system.', 'However, this journey will encounter new challenges that will threaten the lives of the astronauts and the reputation of the ISEA.'],
@@ -668,7 +655,24 @@ var Ship = (function (_super) {
             }
         };
         _this.isDead = false;
-        //LFO: flo = 1000.0;
+        _this.maxLFO = 1000;
+        _this.LFO = _this.maxLFO; // Liquid Fuel and Oxidizer (C10H16)
+        _this.Isp = 250; // Ratio of thrust to fuel flow for every minute of burn
+        // At max thrust, use 250 LFO after a minute of burn
+        _this.maxMono = 50;
+        _this.monoProp = _this.maxMono;
+        _this.monoIsp = 100;
+        _this.calcUsage = function (isp) {
+            return isp / (_this.game.game.time.fps * 60);
+        };
+        _this.fuelFlow = function () {
+            _this.LFO -= _this.calcUsage(_this.Isp);
+            _this.game.uicontroller.setElement(0, (_this.LFO / _this.maxLFO) * 100);
+        };
+        _this.monoFlow = function () {
+            _this.monoProp -= _this.calcUsage(_this.monoIsp);
+            _this.game.uicontroller.setElement(1, (_this.monoProp / _this.maxMono) * 100);
+        };
         _this.reset = function () {
             _this.pObject.body.setZeroForce();
             _this.pObject.body.setZeroRotation();
@@ -694,9 +698,13 @@ var Ship = (function (_super) {
             var angle = BODY.data.angle + Math.PI / 2;
             BODY.velocity.x -= magnitude * Math.cos(angle) * _this.game.get_ratio();
             BODY.velocity.y -= magnitude * Math.sin(angle) * _this.game.get_ratio();
+            _this.fuelFlow();
         };
         _this.throttle = 270;
         _this.engineOn = function () {
+            if (_this.LFO <= 0) {
+                return;
+            }
             _this.switchTo(_this.assets[1]);
             // Rocket weighs 200 (gravity * mass)
             _this.thrust(_this.throttle); // Lower when in 0G
@@ -704,6 +712,10 @@ var Ship = (function (_super) {
         };
         // Turn right using RCS (reaction control system)
         _this.rightRCS = function () {
+            if (_this.monoProp <= 0) {
+                return;
+            }
+            _this.monoFlow();
             var angularVelocity = function () { return _this.pObject.body.angularVelocity / 0.05; }; // Convert to correct unit
             var tempVel = _this.calculate_velocity(0.7, angularVelocity);
             _this.pObject.body.rotateRight(tempVel);
@@ -711,6 +723,10 @@ var Ship = (function (_super) {
             _this.switchTo(_this.assets[2]);
         };
         _this.leftRCS = function () {
+            if (_this.monoProp <= 0) {
+                return;
+            }
+            _this.monoFlow();
             var angularVelocity = function () { return _this.pObject.body.angularVelocity / 0.05; }; // Convert to correct unit
             var tempVel = _this.calculate_velocity(-0.7, angularVelocity);
             _this.pObject.body.rotateRight(tempVel);
@@ -842,7 +858,24 @@ var UIController = (function () {
                 .children('.bar')
                 .children('span')
                 .css('width', value.toString() + '%');
-            $(_this.UIElements[index]).children('span').text(value.toFixed(0));
+            $(_this.UIElements[index]).children('span').text(Math.abs(value.toFixed(0)));
+            if (value > 60) {
+                $(_this.UIElements[index])
+                    .removeClass('warning')
+                    .removeClass('emergency');
+            }
+            else if (value < 60 && value > 20) {
+                $(_this.UIElements[index])
+                    .removeClass('emergency');
+                $(_this.UIElements[index])
+                    .addClass('warning');
+            }
+            else {
+                $(_this.UIElements[index])
+                    .removeClass('warning');
+                $(_this.UIElements[index])
+                    .addClass('emergency');
+            }
         };
         this.UIElements = document.querySelectorAll('.ui-ob');
     }
