@@ -18,19 +18,29 @@ export class UIController {
         if (value > 60) {
             $(this.UIElements[index])
                 .removeClass ('warning')
-                .removeClass ('emergency');
+                .removeClass ('emergency')
+                .removeClass ('out');
         }
         else if (value < 60 && value > 20) {
             $(this.UIElements[index])
-                .removeClass ('emergency');
+                .removeClass ('emergency')
+                .removeClass ('out');
             $(this.UIElements[index])
                 .addClass ('warning');
         }
-        else {
+        else if (value > 0) {
             $(this.UIElements[index])
-                .removeClass ('warning');
+                .removeClass ('warning')
+                .removeClass ('out');
             $(this.UIElements[index])
                 .addClass ('emergency');
+        }
+        else {
+            $(this.UIElements[index])
+                .removeClass ('warning')
+                .removeClass ('emergency');
+            $(this.UIElements[index])
+                .addClass ('out');
         }
     }
 }

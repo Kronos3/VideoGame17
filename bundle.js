@@ -832,7 +832,9 @@ var Ship = (function (_super) {
         };
         _this.addBooster = function (booster) {
             _this.booster = booster;
-            _this.game.game.physics.p2.createLockConstraint(_this.pObject, _this.booster.pObject, [-20, 0], 0);
+            //this.game.game.physics.p2.createPrismaticConstraint (
+            //
+            //)
         };
         _this.enablePhysics();
         _this.pObject.body.mass = 5;
@@ -933,19 +935,29 @@ var UIController = (function () {
             if (value > 60) {
                 $(_this.UIElements[index])
                     .removeClass('warning')
-                    .removeClass('emergency');
+                    .removeClass('emergency')
+                    .removeClass('out');
             }
             else if (value < 60 && value > 20) {
                 $(_this.UIElements[index])
-                    .removeClass('emergency');
+                    .removeClass('emergency')
+                    .removeClass('out');
                 $(_this.UIElements[index])
                     .addClass('warning');
             }
-            else {
+            else if (value > 0) {
                 $(_this.UIElements[index])
-                    .removeClass('warning');
+                    .removeClass('warning')
+                    .removeClass('out');
                 $(_this.UIElements[index])
                     .addClass('emergency');
+            }
+            else {
+                $(_this.UIElements[index])
+                    .removeClass('warning')
+                    .removeClass('emergency');
+                $(_this.UIElements[index])
+                    .addClass('out');
             }
         };
         this.UIElements = document.querySelectorAll('.ui-ob');

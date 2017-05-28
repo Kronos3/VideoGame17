@@ -164,7 +164,9 @@ var Ship = (function (_super) {
         };
         _this.addBooster = function (booster) {
             _this.booster = booster;
-            _this.game.game.physics.p2.createLockConstraint(_this.pObject, _this.booster.pObject, [-20, 0], 0);
+            //this.game.game.physics.p2.createPrismaticConstraint (
+            //
+            //)
         };
         _this.enablePhysics();
         _this.pObject.body.mass = 5;

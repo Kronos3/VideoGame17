@@ -191,7 +191,9 @@ export class Ship extends DynamicSprite {
 
     addBooster = (booster: Booster) => {
         this.booster = booster;
-        this.game.game.physics.p2.createLockConstraint(this.pObject, this.booster.pObject, [-20, 0], 0);
+        //this.game.game.physics.p2.createPrismaticConstraint (
+            //
+        //)
     }
 }
 

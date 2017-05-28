@@ -344,6 +344,7 @@ body {
     border-left: solid #fff 1px;
     background: rgba(255,255,255,0.2);
     position: relative;
+    transition: 1s background ease;
 }
 
 .ui-ob > img {
@@ -396,8 +397,22 @@ body {
     width: 100%;
 }
 
+@keyframes resource-out {
+    0% {
+        background: rgba(255,40,0,0.5);
+    }
+    100% {
+        background: rgba(255,40,0,0);
+    }
+    
+}
+
 .warning {
     background: rgba(255,200,0,0.5);
+}
+
+.out {
+    animation: resource-out 1.5s ease infinite;
 }
 
 .emergency {
