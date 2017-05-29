@@ -37,11 +37,11 @@ export class LevelSequence {
     }
 
     initGame = () => {
-        this.current = 0;
-        for (var i = 1; i!= this.levels.length; i++) {
+        this.current = -1;
+        for (var i = 0; i!= this.levels.length; i++) {
             this.levels[i].disable ();
         }
-        this.levels[this.current + 1].enable ();
+        this.levels[0].enable ();
     }
 
     nextLevel = () => {
@@ -72,13 +72,14 @@ export interface BasicAsset {
 export interface LevelConstructor {
     name: string;
     game: MainGame;
+    done: () => boolean;
     objects?: ObjectAsset[];
     frame?: () => void;
-    init?: () => void;
+    init?: (l: Level) => void;
 }
 
 export function createLevel (_const: LevelConstructor): Level {
-    var out = new Level (_const.game, _const.name, _const.frame, _const.init);
+    var out = new Level (_const.game, _const.name, _const.done, _const.frame, _const.init);
     if (typeof _const.objects !== "undefined") {
         for (var iter of _const.objects){
             var OBJ: GameSprite;
@@ -109,19 +110,25 @@ export class Level {
     game: MainGame;
     name: string;
     frame: () => void = () => {return};
-    init: () => void;
-    constructor (game: MainGame,  name: string, frame = () => {return}, init = () => {return}) {
+    init: (l: Level) => void;
+    done: () => boolean;
+    inited: boolean = false;
+    constructor (game: MainGame,  name: string, done: () => boolean, frame = () => {return}, init = (l: Level) => {return}) {
         this.game = game;
         this.name = name;
         this.frame = frame;
         this.init = init;
+        this.done = done;
     }
 
     enable = () => {
         this.objects.forEach(element => {
             element.enable ();
         });
-        this.init ();
+        if (!this.inited) {
+            this.init (this);
+            this.inited = true;
+        }
     }
 
     disable = () => {

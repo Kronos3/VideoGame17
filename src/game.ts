@@ -8,6 +8,7 @@ import {LevelConstructor} from "./level"
 import {createLevel} from "./level"
 import {UIController} from "./ui"
 import * as UTIL from "./util"
+import {Wrapper} from "./wrapper"
 
 export class toggleControlScheme extends ControlScheme {
     enabled: boolean;
@@ -46,7 +47,6 @@ export class MainGame {
     onReady: (game: MainGame) => void;
     constructor(onReady: (game: MainGame) => void) {
         this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'T17', {preload: this.preload, create: this.create, update: this.update, render: this.render}, true);
-        this.newLevel ('global');
         this.onReady = onReady;
         setTimeout (() => {
             this.isLoaded = true;
@@ -109,14 +109,13 @@ export class MainGame {
         var mainCanvas = $(this.game.canvas);
         mainCanvas.detach();
         $('#canvas-wrapper').append (mainCanvas);
-        this.game.world.setBounds(0, 0, this.game.width, 4200);
+        this.game.world.setBounds(0, 0, this.game.width, 4600);
         this.game.physics.startSystem(Phaser.Physics.P2JS);
         this.cursor = this.game.input.keyboard.createCursorKeys();
         this.hide ();
         this.onReady (this);
         this.game.time.advancedTiming = true;
         this.game.time.desiredFps = 60;
-        this.game.camera.follow(this.getLevel('global').getObject('Artemis').pObject);
         this.game.camera.bounds.top = 0;
         this.game.physics.p2.boundsCollidesWith = [];
         this.levelsequence.initGame ();
@@ -124,6 +123,7 @@ export class MainGame {
     }
 
     isLoaded:boolean = false;
+    wrapper: Wrapper;
 
     getGravity = () => { // Gravity at a distance
         return 1;
@@ -135,6 +135,11 @@ export class MainGame {
             for (var iter of this.controls) {
                 iter.frame ();
             }
+        }
+        
+        if (this.levelsequence.getCurrent ().done ()) {
+            this.wrapper.handleNext ();
+            return;
         }
 
         // Per-Level
@@ -161,7 +166,7 @@ export class MainGame {
     }
 
     newLevel = (name: string): Level => {
-        var level = new Level (this, name);
+        var level = new Level (this, name, () => {return false});
         this.levelsequence.addLevel (level);
         return level;
     }

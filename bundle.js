@@ -165,14 +165,13 @@ var MainGame = (function () {
             var mainCanvas = $(_this.game.canvas);
             mainCanvas.detach();
             $('#canvas-wrapper').append(mainCanvas);
-            _this.game.world.setBounds(0, 0, _this.game.width, 4200);
+            _this.game.world.setBounds(0, 0, _this.game.width, 4600);
             _this.game.physics.startSystem(Phaser.Physics.P2JS);
             _this.cursor = _this.game.input.keyboard.createCursorKeys();
             _this.hide();
             _this.onReady(_this);
             _this.game.time.advancedTiming = true;
             _this.game.time.desiredFps = 60;
-            _this.game.camera.follow(_this.getLevel('global').getObject('Artemis').pObject);
             _this.game.camera.bounds.top = 0;
             _this.game.physics.p2.boundsCollidesWith = [];
             _this.levelsequence.initGame();
@@ -188,6 +187,10 @@ var MainGame = (function () {
                     var iter = _a[_i];
                     iter.frame();
                 }
+            }
+            if (_this.levelsequence.getCurrent().done()) {
+                _this.wrapper.handleNext();
+                return;
             }
             // Per-Level
             _this.levelsequence.getCurrent().frame();
@@ -209,7 +212,7 @@ var MainGame = (function () {
             });
         };
         this.newLevel = function (name) {
-            var level = new level_2.Level(_this, name);
+            var level = new level_2.Level(_this, name, function () { return false; });
             _this.levelsequence.addLevel(level);
             return level;
         };
@@ -234,7 +237,6 @@ var MainGame = (function () {
             this.game.load.image (name, path);*/
         };
         this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'T17', { preload: this.preload, create: this.create, update: this.update, render: this.render }, true);
-        this.newLevel('global');
         this.onReady = onReady;
         setTimeout(function () {
             _this.isLoaded = true;
@@ -277,11 +279,11 @@ var LevelSequence = (function () {
             return null;
         };
         this.initGame = function () {
-            _this.current = 0;
-            for (var i = 1; i != _this.levels.length; i++) {
+            _this.current = -1;
+            for (var i = 0; i != _this.levels.length; i++) {
                 _this.levels[i].disable();
             }
-            _this.levels[_this.current + 1].enable();
+            _this.levels[0].enable();
         };
         this.nextLevel = function () {
             _this.current++;
@@ -297,7 +299,7 @@ var LevelSequence = (function () {
 }());
 exports.LevelSequence = LevelSequence;
 function createLevel(_const) {
-    var out = new Level(_const.game, _const.name, _const.frame, _const.init);
+    var out = new Level(_const.game, _const.name, _const.done, _const.frame, _const.init);
     if (typeof _const.objects !== "undefined") {
         for (var _i = 0, _a = _const.objects; _i < _a.length; _i++) {
             var iter = _a[_i];
@@ -325,17 +327,21 @@ function createLevel(_const) {
 }
 exports.createLevel = createLevel;
 var Level = (function () {
-    function Level(game, name, frame, init) {
+    function Level(game, name, done, frame, init) {
         if (frame === void 0) { frame = function () { return; }; }
-        if (init === void 0) { init = function () { return; }; }
+        if (init === void 0) { init = function (l) { return; }; }
         var _this = this;
         this.objects = [];
         this.frame = function () { return; };
+        this.inited = false;
         this.enable = function () {
             _this.objects.forEach(function (element) {
                 element.enable();
             });
-            _this.init();
+            if (!_this.inited) {
+                _this.init(_this);
+                _this.inited = true;
+            }
         };
         this.disable = function () {
             _this.objects.forEach(function (element) {
@@ -378,6 +384,7 @@ var Level = (function () {
         this.name = name;
         this.frame = frame;
         this.init = init;
+        this.done = done;
     }
     return Level;
 }());
@@ -548,9 +555,34 @@ function DoGame(game) {
                 },
             ],
             frame: function () {
-                if (window.GAME.game.camera.view.top > 500) {
-                    // Out of atmo
-                }
+            },
+            done: function () {
+                return window.GAME.getLevel('intro').getObject('Artemis').getAltitude() > 4000;
+            },
+            init: function (___this) {
+                var artemis_pos = {
+                    x: function () { return window.GAME.game.world.width / 2 - 70; },
+                    y: function () { return window.GAME.game.world.height - 60; },
+                };
+                ___this.addObject(new ship_2.Ship(window.GAME, 'Artemis', artemis_pos, [
+                    'rocket',
+                    'rocket-thrust',
+                    'rocket-L-L',
+                    'rocket-L-R',
+                    'Explosion'
+                ], ___this));
+                window.GAME.addControlScheme([
+                    ship_1.ShipBinding(window.GAME, ___this.getObject('Artemis')),
+                    {
+                        key: Phaser.KeyCode.R,
+                        callback: function () {
+                            ___this.getObject('Artemis').reset();
+                        },
+                        press: true
+                    }
+                ]);
+                window.GAME.setGravity(100, 0.1);
+                window.GAME.game.camera.follow(___this.getObject('Artemis').pObject);
             }
         }
     ];
@@ -558,26 +590,6 @@ function DoGame(game) {
         var iter = levels_1[_i];
         game.addLevel(iter);
     }
-    var artemis_pos = {
-        x: function () { return window.GAME.game.world.width / 2 - 70; },
-        y: function () { return window.GAME.game.world.height - 60; },
-    };
-    game.getLevel('global').addObject(new ship_2.Ship(game, 'Artemis', artemis_pos, [
-        'rocket',
-        'rocket-thrust',
-        'rocket-L-L',
-        'rocket-L-R',
-        'Explosion'
-    ]));
-    game.controls[0].addBinding(ship_1.ShipBinding(game, game.getLevel('global').getObject('Artemis')));
-    game.controls[0].addBinding({
-        key: Phaser.KeyCode.R,
-        callback: function () {
-            game.getLevel('global').getObject('Artemis').reset();
-        },
-        press: true
-    });
-    game.setGravity(100, 0.1);
 }
 
 },{"./background":1,"./game":3,"./ship":7,"./wrapper":11}],6:[function(require,module,exports){
@@ -709,7 +721,7 @@ exports.ShipBinding = function (game, ship) {
 var Ship = (function (_super) {
     __extends(Ship, _super);
     function Ship(game, name, pos, assets, level) {
-        if (level === void 0) { level = game.levelsequence.getLevel('global'); }
+        if (level === void 0) { level = game.levelsequence.getLevel('intro'); }
         var _this = _super.call(this, game, level, name, pos, assets, { angularRot: 0, SAS: false, thrustOn: false, inSpace: false }) || this;
         _this.collide = function (target, this_target, shapeA, shapeB, contactEquation) {
             if (contactEquation[0] != null) {
@@ -728,6 +740,9 @@ var Ship = (function (_super) {
         _this.maxMono = 50;
         _this.monoProp = _this.maxMono;
         _this.monoIsp = 100;
+        _this.getAltitude = function () {
+            return _this.startAlt - _this.pObject.body.y;
+        };
         _this.calcUsage = function (isp) {
             return isp / (_this.game.game.time.fps * 60);
         };
@@ -839,6 +854,7 @@ var Ship = (function (_super) {
         _this.enablePhysics();
         _this.pObject.body.mass = 5;
         _this.loadBody('Rocket-L');
+        _this.startAlt = _this.pObject.body.y;
         return _this;
         //this.pObject.body.onBeginContact.add(this.collide, this);
     }
@@ -1010,7 +1026,7 @@ var Wrapper = (function () {
         this.order = [
             // 0: level
             // 1: TextScene
-            0,
+            1,
             0
         ];
         this.currentTotal = 0;
@@ -1021,8 +1037,9 @@ var Wrapper = (function () {
         this.game = game;
         scene_text.forEach(function (element) {
             _this.scenes.push(new type_1.TextDisplay($('.buf.anim-typewriter').get(0), element, _this.textDone));
-            _this.game.levelsequence.current = -1;
+            _this.game.levelsequence.current = 0;
         });
+        this.game.wrapper = this;
     }
     Wrapper.prototype.handleNext = function () {
         if (this.order[this.currentTotal]) {

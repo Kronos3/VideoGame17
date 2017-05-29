@@ -7,7 +7,7 @@ export class Wrapper {
     order: number[] = [
         // 0: level
         // 1: TextScene
-        0,
+        1,
         0
     ];
     currentTotal: number = 0;
@@ -16,8 +16,9 @@ export class Wrapper {
         this.game = game;
         scene_text.forEach(element => {
             this.scenes.push (new TextDisplay ($('.buf.anim-typewriter').get(0), element, this.textDone));
-            this.game.levelsequence.current = -1;
+            this.game.levelsequence.current = 0;
         });
+        this.game.wrapper = this;
     }
 
     textDone = () => {

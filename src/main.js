@@ -162,9 +162,34 @@ function DoGame(game) {
                 },
             ],
             frame: function () {
-                if (window.GAME.game.camera.view.top > 500) {
-                    // Out of atmo
-                }
+            },
+            done: function () {
+                return window.GAME.getLevel('intro').getObject('Artemis').getAltitude() > 4000;
+            },
+            init: function (___this) {
+                var artemis_pos = {
+                    x: function () { return window.GAME.game.world.width / 2 - 70; },
+                    y: function () { return window.GAME.game.world.height - 60; },
+                };
+                ___this.addObject(new ship_2.Ship(window.GAME, 'Artemis', artemis_pos, [
+                    'rocket',
+                    'rocket-thrust',
+                    'rocket-L-L',
+                    'rocket-L-R',
+                    'Explosion'
+                ], ___this));
+                window.GAME.addControlScheme([
+                    ship_1.ShipBinding(window.GAME, ___this.getObject('Artemis')),
+                    {
+                        key: Phaser.KeyCode.R,
+                        callback: function () {
+                            ___this.getObject('Artemis').reset();
+                        },
+                        press: true
+                    }
+                ]);
+                window.GAME.setGravity(100, 0.1);
+                window.GAME.game.camera.follow(___this.getObject('Artemis').pObject);
             }
         }
     ];
@@ -172,24 +197,4 @@ function DoGame(game) {
         var iter = levels_1[_i];
         game.addLevel(iter);
     }
-    var artemis_pos = {
-        x: function () { return window.GAME.game.world.width / 2 - 70; },
-        y: function () { return window.GAME.game.world.height - 60; },
-    };
-    game.getLevel('global').addObject(new ship_2.Ship(game, 'Artemis', artemis_pos, [
-        'rocket',
-        'rocket-thrust',
-        'rocket-L-L',
-        'rocket-L-R',
-        'Explosion'
-    ]));
-    game.controls[0].addBinding(ship_1.ShipBinding(game, game.getLevel('global').getObject('Artemis')));
-    game.controls[0].addBinding({
-        key: Phaser.KeyCode.R,
-        callback: function () {
-            game.getLevel('global').getObject('Artemis').reset();
-        },
-        press: true
-    });
-    game.setGravity(100, 0.1);
 }

@@ -6,6 +6,7 @@ import {Ship} from "./ship"
 import {TextDisplay} from "./type"
 import {Wrapper} from "./wrapper"
 import {Task} from "./background"
+import {Level} from "./level"
 function getlength(number) {
     return number.toString().length;
 }
@@ -173,39 +174,45 @@ function DoGame (game: MainGame): void {
                 },
             ],
             frame: () => {
-               if ((<any>window).GAME.game.camera.view.top > 500) {
-                   // Out of atmo
-               }
+            },
+            done: () => {
+                return (<any>window).GAME.getLevel ('intro').getObject('Artemis').getAltitude() > 4000;
+            },
+            init: (___this: Level) => {
+
+                var artemis_pos = {
+                    x: ():number => {return (<any>window).GAME.game.world.width / 2 - 70},
+                    y: ():number => {return (<any>window).GAME.game.world.height - 60},
+                }
+
+                ___this.addObject (new Ship (
+                    (<any>window).GAME,
+                    'Artemis',
+                    artemis_pos,
+                    [
+                        'rocket',
+                        'rocket-thrust',
+                        'rocket-L-L',
+                        'rocket-L-R',
+                        'Explosion'
+                    ],
+                    ___this));
+                (<any>window).GAME.addControlScheme ([
+                    ShipBinding((<any>window).GAME, <Ship>___this.getObject ('Artemis')),
+                    {
+                        key: Phaser.KeyCode.R,
+                        callback: () => {
+                            (<Ship>___this.getObject ('Artemis')).reset();
+                        },
+                        press: true
+                    }
+                ]);
+                (<any>window).GAME.setGravity (100, 0.1);
+                (<any>window).GAME.game.camera.follow(___this.getObject('Artemis').pObject);
             }
         }
     ]
     for (var iter of levels) {
         game.addLevel (iter);
     }
-
-    var artemis_pos = {
-        x: ():number => {return (<any>window).GAME.game.world.width / 2 - 70},
-        y: ():number => {return (<any>window).GAME.game.world.height - 60},
-    }
-
-    game.getLevel ('global').addObject (new Ship (
-        game,
-        'Artemis',
-        artemis_pos,
-        [
-            'rocket',
-            'rocket-thrust',
-            'rocket-L-L',
-            'rocket-L-R',
-            'Explosion'
-        ]));
-    game.controls[0].addBinding (ShipBinding(game, <Ship>game.getLevel('global').getObject ('Artemis')));
-    game.controls[0].addBinding({
-        key: Phaser.KeyCode.R,
-        callback: () => {
-            (<Ship>game.getLevel('global').getObject ('Artemis')).reset();
-        },
-        press: true
-    })
-    game.setGravity (100, 0.1);
 }

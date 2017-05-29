@@ -28,11 +28,11 @@ var LevelSequence = (function () {
             return null;
         };
         this.initGame = function () {
-            _this.current = 0;
-            for (var i = 1; i != _this.levels.length; i++) {
+            _this.current = -1;
+            for (var i = 0; i != _this.levels.length; i++) {
                 _this.levels[i].disable();
             }
-            _this.levels[_this.current + 1].enable();
+            _this.levels[0].enable();
         };
         this.nextLevel = function () {
             _this.current++;
@@ -48,7 +48,7 @@ var LevelSequence = (function () {
 }());
 exports.LevelSequence = LevelSequence;
 function createLevel(_const) {
-    var out = new Level(_const.game, _const.name, _const.frame, _const.init);
+    var out = new Level(_const.game, _const.name, _const.done, _const.frame, _const.init);
     if (typeof _const.objects !== "undefined") {
         for (var _i = 0, _a = _const.objects; _i < _a.length; _i++) {
             var iter = _a[_i];
@@ -76,17 +76,21 @@ function createLevel(_const) {
 }
 exports.createLevel = createLevel;
 var Level = (function () {
-    function Level(game, name, frame, init) {
+    function Level(game, name, done, frame, init) {
         if (frame === void 0) { frame = function () { return; }; }
-        if (init === void 0) { init = function () { return; }; }
+        if (init === void 0) { init = function (l) { return; }; }
         var _this = this;
         this.objects = [];
         this.frame = function () { return; };
+        this.inited = false;
         this.enable = function () {
             _this.objects.forEach(function (element) {
                 element.enable();
             });
-            _this.init();
+            if (!_this.inited) {
+                _this.init(_this);
+                _this.inited = true;
+            }
         };
         this.disable = function () {
             _this.objects.forEach(function (element) {
@@ -129,6 +133,7 @@ var Level = (function () {
         this.name = name;
         this.frame = frame;
         this.init = init;
+        this.done = done;
     }
     return Level;
 }());

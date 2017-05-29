@@ -41,7 +41,7 @@ exports.ShipBinding = function (game, ship) {
 var Ship = (function (_super) {
     __extends(Ship, _super);
     function Ship(game, name, pos, assets, level) {
-        if (level === void 0) { level = game.levelsequence.getLevel('global'); }
+        if (level === void 0) { level = game.levelsequence.getLevel('intro'); }
         var _this = _super.call(this, game, level, name, pos, assets, { angularRot: 0, SAS: false, thrustOn: false, inSpace: false }) || this;
         _this.collide = function (target, this_target, shapeA, shapeB, contactEquation) {
             if (contactEquation[0] != null) {
@@ -60,6 +60,9 @@ var Ship = (function (_super) {
         _this.maxMono = 50;
         _this.monoProp = _this.maxMono;
         _this.monoIsp = 100;
+        _this.getAltitude = function () {
+            return _this.startAlt - _this.pObject.body.y;
+        };
         _this.calcUsage = function (isp) {
             return isp / (_this.game.game.time.fps * 60);
         };
@@ -171,6 +174,7 @@ var Ship = (function (_super) {
         _this.enablePhysics();
         _this.pObject.body.mass = 5;
         _this.loadBody('Rocket-L');
+        _this.startAlt = _this.pObject.body.y;
         return _this;
         //this.pObject.body.onBeginContact.add(this.collide, this);
     }

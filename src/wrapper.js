@@ -8,7 +8,7 @@ var Wrapper = (function () {
         this.order = [
             // 0: level
             // 1: TextScene
-            0,
+            1,
             0
         ];
         this.currentTotal = 0;
@@ -19,8 +19,9 @@ var Wrapper = (function () {
         this.game = game;
         scene_text.forEach(function (element) {
             _this.scenes.push(new type_1.TextDisplay($('.buf.anim-typewriter').get(0), element, _this.textDone));
-            _this.game.levelsequence.current = -1;
+            _this.game.levelsequence.current = 0;
         });
+        this.game.wrapper = this;
     }
     Wrapper.prototype.handleNext = function () {
         if (this.order[this.currentTotal]) {

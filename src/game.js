@@ -95,14 +95,13 @@ var MainGame = (function () {
             var mainCanvas = $(_this.game.canvas);
             mainCanvas.detach();
             $('#canvas-wrapper').append(mainCanvas);
-            _this.game.world.setBounds(0, 0, _this.game.width, 4200);
+            _this.game.world.setBounds(0, 0, _this.game.width, 4600);
             _this.game.physics.startSystem(Phaser.Physics.P2JS);
             _this.cursor = _this.game.input.keyboard.createCursorKeys();
             _this.hide();
             _this.onReady(_this);
             _this.game.time.advancedTiming = true;
             _this.game.time.desiredFps = 60;
-            _this.game.camera.follow(_this.getLevel('global').getObject('Artemis').pObject);
             _this.game.camera.bounds.top = 0;
             _this.game.physics.p2.boundsCollidesWith = [];
             _this.levelsequence.initGame();
@@ -118,6 +117,10 @@ var MainGame = (function () {
                     var iter = _a[_i];
                     iter.frame();
                 }
+            }
+            if (_this.levelsequence.getCurrent().done()) {
+                _this.wrapper.handleNext();
+                return;
             }
             // Per-Level
             _this.levelsequence.getCurrent().frame();
@@ -139,7 +142,7 @@ var MainGame = (function () {
             });
         };
         this.newLevel = function (name) {
-            var level = new level_2.Level(_this, name);
+            var level = new level_2.Level(_this, name, function () { return false; });
             _this.levelsequence.addLevel(level);
             return level;
         };
@@ -164,7 +167,6 @@ var MainGame = (function () {
             this.game.load.image (name, path);*/
         };
         this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'T17', { preload: this.preload, create: this.create, update: this.update, render: this.render }, true);
-        this.newLevel('global');
         this.onReady = onReady;
         setTimeout(function () {
             _this.isLoaded = true;

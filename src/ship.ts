@@ -32,11 +32,12 @@ export var ShipBinding = (game: MainGame, ship: Ship): KeyBinding => {return {
 };
 
 export class Ship extends DynamicSprite {
-    constructor (game: MainGame, name:string, pos: _position, assets: string[], level=game.levelsequence.getLevel ('global')) {
+    constructor (game: MainGame, name:string, pos: _position, assets: string[], level=game.levelsequence.getLevel ('intro')) {
         super (game, level, name, pos, assets, {angularRot: 0, SAS: false, thrustOn: false, inSpace: false});
         this.enablePhysics ();
         this.pObject.body.mass = 5;
         this.loadBody ('Rocket-L');
+        this.startAlt = this.pObject.body.y;
         //this.pObject.body.onBeginContact.add(this.collide, this);
     }
 
@@ -55,6 +56,7 @@ export class Ship extends DynamicSprite {
         }
     }
 
+    startAlt: number;
     isDead: boolean = false;
     maxLFO: number = 1000;
     LFO: number = this.maxLFO; // Liquid Fuel and Oxidizer (C10H16)
@@ -64,6 +66,10 @@ export class Ship extends DynamicSprite {
     maxMono:number = 50;
     monoProp:number = this.maxMono;
     monoIsp: number = 100;
+
+    getAltitude = () => {
+        return this.startAlt - this.pObject.body.y;
+    }
 
     calcUsage = (isp: number) => {
         return isp / (this.game.game.time.fps * 60)
