@@ -193,8 +193,24 @@ function DoGame(game) {
             }
         }
     ];
-    for (var _i = 0, levels_1 = levels; _i < levels_1.length; _i++) {
-        var iter = levels_1[_i];
-        game.addLevel(iter);
+    var missions = [
+        [
+            {
+                title: 'Reach 4000m',
+                description: 'Exit Earth\'s atmosphere',
+                condition: function () {
+                    return window.GAME.getLevel('intro').getObject('Artemis').getAltitude() > 4000;
+                },
+                onDone: function () {
+                }
+            }
+        ]
+    ];
+    for (var iter in levels) {
+        game.addLevel(levels[iter]);
+        for (var _i = 0, _a = missions[iter]; _i < _a.length; _i++) {
+            var miter = _a[_i];
+            game.levelsequence.levels[iter].addMission(miter);
+        }
     }
 }

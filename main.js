@@ -11,7 +11,7 @@ let mainWindow
 function createWindow () {
     //var subpy = require('child_process').spawn('python', ['./server.py']);
     // Create the browser window.
-    mainWindow = new BrowserWindow({width: 1080, height: 720, frame: true, minWidth: 800, minHeight: 720, transparent: true, icon:'img/icon-small.png'})
+    mainWindow = new BrowserWindow({width: 1080, height: 720, frame: true, minWidth: 800, minHeight: 720, transparent: true, icon:'resources/planets/io.png'})
     
     // and load the index.html of the app.
     /*mainWindow.loadURL(url.format({

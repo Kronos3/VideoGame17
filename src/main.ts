@@ -7,6 +7,8 @@ import {TextDisplay} from "./type"
 import {Wrapper} from "./wrapper"
 import {Task} from "./background"
 import {Level} from "./level"
+import {MissionContructor} from "./mission"
+
 function getlength(number) {
     return number.toString().length;
 }
@@ -212,7 +214,25 @@ function DoGame (game: MainGame): void {
             }
         }
     ]
-    for (var iter of levels) {
-        game.addLevel (iter);
+
+    var missions: MissionContructor [][] = [
+        [
+            {
+                title: 'Reach 4000m',
+                description: 'Exit Earth\'s atmosphere',
+                condition: () => {
+                    return (<any>window).GAME.getLevel('intro').getObject('Artemis').getAltitude () > 4000;
+                },
+                onDone: () => {
+
+                }
+            }
+        ]
+    ]
+    for (var iter in levels) {
+        game.addLevel (levels[iter]);
+        for (var miter of missions[iter]) {
+            game.levelsequence.levels[iter].addMission (miter);
+        }
     }
 }

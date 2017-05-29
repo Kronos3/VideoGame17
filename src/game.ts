@@ -9,7 +9,6 @@ import {createLevel} from "./level"
 import {UIController} from "./ui"
 import * as UTIL from "./util"
 import {Wrapper} from "./wrapper"
-import {Mission} from "./mission"
 
 export class toggleControlScheme extends ControlScheme {
     enabled: boolean;
@@ -63,6 +62,7 @@ export class MainGame {
     assets: string[] = [];
     gravity: number;
     uicontroller: UIController;
+
 
     addControlScheme = (bindings: KeyBinding[], captureInput = true) => {
         var temp: toggleControlScheme = new toggleControlScheme (this.game, bindings, captureInput);

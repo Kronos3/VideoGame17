@@ -4,6 +4,9 @@ import {GameSprite} from "./object"
 import {DynamicSprite} from "./object"
 import {MainGame} from "./game"
 import {_position} from "./object"
+import {MissionContructor} from "./mission"
+import {generateMission} from "./mission"
+import {MissionControl} from "./mission"
 import * as UTIL from "./util"
 
 export class LevelSequence {
@@ -113,12 +116,19 @@ export class Level {
     init: (l: Level) => void;
     done: () => boolean;
     inited: boolean = false;
+    missionControl: MissionControl;
+    
     constructor (game: MainGame,  name: string, done: () => boolean, frame = () => {return}, init = (l: Level) => {return}) {
         this.game = game;
         this.name = name;
         this.frame = frame;
         this.init = init;
         this.done = done;
+        this.missionControl = new MissionControl ();
+    }
+
+    addMission = (l: MissionContructor) => {
+        this.missionControl.addMission (generateMission (l));
     }
 
     enable = () => {

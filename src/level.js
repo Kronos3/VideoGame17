@@ -2,6 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var object_1 = require("./object");
 var object_2 = require("./object");
+var mission_1 = require("./mission");
+var mission_2 = require("./mission");
 var UTIL = require("./util");
 var LevelSequence = (function () {
     function LevelSequence() {
@@ -83,6 +85,9 @@ var Level = (function () {
         this.objects = [];
         this.frame = function () { return; };
         this.inited = false;
+        this.addMission = function (l) {
+            _this.missionControl.addMission(mission_1.generateMission(l));
+        };
         this.enable = function () {
             _this.objects.forEach(function (element) {
                 element.enable();
@@ -134,6 +139,7 @@ var Level = (function () {
         this.frame = frame;
         this.init = init;
         this.done = done;
+        this.missionControl = new mission_2.MissionControl();
     }
     return Level;
 }());

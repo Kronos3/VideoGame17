@@ -248,11 +248,13 @@ var MainGame = (function () {
 }());
 exports.MainGame = MainGame;
 
-},{"./control":2,"./level":4,"./ui":9}],4:[function(require,module,exports){
+},{"./control":2,"./level":4,"./ui":10}],4:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var object_1 = require("./object");
 var object_2 = require("./object");
+var mission_1 = require("./mission");
+var mission_2 = require("./mission");
 var UTIL = require("./util");
 var LevelSequence = (function () {
     function LevelSequence() {
@@ -334,6 +336,9 @@ var Level = (function () {
         this.objects = [];
         this.frame = function () { return; };
         this.inited = false;
+        this.addMission = function (l) {
+            _this.missionControl.addMission(mission_1.generateMission(l));
+        };
         this.enable = function () {
             _this.objects.forEach(function (element) {
                 element.enable();
@@ -385,12 +390,13 @@ var Level = (function () {
         this.frame = frame;
         this.init = init;
         this.done = done;
+        this.missionControl = new mission_2.MissionControl();
     }
     return Level;
 }());
 exports.Level = Level;
 
-},{"./object":6,"./util":10}],5:[function(require,module,exports){
+},{"./mission":6,"./object":7,"./util":11}],5:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var game_1 = require("./game");
@@ -586,13 +592,78 @@ function DoGame(game) {
             }
         }
     ];
-    for (var _i = 0, levels_1 = levels; _i < levels_1.length; _i++) {
-        var iter = levels_1[_i];
-        game.addLevel(iter);
+    var missions = [
+        [
+            {
+                title: 'Reach 4000m',
+                description: 'Exit Earth\'s atmosphere',
+                condition: function () {
+                    return window.GAME.getLevel('intro').getObject('Artemis').getAltitude() > 4000;
+                },
+                onDone: function () {
+                }
+            }
+        ]
+    ];
+    for (var iter in levels) {
+        game.addLevel(levels[iter]);
+        for (var _i = 0, _a = missions[iter]; _i < _a.length; _i++) {
+            var miter = _a[_i];
+            game.levelsequence.levels[iter].addMission(miter);
+        }
     }
 }
 
-},{"./background":1,"./game":3,"./ship":7,"./wrapper":11}],6:[function(require,module,exports){
+},{"./background":1,"./game":3,"./ship":8,"./wrapper":12}],6:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+function generateMission(m) {
+    var e = $("<div class=\"mission\">\
+    <p class=\"title\">{0}</p>\
+    <p class=\"description\">{1}</p>\
+</div>".format(m.title, m.description));
+    //e.appendTo( ".mission-control > .inner" );
+    return new Mission(e.get(0), m.condition, m.title, m.onDone, m.description, m.update);
+}
+exports.generateMission = generateMission;
+var MissionControl = (function () {
+    function MissionControl() {
+        var _this = this;
+        this.missions = [];
+        this.addMission = function (m) {
+            _this.missions.push(m);
+        };
+        this.begin = function () {
+            _this.missionIndex = 0;
+            _this.activeMission = _this.missions[_this.missionIndex];
+        };
+        this.frame = function () {
+        };
+    }
+    return MissionControl;
+}());
+exports.MissionControl = MissionControl;
+var Mission = (function () {
+    function Mission(e, condition, title, onDone, desc, update) {
+        var _this = this;
+        this.complete = false;
+        this.frame = function () {
+            if (_this.condition()) {
+                _this.complete = true;
+            }
+            _this.update();
+        };
+        this.element = e;
+        this.title = title;
+        this.desc = desc;
+        this.condition = condition;
+        this.update = update;
+    }
+    return Mission;
+}());
+exports.Mission = Mission;
+
+},{}],7:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -677,7 +748,7 @@ var DynamicSprite = (function (_super) {
 }(GameSprite));
 exports.DynamicSprite = DynamicSprite;
 
-},{"./util":10}],7:[function(require,module,exports){
+},{"./util":11}],8:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -872,7 +943,7 @@ var Booster = (function (_super) {
 }(Ship));
 exports.Booster = Booster;
 
-},{"./object":6}],8:[function(require,module,exports){
+},{"./object":7}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var TextDisplay = (function () {
@@ -935,7 +1006,7 @@ var TextDisplay = (function () {
 }());
 exports.TextDisplay = TextDisplay;
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var UIController = (function () {
@@ -982,7 +1053,7 @@ var UIController = (function () {
 }());
 exports.UIController = UIController;
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 function find(a, b) {
@@ -1015,7 +1086,7 @@ function error(message) {
 }
 exports.error = error;
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var type_1 = require("./type");
@@ -1064,4 +1135,4 @@ var Wrapper = (function () {
 }());
 exports.Wrapper = Wrapper;
 
-},{"./type":8}]},{},[2,3,4,5,6,7,8,10,11]);
+},{"./type":9}]},{},[2,3,4,5,7,8,9,11,12]);

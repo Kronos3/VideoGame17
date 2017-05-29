@@ -499,3 +499,100 @@ body {
     color: rgba(255,255,255,0.75);
     text-transform: Uppercase;
 }
+
+.mission-control {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    display: none;
+    height: 100%;
+    background: -webkit-radial-gradient(center, ellipse cover, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 97%, rgba(0,0,0,1) 100%);
+}
+
+.mission-control > .inner {
+    font-family: 'Open Sans';
+    width: 70vw;
+    color: #fff;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    top: 50%;
+}
+
+.mission-control > .inner > p {
+    font-weight: 300;
+    font-size: 24px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,1);
+    margin-bottom: 10px;
+    display: inline-block;
+    letter-spacing: -1px;
+}
+
+.mission-control > .inner > span {
+    width: 100%;
+    display: block;
+    position: relative;
+    height: 2px;
+    background: #fff;
+    margin-bottom: 10px;
+}
+
+.mission-control > .inner > span::before {
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 8px;
+    left: 0;
+    top: 0;
+    background: #fff;
+}
+
+.mission-control > .inner > .status {
+    position: absolute;
+    left: 90%;
+    transform: translateX(-50%);
+}
+
+.mission-control > .inner > .mission {
+    padding: 15px 10px;
+    background: rgba(255,255,255,0.4);
+    position: relative;
+    margin-bottom: 5px;
+}
+
+.mission-control > .inner > .mission > .title {
+    font-size: 18px;
+}
+
+.mission-control > .inner > .mission > .description {
+    font-size: 12px;
+}
+
+.mission.current::before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    background: url('resources/assets/arrow.png');
+    background-size: cover;
+    background-position: center center;
+    display: block;
+    position: absolute;
+    left: 90%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.mission.finished::before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    background: url('resources/assets/check.png');
+    background-size: cover;
+    background-position: center center;
+    display: block;
+    position: absolute;
+    left: 90%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
