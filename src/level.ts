@@ -124,7 +124,7 @@ export class Level {
         this.setframe = frame;
         this.init = init;
         this.done = done;
-        this.missionControl = new MissionControl ();
+        this.missionControl = new MissionControl (this);
         this.missionControl.begin ();
     }
 

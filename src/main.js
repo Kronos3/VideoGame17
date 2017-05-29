@@ -206,6 +206,9 @@ function DoGame(game) {
                 },
                 update: function () {
                     var a = parseInt(window.GAME.getLevel('intro').getObject('Artemis').getAltitude());
+                    if (a < 0) {
+                        a = 0;
+                    }
                     $('.alt').text(a + 'M');
                     var x = (.95 * (a / 40));
                     if (x > 95) {

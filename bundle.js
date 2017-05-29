@@ -394,7 +394,7 @@ var Level = (function () {
         this.setframe = frame;
         this.init = init;
         this.done = done;
-        this.missionControl = new mission_2.MissionControl();
+        this.missionControl = new mission_2.MissionControl(this);
         this.missionControl.begin();
     }
     return Level;
@@ -610,6 +610,9 @@ function DoGame(game) {
                 },
                 update: function () {
                     var a = parseInt(window.GAME.getLevel('intro').getObject('Artemis').getAltitude());
+                    if (a < 0) {
+                        a = 0;
+                    }
                     $('.alt').text(a + 'M');
                     var x = (.95 * (a / 40));
                     if (x > 95) {
@@ -639,17 +642,18 @@ function generateMission(m) {
     <p class=\"title\">{0}</p>\
     <p class=\"description\">{1}</p>\
 </div>".format(m.title, m.description));
-    //e.appendTo( ".mission-control > .inner" );
     return new Mission(e.get(0), m.condition, m.title, m.onDone, m.description, m.update);
 }
 exports.generateMission = generateMission;
 var MissionControl = (function () {
-    function MissionControl(levelName) {
+    function MissionControl(level) {
         var _this = this;
         this.missionIndex = 0;
         this.missions = [];
         this.addMission = function (m) {
+            m.setControl(_this);
             _this.missions.push(m);
+            $(m.element).appendTo(".mission-control > .inner");
         };
         this.begin = function () {
             _this.missionIndex = 0;
@@ -658,8 +662,17 @@ var MissionControl = (function () {
             _this.missionIndex++;
         };
         this.frame = function () {
-            _this.missions[_this.missionIndex].frame();
+            var current_mission = _this.missions[_this.missionIndex];
+            if (typeof current_mission === 'undefined') {
+                _this.level.game.wrapper.handleNext();
+                return;
+            }
+            current_mission.frame();
+            if (!$(current_mission.element).hasClass('current')) {
+                $(current_mission.element).addClass('current');
+            }
         };
+        this.level = level;
     }
     return MissionControl;
 }());
@@ -668,10 +681,16 @@ var Mission = (function () {
     function Mission(e, condition, title, onDone, desc, update) {
         var _this = this;
         this.complete = false;
+        this.setControl = function (c) {
+            _this.missionControl = c;
+        };
         this.frame = function () {
             if (_this.condition()) {
                 _this.complete = true;
                 _this.onDone();
+                $(_this.element).removeClass('current');
+                $(_this.element).addClass('finished');
+                _this.missionControl.nextMission();
             }
             _this.update();
         };
@@ -1120,7 +1139,10 @@ var Wrapper = (function () {
         this.order = [
             // 0: level
             // 1: TextScene
+            // 2: Open Mission Control
             0,
+            2
+            //0
         ];
         this.currentTotal = 0;
         this.currentText = 0;
@@ -1135,7 +1157,14 @@ var Wrapper = (function () {
         this.game.wrapper = this;
     }
     Wrapper.prototype.handleNext = function () {
-        if (this.order[this.currentTotal]) {
+        if (this.order[this.currentTotal] == 2) {
+            $('.scene-wrapper').removeClass('title');
+            $('.scene-wrapper').removeClass('text');
+            $('.scene-wrapper').addClass('game');
+            $('.mission-control').css('display', 'block');
+            this.game.pause();
+        }
+        else if (this.order[this.currentTotal] == 1) {
             $('.scene-wrapper').removeClass('title');
             $('.scene-wrapper').removeClass('game');
             $('.scene-wrapper').addClass('text');

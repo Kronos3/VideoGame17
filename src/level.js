@@ -143,7 +143,7 @@ var Level = (function () {
         this.setframe = frame;
         this.init = init;
         this.done = done;
-        this.missionControl = new mission_2.MissionControl();
+        this.missionControl = new mission_2.MissionControl(this);
         this.missionControl.begin();
     }
     return Level;

@@ -1,4 +1,5 @@
 import * as UTIL from "./util"
+import {Level} from "./level"
 
 export interface MissionContructor {
     title: string;
@@ -14,20 +15,21 @@ export function generateMission (m: MissionContructor) {
     <p class=\"title\">{0}</p>\
     <p class=\"description\">{1}</p>\
 </div>".format (m.title, m.description));
-    //e.appendTo( ".mission-control > .inner" );
     return new Mission (e.get(0), m.condition, m.title, m.onDone, m.description, m.update);
 }
 
 export class MissionControl {
     missionIndex: number = 0;
     missions: Mission[] = [];
-
-    constructor (levelName: string) {
-        
+    level: Level;
+    constructor (level: Level) {
+        this.level = level;
     }
 
     addMission = (m: Mission) => {
+        m.setControl (this);
         this.missions.push(m);
+        $(m.element).appendTo( ".mission-control > .inner" );
     }
 
     begin = () => {
@@ -39,7 +41,15 @@ export class MissionControl {
     }
 
     frame = () => {
-        this.missions[this.missionIndex].frame ();
+        var current_mission = this.missions[this.missionIndex];
+        if (typeof current_mission === 'undefined') {
+            this.level.game.wrapper.handleNext();
+            return;
+        }
+        current_mission.frame ();
+        if(!$(current_mission.element).hasClass('current')) {
+            $(current_mission.element).addClass('current');
+        }
     }
 }
 
@@ -51,6 +61,7 @@ export class Mission {
     condition: () => boolean;
     update: () => void;
     onDone: () => void;
+    missionControl: MissionControl;
     constructor(e: Element, condition: () => boolean, title: string, onDone: () => void, desc?: string, update?: () => void) {
         this.element = e;
         this.title = title;
@@ -60,10 +71,17 @@ export class Mission {
         this.onDone = onDone;
     }
 
+    setControl = (c: MissionControl) => {
+        this.missionControl = c;
+    }
+
     frame = () => {
         if (this.condition ()) {
             this.complete = true;
             this.onDone();
+            $(this.element).removeClass('current');
+            $(this.element).addClass('finished');
+            this.missionControl.nextMission ();
         }
         this.update ();
     }

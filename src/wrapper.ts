@@ -7,7 +7,9 @@ export class Wrapper {
     order: number[] = [
         // 0: level
         // 1: TextScene
+        // 2: Open Mission Control
         0,
+        2
         //0
     ];
     currentTotal: number = 0;
@@ -26,7 +28,14 @@ export class Wrapper {
     }
 
     handleNext () {
-        if (this.order[this.currentTotal]) {
+        if (this.order[this.currentTotal] == 2) {
+            $('.scene-wrapper').removeClass ('title');
+            $('.scene-wrapper').removeClass ('text');
+            $('.scene-wrapper').addClass ('game');
+            $('.mission-control').css ('display', 'block');
+            this.game.pause ();
+        }
+        else if (this.order[this.currentTotal] == 1) {
             $('.scene-wrapper').removeClass ('title');
             $('.scene-wrapper').removeClass ('game');
             $('.scene-wrapper').addClass ('text');
