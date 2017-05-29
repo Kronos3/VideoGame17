@@ -557,7 +557,7 @@ function DoGame(game) {
             frame: function () {
             },
             done: function () {
-                return window.GAME.getLevel('intro').getObject('Artemis').getAltitude() > 4000;
+                return false; //(<any>window).GAME.getLevel ('intro').getObject('Artemis').getAltitude() > 4000;
             },
             init: function (___this) {
                 var artemis_pos = {
@@ -739,7 +739,7 @@ var Ship = (function (_super) {
         // At max thrust, use 250 LFO after a minute of burn
         _this.maxMono = 50;
         _this.monoProp = _this.maxMono;
-        _this.monoIsp = 100;
+        _this.monoIsp = 10;
         _this.getAltitude = function () {
             return _this.startAlt - _this.pObject.body.y;
         };
@@ -1026,8 +1026,7 @@ var Wrapper = (function () {
         this.order = [
             // 0: level
             // 1: TextScene
-            1,
-            0
+            0,
         ];
         this.currentTotal = 0;
         this.currentText = 0;

@@ -176,7 +176,7 @@ function DoGame (game: MainGame): void {
             frame: () => {
             },
             done: () => {
-                return (<any>window).GAME.getLevel ('intro').getObject('Artemis').getAltitude() > 4000;
+                return false; //(<any>window).GAME.getLevel ('intro').getObject('Artemis').getAltitude() > 4000;
             },
             init: (___this: Level) => {
 

@@ -9,6 +9,7 @@ import {createLevel} from "./level"
 import {UIController} from "./ui"
 import * as UTIL from "./util"
 import {Wrapper} from "./wrapper"
+import {Mission} from "./mission"
 
 export class toggleControlScheme extends ControlScheme {
     enabled: boolean;

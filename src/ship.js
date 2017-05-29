@@ -59,7 +59,7 @@ var Ship = (function (_super) {
         // At max thrust, use 250 LFO after a minute of burn
         _this.maxMono = 50;
         _this.monoProp = _this.maxMono;
-        _this.monoIsp = 100;
+        _this.monoIsp = 10;
         _this.getAltitude = function () {
             return _this.startAlt - _this.pObject.body.y;
         };

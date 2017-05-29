@@ -65,7 +65,7 @@ export class Ship extends DynamicSprite {
     
     maxMono:number = 50;
     monoProp:number = this.maxMono;
-    monoIsp: number = 100;
+    monoIsp: number = 10;
 
     getAltitude = () => {
         return this.startAlt - this.pObject.body.y;

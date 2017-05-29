@@ -427,3 +427,75 @@ body {
     color: #fff;
     font-size: 15px;
 }
+
+.objective {
+    right: 10px;
+    top: 10px;
+    font-family: 'Open Sans';
+    width: 300px;
+    color: #fff;
+}
+
+.objective ul {
+   list-style: none;
+}
+
+.objective p {
+    display: block;
+    font-size: 15px;
+    color: rgba(255,255,255,0.75);
+    text-transform: Uppercase;
+}
+
+.objective > p {
+    border-bottom: 1px rgba(255,255,255,0.4) solid;
+    position: relative;
+    width: 100%;
+    margin-bottom: 10px;
+    
+}
+
+.objective ul > li > p {
+    color: rgba(255,255,255,0.85);
+}
+
+.altitude > p {
+    line-height: 120px;
+    vertical-align: middle;
+}
+
+.altitude {
+    height: 120px;
+    position: relative;
+}
+
+.alt-line {
+    position: absolute;
+    height: 95%;
+    top: 5%;
+    right: 5%;
+    width: 1px;
+    background: rgba(255,255,255,0.4);
+}
+
+.alt-line::before {
+    width: 8px;
+    height: 2px;
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255,255,255,1);
+}
+
+.altitude .alt {
+    position: absolute;
+    bottom: 2px;
+    transform: translateY(50%);
+    right: 24px;
+    display: block;
+    font-size: 15px;
+    color: rgba(255,255,255,0.75);
+    text-transform: Uppercase;
+}

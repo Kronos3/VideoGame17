@@ -164,7 +164,7 @@ function DoGame(game) {
             frame: function () {
             },
             done: function () {
-                return window.GAME.getLevel('intro').getObject('Artemis').getAltitude() > 4000;
+                return false; //(<any>window).GAME.getLevel ('intro').getObject('Artemis').getAltitude() > 4000;
             },
             init: function (___this) {
                 var artemis_pos = {
