@@ -19,11 +19,11 @@ export function generateMission (m: MissionContructor) {
 }
 
 export class MissionControl {
-    activeMission: Mission;
-    missionIndex: number;
+    missionIndex: number = 0;
     missions: Mission[] = [];
 
-    constructor () {
+    constructor (levelName: string) {
+        
     }
 
     addMission = (m: Mission) => {
@@ -32,11 +32,14 @@ export class MissionControl {
 
     begin = () => {
         this.missionIndex = 0;
-        this.activeMission = this.missions[this.missionIndex];
+    }
+
+    nextMission = () => {
+        this.missionIndex++;
     }
 
     frame = () => {
-
+        this.missions[this.missionIndex].frame ();
     }
 }
 
@@ -47,17 +50,20 @@ export class Mission {
     element: Element;
     condition: () => boolean;
     update: () => void;
+    onDone: () => void;
     constructor(e: Element, condition: () => boolean, title: string, onDone: () => void, desc?: string, update?: () => void) {
         this.element = e;
         this.title = title;
         this.desc = desc;
         this.condition = condition;
         this.update = update;
+        this.onDone = onDone;
     }
 
     frame = () => {
         if (this.condition ()) {
             this.complete = true;
+            this.onDone();
         }
         this.update ();
     }

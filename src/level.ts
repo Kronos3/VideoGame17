@@ -112,19 +112,25 @@ export class Level {
     objects: GameSprite[] = [];
     game: MainGame;
     name: string;
-    frame: () => void = () => {return};
+    setframe: () => void = () => {return};
     init: (l: Level) => void;
     done: () => boolean;
     inited: boolean = false;
     missionControl: MissionControl;
-    
+
     constructor (game: MainGame,  name: string, done: () => boolean, frame = () => {return}, init = (l: Level) => {return}) {
         this.game = game;
         this.name = name;
-        this.frame = frame;
+        this.setframe = frame;
         this.init = init;
         this.done = done;
         this.missionControl = new MissionControl ();
+        this.missionControl.begin ();
+    }
+
+    frame = () => {
+        this.missionControl.frame ();
+        this.setframe ();
     }
 
     addMission = (l: MissionContructor) => {

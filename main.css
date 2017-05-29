@@ -471,30 +471,31 @@ body {
 
 .alt-line {
     position: absolute;
-    height: 95%;
-    top: 5%;
-    right: 5%;
+    height: calc(120px * .95);
+    bottom: 5%;
     width: 1px;
+    right: 5%;
     background: rgba(255,255,255,0.4);
+    content: '';
 }
 
-.alt-line::before {
+.altitude .alt::before {
     width: 8px;
     height: 2px;
     content: '';
     position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 50%;
+    left: calc(100% + 6px);
+    transform: translateY(-50%);
     background: rgba(255,255,255,1);
 }
 
 .altitude .alt {
     position: absolute;
-    bottom: 2px;
-    transform: translateY(50%);
-    right: 24px;
+    bottom: 0;
+    right: 26px;
     display: block;
+    transform: translateY(4px);
     font-size: 15px;
     color: rgba(255,255,255,0.75);
     text-transform: Uppercase;

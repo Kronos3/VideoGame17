@@ -10,17 +10,21 @@ function generateMission(m) {
 }
 exports.generateMission = generateMission;
 var MissionControl = (function () {
-    function MissionControl() {
+    function MissionControl(levelName) {
         var _this = this;
+        this.missionIndex = 0;
         this.missions = [];
         this.addMission = function (m) {
             _this.missions.push(m);
         };
         this.begin = function () {
             _this.missionIndex = 0;
-            _this.activeMission = _this.missions[_this.missionIndex];
+        };
+        this.nextMission = function () {
+            _this.missionIndex++;
         };
         this.frame = function () {
+            _this.missions[_this.missionIndex].frame();
         };
     }
     return MissionControl;
@@ -33,6 +37,7 @@ var Mission = (function () {
         this.frame = function () {
             if (_this.condition()) {
                 _this.complete = true;
+                _this.onDone();
             }
             _this.update();
         };
@@ -41,6 +46,7 @@ var Mission = (function () {
         this.desc = desc;
         this.condition = condition;
         this.update = update;
+        this.onDone = onDone;
     }
     return Mission;
 }());

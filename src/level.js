@@ -83,8 +83,12 @@ var Level = (function () {
         if (init === void 0) { init = function (l) { return; }; }
         var _this = this;
         this.objects = [];
-        this.frame = function () { return; };
+        this.setframe = function () { return; };
         this.inited = false;
+        this.frame = function () {
+            _this.missionControl.frame();
+            _this.setframe();
+        };
         this.addMission = function (l) {
             _this.missionControl.addMission(mission_1.generateMission(l));
         };
@@ -136,10 +140,11 @@ var Level = (function () {
         };
         this.game = game;
         this.name = name;
-        this.frame = frame;
+        this.setframe = frame;
         this.init = init;
         this.done = done;
         this.missionControl = new mission_2.MissionControl();
+        this.missionControl.begin();
     }
     return Level;
 }());

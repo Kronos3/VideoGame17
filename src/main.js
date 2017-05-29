@@ -169,7 +169,7 @@ function DoGame(game) {
             init: function (___this) {
                 var artemis_pos = {
                     x: function () { return window.GAME.game.world.width / 2 - 70; },
-                    y: function () { return window.GAME.game.world.height - 60; },
+                    y: function () { return window.GAME.game.world.height - 57; },
                 };
                 ___this.addObject(new ship_2.Ship(window.GAME, 'Artemis', artemis_pos, [
                     'rocket',
@@ -202,6 +202,18 @@ function DoGame(game) {
                     return window.GAME.getLevel('intro').getObject('Artemis').getAltitude() > 4000;
                 },
                 onDone: function () {
+                    console.log('mission complete');
+                },
+                update: function () {
+                    var a = parseInt(window.GAME.getLevel('intro').getObject('Artemis').getAltitude());
+                    $('.alt').text(a + 'M');
+                    var x = (.95 * (a / 40));
+                    if (x > 95) {
+                        $('.alt').css('bottom', '95%');
+                    }
+                    else {
+                        $('.alt').css('bottom', x + '%');
+                    }
                 }
             }
         ]

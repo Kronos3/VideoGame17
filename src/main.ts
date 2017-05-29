@@ -184,7 +184,7 @@ function DoGame (game: MainGame): void {
 
                 var artemis_pos = {
                     x: ():number => {return (<any>window).GAME.game.world.width / 2 - 70},
-                    y: ():number => {return (<any>window).GAME.game.world.height - 60},
+                    y: ():number => {return (<any>window).GAME.game.world.height - 57},
                 }
 
                 ___this.addObject (new Ship (
@@ -224,7 +224,18 @@ function DoGame (game: MainGame): void {
                     return (<any>window).GAME.getLevel('intro').getObject('Artemis').getAltitude () > 4000;
                 },
                 onDone: () => {
-
+                    console.log('mission complete');
+                },
+                update: () => {
+                    var a = parseInt((<any>window).GAME.getLevel('intro').getObject('Artemis').getAltitude ());
+                    $('.alt').text (a + 'M');
+                    var x = (.95 * (a/40));
+                    if (x > 95) {
+                        $('.alt').css ('bottom', '95%')
+                    }
+                    else {
+                        $('.alt').css ('bottom', x + '%')
+                    }
                 }
             }
         ]

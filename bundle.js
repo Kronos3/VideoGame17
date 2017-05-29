@@ -334,8 +334,12 @@ var Level = (function () {
         if (init === void 0) { init = function (l) { return; }; }
         var _this = this;
         this.objects = [];
-        this.frame = function () { return; };
+        this.setframe = function () { return; };
         this.inited = false;
+        this.frame = function () {
+            _this.missionControl.frame();
+            _this.setframe();
+        };
         this.addMission = function (l) {
             _this.missionControl.addMission(mission_1.generateMission(l));
         };
@@ -387,10 +391,11 @@ var Level = (function () {
         };
         this.game = game;
         this.name = name;
-        this.frame = frame;
+        this.setframe = frame;
         this.init = init;
         this.done = done;
         this.missionControl = new mission_2.MissionControl();
+        this.missionControl.begin();
     }
     return Level;
 }());
@@ -568,7 +573,7 @@ function DoGame(game) {
             init: function (___this) {
                 var artemis_pos = {
                     x: function () { return window.GAME.game.world.width / 2 - 70; },
-                    y: function () { return window.GAME.game.world.height - 60; },
+                    y: function () { return window.GAME.game.world.height - 57; },
                 };
                 ___this.addObject(new ship_2.Ship(window.GAME, 'Artemis', artemis_pos, [
                     'rocket',
@@ -601,6 +606,18 @@ function DoGame(game) {
                     return window.GAME.getLevel('intro').getObject('Artemis').getAltitude() > 4000;
                 },
                 onDone: function () {
+                    console.log('mission complete');
+                },
+                update: function () {
+                    var a = parseInt(window.GAME.getLevel('intro').getObject('Artemis').getAltitude());
+                    $('.alt').text(a + 'M');
+                    var x = (.95 * (a / 40));
+                    if (x > 95) {
+                        $('.alt').css('bottom', '95%');
+                    }
+                    else {
+                        $('.alt').css('bottom', x + '%');
+                    }
                 }
             }
         ]
@@ -627,17 +644,21 @@ function generateMission(m) {
 }
 exports.generateMission = generateMission;
 var MissionControl = (function () {
-    function MissionControl() {
+    function MissionControl(levelName) {
         var _this = this;
+        this.missionIndex = 0;
         this.missions = [];
         this.addMission = function (m) {
             _this.missions.push(m);
         };
         this.begin = function () {
             _this.missionIndex = 0;
-            _this.activeMission = _this.missions[_this.missionIndex];
+        };
+        this.nextMission = function () {
+            _this.missionIndex++;
         };
         this.frame = function () {
+            _this.missions[_this.missionIndex].frame();
         };
     }
     return MissionControl;
@@ -650,6 +671,7 @@ var Mission = (function () {
         this.frame = function () {
             if (_this.condition()) {
                 _this.complete = true;
+                _this.onDone();
             }
             _this.update();
         };
@@ -658,6 +680,7 @@ var Mission = (function () {
         this.desc = desc;
         this.condition = condition;
         this.update = update;
+        this.onDone = onDone;
     }
     return Mission;
 }());
