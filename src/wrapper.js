@@ -9,6 +9,7 @@ var Wrapper = (function () {
             // 0: level
             // 1: TextScene
             // 2: Open Mission Control
+            1,
             0,
             2
             //0
@@ -27,11 +28,7 @@ var Wrapper = (function () {
     }
     Wrapper.prototype.handleNext = function () {
         if (this.order[this.currentTotal] == 2) {
-            $('.scene-wrapper').removeClass('title');
-            $('.scene-wrapper').removeClass('text');
-            $('.scene-wrapper').addClass('game');
-            $('.mission-control').css('display', 'block');
-            this.game.pause();
+            this.game.openMissionControl();
         }
         else if (this.order[this.currentTotal] == 1) {
             $('.scene-wrapper').removeClass('title');

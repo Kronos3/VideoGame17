@@ -40,7 +40,7 @@ exports.ShipBinding = function (game, ship) {
 };
 var Ship = (function (_super) {
     __extends(Ship, _super);
-    function Ship(game, name, pos, assets, level) {
+    function Ship(game, name, bodyName, pos, assets, level) {
         if (level === void 0) { level = game.levelsequence.getLevel('intro'); }
         var _this = _super.call(this, game, level, name, pos, assets, { angularRot: 0, SAS: false, thrustOn: false, inSpace: false }) || this;
         _this.collide = function (target, this_target, shapeA, shapeB, contactEquation) {
@@ -106,6 +106,7 @@ var Ship = (function (_super) {
             _this.fuelFlow();
         };
         _this.throttle = 270;
+        _this.angularAcceleration = 0.7;
         _this.engineOn = function () {
             if (_this.LFO <= 0) {
                 return;
@@ -122,7 +123,7 @@ var Ship = (function (_super) {
             }
             _this.monoFlow();
             var angularVelocity = function () { return _this.pObject.body.angularVelocity / 0.05; }; // Convert to correct unit
-            var tempVel = _this.calculate_velocity(0.7, angularVelocity);
+            var tempVel = _this.calculate_velocity(_this.angularAcceleration, angularVelocity);
             _this.pObject.body.rotateRight(tempVel);
             _this.extra.angularRot = tempVel;
             _this.switchTo(_this.assets[2]);
@@ -133,7 +134,7 @@ var Ship = (function (_super) {
             }
             _this.monoFlow();
             var angularVelocity = function () { return _this.pObject.body.angularVelocity / 0.05; }; // Convert to correct unit
-            var tempVel = _this.calculate_velocity(-0.7, angularVelocity);
+            var tempVel = _this.calculate_velocity(-1 * _this.angularAcceleration, angularVelocity);
             _this.pObject.body.rotateRight(tempVel);
             _this.extra.angularRot = tempVel;
             _this.switchTo(_this.assets[3]);
@@ -165,15 +166,9 @@ var Ship = (function (_super) {
         _this.calculate_velocity = function (acceleration, initialVel) {
             return (acceleration * _this.game.get_ratio()) + initialVel();
         };
-        _this.addBooster = function (booster) {
-            _this.booster = booster;
-            //this.game.game.physics.p2.createPrismaticConstraint (
-            //
-            //)
-        };
         _this.enablePhysics();
         _this.pObject.body.mass = 5;
-        _this.loadBody('Rocket-L');
+        _this.loadBody(bodyName);
         _this.startAlt = _this.pObject.body.y;
         return _this;
         //this.pObject.body.onBeginContact.add(this.collide, this);
@@ -181,13 +176,55 @@ var Ship = (function (_super) {
     return Ship;
 }(object_1.DynamicSprite));
 exports.Ship = Ship;
-var Booster = (function (_super) {
-    __extends(Booster, _super);
-    function Booster(game, level, name, pos, assets) {
-        var _this = _super.call(this, game, name, pos, assets, level) || this;
-        _this.attached = true;
+var Artemis = (function (_super) {
+    __extends(Artemis, _super);
+    function Artemis(game, pos, level) {
+        var _this = _super.call(this, game, 'ship', 'Artemis', pos, [
+            'Artemis',
+            'ArtemisThrust',
+            'ArtemisL',
+            'ArtemisR',
+            'Explosion'
+        ], level) || this;
+        _this.angularAcceleration = 0.7;
+        _this.throttle = 300;
         return _this;
     }
-    return Booster;
+    return Artemis;
 }(Ship));
-exports.Booster = Booster;
+exports.Artemis = Artemis;
+var Athena = (function (_super) {
+    __extends(Athena, _super);
+    function Athena(game, pos, level) {
+        var _this = _super.call(this, game, 'ship', 'Athena', pos, [
+            'Athena',
+            'AthenaThrust',
+            'AthenaL',
+            'AthenaR',
+            'Explosion'
+        ], level) || this;
+        _this.angularAcceleration = 0.5;
+        _this.throttle = 240;
+        return _this;
+    }
+    return Athena;
+}(Ship));
+exports.Athena = Athena;
+var Vulcan = (function (_super) {
+    __extends(Vulcan, _super);
+    function Vulcan(game, pos, level) {
+        var _this = _super.call(this, game, 'ship', 'Vulcan', pos, [
+            'Vulcan',
+            'VulcanThrust',
+            'VulcanL',
+            'VulcanR',
+            'Explosion'
+        ], level) || this;
+        _this.angularAcceleration = 0.5;
+        _this.throttle = 640;
+        _this.pObject.body.mass = 8;
+        return _this;
+    }
+    return Vulcan;
+}(Ship));
+exports.Vulcan = Vulcan;

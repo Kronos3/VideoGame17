@@ -3,6 +3,9 @@ import {MainGame} from "./game"
 import {LevelConstructor} from "./level"
 import {ShipBinding} from "./ship"
 import {Ship} from "./ship"
+import {Artemis} from "./ship"
+import {Athena} from "./ship"
+import {Vulcan} from "./ship"
 import {TextDisplay} from "./type"
 import {Wrapper} from "./wrapper"
 import {Task} from "./background"
@@ -182,37 +185,85 @@ function DoGame (game: MainGame): void {
             },
             init: (___this: Level) => {
 
-                var artemis_pos = {
+                var ship_pos = {
                     x: ():number => {return (<any>window).GAME.game.world.width / 2 - 70},
                     y: ():number => {return (<any>window).GAME.game.world.height - 57},
                 }
 
-                ___this.addObject (new Ship (
+                ___this.addObject (new Athena (
                     (<any>window).GAME,
-                    'Artemis',
-                    artemis_pos,
-                    [
-                        'rocket',
-                        'rocket-thrust',
-                        'rocket-L-L',
-                        'rocket-L-R',
-                        'Explosion'
-                    ],
-                    ___this));
+                    ship_pos,
+                    ___this
+                ));
                 (<any>window).GAME.addControlScheme ([
-                    ShipBinding((<any>window).GAME, <Ship>___this.getObject ('Artemis')),
+                    ShipBinding((<any>window).GAME, <Ship>___this.getObject ('ship')),
                     {
                         key: Phaser.KeyCode.R,
                         callback: () => {
-                            (<Ship>___this.getObject ('Artemis')).reset();
+                            (<Ship>___this.getObject ('ship')).reset();
                         },
                         press: true
                     }
                 ]);
                 (<any>window).GAME.setGravity (100, 0.1);
-                (<any>window).GAME.game.camera.follow(___this.getObject('Artemis').pObject);
+                (<any>window).GAME.game.camera.follow(___this.getObject('ship').pObject);
             }
-        }
+        },
+        {
+            name: "belt1",
+            game: (<any>window).GAME,
+            objects: [
+                {
+                    name: "stars",
+                    assets: "Stars",
+                    position: {
+                        x: ():number => {return 0},
+                        y: ():number => {return 0}
+                    }
+                },
+                {
+                    name: "stars2",
+                    assets: "Stars",
+                    position: {
+                        x: ():number => {return 0},
+                        y: ():number => {return 1600}
+                    }
+                },
+                
+            ],
+            frame: () => {
+            },
+            done: () => {
+                return false; //(<any>window).GAME.getLevel ('intro').getObject('Artemis').getAltitude() > 4000;
+            },
+            init: (___this: Level) => {
+                ___this.game.game.world.setBounds(0, 0, this.game.width, 4600);
+
+                var ship_pos = {
+                    x: ():number => {return (<any>window).GAME.game.world.width / 2 - 70},
+                    y: ():number => {return (<any>window).GAME.game.world.height - 57},
+                }
+
+                ___this.addObject (new Athena (
+                    (<any>window).GAME,
+                    ship_pos,
+                    ___this
+                ));
+                (<any>window).GAME.addControlScheme ([
+                    ShipBinding((<any>window).GAME, <Ship>___this.getObject ('ship')),
+                    {
+                        key: Phaser.KeyCode.R,
+                        callback: () => {
+                            (<Ship>___this.getObject ('ship')).reset();
+                        },
+                        press: true
+                    }
+                ]);
+                (<any>window).GAME.setGravity (100, 0.1);
+                (<any>window).GAME.game.camera.follow(___this.getObject('ship').pObject);
+            }
+        },
+
     ]
 
     var missions: MissionContructor [][] = [
@@ -221,13 +272,13 @@ function DoGame (game: MainGame): void {
                 title: 'Reach 4000m',
                 description: 'Exit Earth\'s atmosphere',
                 condition: () => {
-                    return (<any>window).GAME.getLevel('intro').getObject('Artemis').getAltitude () > 4000;
+                    return (<any>window).GAME.getLevel('intro').getObject('ship').getAltitude () > 4000;
                 },
                 onDone: () => {
                     console.log('mission complete');
                 },
                 update: () => {
-                    var a = parseInt((<any>window).GAME.getLevel('intro').getObject('Artemis').getAltitude ());
+                    var a = parseInt((<any>window).GAME.getLevel('intro').getObject('ship').getAltitude ());
                     if (a < 0){
                         a = 0;
                     }
@@ -239,6 +290,21 @@ function DoGame (game: MainGame): void {
                     else {
                         $('.alt').css ('bottom', x + '%')
                     }
+                }
+            }
+        ],
+        [
+            {
+                title: 'Survive the astroid belt',
+                description: 'Manuever around astroids in the belt',
+                condition: () => {
+                    return false;
+                },
+                onDone: () => {
+                    ;
+                },
+                update: () => {
+                    ;
                 }
             }
         ]

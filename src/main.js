@@ -105,6 +105,7 @@ function setup_pos(e, x_scale, y_scale) {
     $(e).data('yfactor', y_scale);
 }
 function DoGame(game) {
+    var _this = this;
     var levels = [
         {
             name: "intro",
@@ -167,31 +168,72 @@ function DoGame(game) {
                 return false; //(<any>window).GAME.getLevel ('intro').getObject('Artemis').getAltitude() > 4000;
             },
             init: function (___this) {
-                var artemis_pos = {
+                var ship_pos = {
                     x: function () { return window.GAME.game.world.width / 2 - 70; },
                     y: function () { return window.GAME.game.world.height - 57; },
                 };
-                ___this.addObject(new ship_2.Ship(window.GAME, 'Artemis', artemis_pos, [
-                    'rocket',
-                    'rocket-thrust',
-                    'rocket-L-L',
-                    'rocket-L-R',
-                    'Explosion'
-                ], ___this));
+                ___this.addObject(new ship_2.Athena(window.GAME, ship_pos, ___this));
                 window.GAME.addControlScheme([
-                    ship_1.ShipBinding(window.GAME, ___this.getObject('Artemis')),
+                    ship_1.ShipBinding(window.GAME, ___this.getObject('ship')),
                     {
                         key: Phaser.KeyCode.R,
                         callback: function () {
-                            ___this.getObject('Artemis').reset();
+                            ___this.getObject('ship').reset();
                         },
                         press: true
                     }
                 ]);
                 window.GAME.setGravity(100, 0.1);
-                window.GAME.game.camera.follow(___this.getObject('Artemis').pObject);
+                window.GAME.game.camera.follow(___this.getObject('ship').pObject);
             }
-        }
+        },
+        {
+            name: "belt1",
+            game: window.GAME,
+            objects: [
+                {
+                    name: "stars",
+                    assets: "Stars",
+                    position: {
+                        x: function () { return 0; },
+                        y: function () { return 0; }
+                    }
+                },
+                {
+                    name: "stars2",
+                    assets: "Stars",
+                    position: {
+                        x: function () { return 0; },
+                        y: function () { return 1600; }
+                    }
+                },
+            ],
+            frame: function () {
+            },
+            done: function () {
+                return false; //(<any>window).GAME.getLevel ('intro').getObject('Artemis').getAltitude() > 4000;
+            },
+            init: function (___this) {
+                ___this.game.game.world.setBounds(0, 0, _this.game.width, 4600);
+                var ship_pos = {
+                    x: function () { return window.GAME.game.world.width / 2 - 70; },
+                    y: function () { return window.GAME.game.world.height - 57; },
+                };
+                ___this.addObject(new ship_2.Athena(window.GAME, ship_pos, ___this));
+                window.GAME.addControlScheme([
+                    ship_1.ShipBinding(window.GAME, ___this.getObject('ship')),
+                    {
+                        key: Phaser.KeyCode.R,
+                        callback: function () {
+                            ___this.getObject('ship').reset();
+                        },
+                        press: true
+                    }
+                ]);
+                window.GAME.setGravity(100, 0.1);
+                window.GAME.game.camera.follow(___this.getObject('ship').pObject);
+            }
+        },
     ];
     var missions = [
         [
@@ -199,13 +241,13 @@ function DoGame(game) {
                 title: 'Reach 4000m',
                 description: 'Exit Earth\'s atmosphere',
                 condition: function () {
-                    return window.GAME.getLevel('intro').getObject('Artemis').getAltitude() > 4000;
+                    return window.GAME.getLevel('intro').getObject('ship').getAltitude() > 4000;
                 },
                 onDone: function () {
                     console.log('mission complete');
                 },
                 update: function () {
-                    var a = parseInt(window.GAME.getLevel('intro').getObject('Artemis').getAltitude());
+                    var a = parseInt(window.GAME.getLevel('intro').getObject('ship').getAltitude());
                     if (a < 0) {
                         a = 0;
                     }
@@ -217,6 +259,21 @@ function DoGame(game) {
                     else {
                         $('.alt').css('bottom', x + '%');
                     }
+                }
+            }
+        ],
+        [
+            {
+                title: 'Survive the astroid belt',
+                description: 'Manuever around astroids in the belt',
+                condition: function () {
+                    return false;
+                },
+                onDone: function () {
+                    ;
+                },
+                update: function () {
+                    ;
                 }
             }
         ]

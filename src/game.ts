@@ -74,10 +74,10 @@ export class MainGame {
     }
 
     preload = () => {
-        this.game.load.image('rocket', '../resources/textures/player/Rocket-L.png');
-        this.game.load.image('rocket-thrust', '../resources/textures/player/Rocket-L-T.png');
-        this.game.load.image('rocket-L-L', '../resources/textures/player/Rocket-L-L.png');
-        this.game.load.image('rocket-L-R', '../resources/textures/player/Rocket-L-R.png');
+        this.game.load.image('Artemis', '../resources/textures/Artemis/Artemis.png');
+        this.game.load.image('ArtemisThrust', '../resources/textures/Artemis/ArtemisThrust.png');
+        this.game.load.image('ArtemisL', '../resources/textures/Artemis/ArtemisL.png');
+        this.game.load.image('ArtemisR', '../resources/textures/Artemis/ArtemisR.png');
         this.game.load.image('Launch-L', '../resources/textures/Launch-L.png');
         this.game.load.image('Fore', '../resources/textures/Foreground-L.png');
         this.game.load.image('Mountain-E', '../resources/textures/BG_1-L.png');
@@ -85,6 +85,14 @@ export class MainGame {
         this.game.load.image('Back', '../resources/textures/Background-L.png');
         this.game.load.image('Stars', '../resources/textures/stars.png');
         this.game.load.image('Explosion', '../resources/textures/explosion.png');
+        this.game.load.image('Athena', '../resources/textures/Athena/Athena.png');
+        this.game.load.image('AthenaThrust', '../resources/textures/Athena/AthenaThrust.png');
+        this.game.load.image('AthenaL', '../resources/textures/Athena/AthenaL.png');
+        this.game.load.image('AthenaR', '../resources/textures/Athena/AthenaR.png');
+        this.game.load.image('Vulcan', '../resources/textures/Athena/AthenaR.png');
+        this.game.load.image('VulcanR', '../resources/textures/Athena/AthenaR.png');
+        this.game.load.image('VulcanL', '../resources/textures/Athena/AthenaR.png');
+        this.game.load.image('VulcanThrust', '../resources/textures/Athena/AthenaR.png');
         this.game.load.physics('physicsData', '../resources/physics/mappings.json');
     }
 
@@ -104,6 +112,14 @@ export class MainGame {
     show = () => {
         $('#canvas-wrapper').css ('display', "block");
         this.resume ();
+    }
+
+    openMissionControl = () => {
+            $('.scene-wrapper').removeClass ('title');
+            $('.scene-wrapper').removeClass ('text');
+            $('.scene-wrapper').addClass ('game');
+            $('.mission-control').css ('display', 'block');
+            this.pause ();
     }
 
     create = () => {

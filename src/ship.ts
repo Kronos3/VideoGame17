@@ -32,11 +32,11 @@ export var ShipBinding = (game: MainGame, ship: Ship): KeyBinding => {return {
 };
 
 export class Ship extends DynamicSprite {
-    constructor (game: MainGame, name:string, pos: _position, assets: string[], level=game.levelsequence.getLevel ('intro')) {
+    constructor (game: MainGame, name:string, bodyName: string, pos: _position, assets: string[], level=game.levelsequence.getLevel ('intro')) {
         super (game, level, name, pos, assets, {angularRot: 0, SAS: false, thrustOn: false, inSpace: false});
         this.enablePhysics ();
         this.pObject.body.mass = 5;
-        this.loadBody ('Rocket-L');
+        this.loadBody (bodyName);
         this.startAlt = this.pObject.body.y;
         //this.pObject.body.onBeginContact.add(this.collide, this);
     }
@@ -124,6 +124,7 @@ export class Ship extends DynamicSprite {
     }
 
     throttle: number = 270;
+    angularAcceleration = 0.7;
 
     engineOn = () => {
         if (this.LFO <= 0) {
@@ -142,7 +143,7 @@ export class Ship extends DynamicSprite {
         }
         this.monoFlow ();
         var angularVelocity = () => {return this.pObject.body.angularVelocity / 0.05} // Convert to correct unit
-        var tempVel = this.calculate_velocity (0.7, angularVelocity);
+        var tempVel = this.calculate_velocity (this.angularAcceleration, angularVelocity);
         this.pObject.body.rotateRight (tempVel);
         (<any>this.extra).angularRot = tempVel;
         this.switchTo (this.assets[2]);
@@ -154,7 +155,7 @@ export class Ship extends DynamicSprite {
         }
         this.monoFlow ();
         var angularVelocity = () => {return this.pObject.body.angularVelocity / 0.05} // Convert to correct unit
-        var tempVel = this.calculate_velocity (-0.7, angularVelocity);
+        var tempVel = this.calculate_velocity (-1 * this.angularAcceleration, angularVelocity);
         this.pObject.body.rotateRight (tempVel);
         (<any>this.extra).angularRot = tempVel;
         this.switchTo (this.assets[3]);
@@ -192,22 +193,47 @@ export class Ship extends DynamicSprite {
     calculate_velocity = (acceleration, initialVel) => {
         return (acceleration * this.game.get_ratio()) + initialVel();
     }
+}
 
-    booster: Booster;
-
-    addBooster = (booster: Booster) => {
-        this.booster = booster;
-        //this.game.game.physics.p2.createPrismaticConstraint (
-            //
-        //)
+export class Artemis extends Ship {
+    constructor (game: MainGame, pos: _position, level: Level) {
+        super (game, 'ship', 'Artemis', pos, [
+            'Artemis',
+            'ArtemisThrust',
+            'ArtemisL',
+            'ArtemisR',
+            'Explosion'
+        ], level);
+        this.angularAcceleration = 0.7;
+        this.throttle = 300;
     }
 }
 
-export class Booster extends Ship {
-    parentShip: Ship;
-    attached: boolean = true;
+export class Athena extends Ship {
+    constructor (game: MainGame, pos: _position, level: Level) {
+        super (game, 'ship', 'Athena', pos, [
+            'Athena',
+            'AthenaThrust',
+            'AthenaL',
+            'AthenaR',
+            'Explosion'
+        ], level);
+        this.angularAcceleration = 0.5;
+        this.throttle = 240;
+    }
+}
 
-    constructor (game: MainGame, level: Level, name:string, pos: _position, assets: string[]) {
-        super (game, name, pos, assets, level);
+export class Vulcan extends Ship {
+    constructor (game: MainGame, pos: _position, level: Level) {
+        super (game, 'ship', 'Vulcan', pos, [
+            'Vulcan',
+            'VulcanThrust',
+            'VulcanL',
+            'VulcanR',
+            'Explosion'
+        ], level);
+        this.angularAcceleration = 0.5;
+        this.throttle = 640;
+        this.pObject.body.mass = 8;
     }
 }

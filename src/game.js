@@ -64,10 +64,10 @@ var MainGame = (function () {
             _this.controls.push(scheme);
         };
         this.preload = function () {
-            _this.game.load.image('rocket', '../resources/textures/player/Rocket-L.png');
-            _this.game.load.image('rocket-thrust', '../resources/textures/player/Rocket-L-T.png');
-            _this.game.load.image('rocket-L-L', '../resources/textures/player/Rocket-L-L.png');
-            _this.game.load.image('rocket-L-R', '../resources/textures/player/Rocket-L-R.png');
+            _this.game.load.image('Artemis', '../resources/textures/Artemis/Artemis.png');
+            _this.game.load.image('ArtemisThrust', '../resources/textures/Artemis/ArtemisThrust.png');
+            _this.game.load.image('ArtemisL', '../resources/textures/Artemis/ArtemisL.png');
+            _this.game.load.image('ArtemisR', '../resources/textures/Artemis/ArtemisR.png');
             _this.game.load.image('Launch-L', '../resources/textures/Launch-L.png');
             _this.game.load.image('Fore', '../resources/textures/Foreground-L.png');
             _this.game.load.image('Mountain-E', '../resources/textures/BG_1-L.png');
@@ -75,6 +75,14 @@ var MainGame = (function () {
             _this.game.load.image('Back', '../resources/textures/Background-L.png');
             _this.game.load.image('Stars', '../resources/textures/stars.png');
             _this.game.load.image('Explosion', '../resources/textures/explosion.png');
+            _this.game.load.image('Athena', '../resources/textures/Athena/Athena.png');
+            _this.game.load.image('AthenaThrust', '../resources/textures/Athena/AthenaThrust.png');
+            _this.game.load.image('AthenaL', '../resources/textures/Athena/AthenaL.png');
+            _this.game.load.image('AthenaR', '../resources/textures/Athena/AthenaR.png');
+            _this.game.load.image('Vulcan', '../resources/textures/Athena/AthenaR.png');
+            _this.game.load.image('VulcanR', '../resources/textures/Athena/AthenaR.png');
+            _this.game.load.image('VulcanL', '../resources/textures/Athena/AthenaR.png');
+            _this.game.load.image('VulcanThrust', '../resources/textures/Athena/AthenaR.png');
             _this.game.load.physics('physicsData', '../resources/physics/mappings.json');
         };
         this.pause = function () {
@@ -90,6 +98,13 @@ var MainGame = (function () {
         this.show = function () {
             $('#canvas-wrapper').css('display', "block");
             _this.resume();
+        };
+        this.openMissionControl = function () {
+            $('.scene-wrapper').removeClass('title');
+            $('.scene-wrapper').removeClass('text');
+            $('.scene-wrapper').addClass('game');
+            $('.mission-control').css('display', 'block');
+            _this.pause();
         };
         this.create = function () {
             var mainCanvas = $(_this.game.canvas);

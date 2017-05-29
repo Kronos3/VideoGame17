@@ -134,10 +134,10 @@ var MainGame = (function () {
             _this.controls.push(scheme);
         };
         this.preload = function () {
-            _this.game.load.image('rocket', '../resources/textures/player/Rocket-L.png');
-            _this.game.load.image('rocket-thrust', '../resources/textures/player/Rocket-L-T.png');
-            _this.game.load.image('rocket-L-L', '../resources/textures/player/Rocket-L-L.png');
-            _this.game.load.image('rocket-L-R', '../resources/textures/player/Rocket-L-R.png');
+            _this.game.load.image('Artemis', '../resources/textures/Artemis/Artemis.png');
+            _this.game.load.image('ArtemisThrust', '../resources/textures/Artemis/ArtemisThrust.png');
+            _this.game.load.image('ArtemisL', '../resources/textures/Artemis/ArtemisL.png');
+            _this.game.load.image('ArtemisR', '../resources/textures/Artemis/ArtemisR.png');
             _this.game.load.image('Launch-L', '../resources/textures/Launch-L.png');
             _this.game.load.image('Fore', '../resources/textures/Foreground-L.png');
             _this.game.load.image('Mountain-E', '../resources/textures/BG_1-L.png');
@@ -145,6 +145,14 @@ var MainGame = (function () {
             _this.game.load.image('Back', '../resources/textures/Background-L.png');
             _this.game.load.image('Stars', '../resources/textures/stars.png');
             _this.game.load.image('Explosion', '../resources/textures/explosion.png');
+            _this.game.load.image('Athena', '../resources/textures/Athena/Athena.png');
+            _this.game.load.image('AthenaThrust', '../resources/textures/Athena/AthenaThrust.png');
+            _this.game.load.image('AthenaL', '../resources/textures/Athena/AthenaL.png');
+            _this.game.load.image('AthenaR', '../resources/textures/Athena/AthenaR.png');
+            _this.game.load.image('Vulcan', '../resources/textures/Athena/AthenaR.png');
+            _this.game.load.image('VulcanR', '../resources/textures/Athena/AthenaR.png');
+            _this.game.load.image('VulcanL', '../resources/textures/Athena/AthenaR.png');
+            _this.game.load.image('VulcanThrust', '../resources/textures/Athena/AthenaR.png');
             _this.game.load.physics('physicsData', '../resources/physics/mappings.json');
         };
         this.pause = function () {
@@ -160,6 +168,13 @@ var MainGame = (function () {
         this.show = function () {
             $('#canvas-wrapper').css('display', "block");
             _this.resume();
+        };
+        this.openMissionControl = function () {
+            $('.scene-wrapper').removeClass('title');
+            $('.scene-wrapper').removeClass('text');
+            $('.scene-wrapper').addClass('game');
+            $('.mission-control').css('display', 'block');
+            _this.pause();
         };
         this.create = function () {
             var mainCanvas = $(_this.game.canvas);
@@ -509,6 +524,7 @@ function setup_pos(e, x_scale, y_scale) {
     $(e).data('yfactor', y_scale);
 }
 function DoGame(game) {
+    var _this = this;
     var levels = [
         {
             name: "intro",
@@ -571,31 +587,72 @@ function DoGame(game) {
                 return false; //(<any>window).GAME.getLevel ('intro').getObject('Artemis').getAltitude() > 4000;
             },
             init: function (___this) {
-                var artemis_pos = {
+                var ship_pos = {
                     x: function () { return window.GAME.game.world.width / 2 - 70; },
                     y: function () { return window.GAME.game.world.height - 57; },
                 };
-                ___this.addObject(new ship_2.Ship(window.GAME, 'Artemis', artemis_pos, [
-                    'rocket',
-                    'rocket-thrust',
-                    'rocket-L-L',
-                    'rocket-L-R',
-                    'Explosion'
-                ], ___this));
+                ___this.addObject(new ship_2.Athena(window.GAME, ship_pos, ___this));
                 window.GAME.addControlScheme([
-                    ship_1.ShipBinding(window.GAME, ___this.getObject('Artemis')),
+                    ship_1.ShipBinding(window.GAME, ___this.getObject('ship')),
                     {
                         key: Phaser.KeyCode.R,
                         callback: function () {
-                            ___this.getObject('Artemis').reset();
+                            ___this.getObject('ship').reset();
                         },
                         press: true
                     }
                 ]);
                 window.GAME.setGravity(100, 0.1);
-                window.GAME.game.camera.follow(___this.getObject('Artemis').pObject);
+                window.GAME.game.camera.follow(___this.getObject('ship').pObject);
             }
-        }
+        },
+        {
+            name: "belt1",
+            game: window.GAME,
+            objects: [
+                {
+                    name: "stars",
+                    assets: "Stars",
+                    position: {
+                        x: function () { return 0; },
+                        y: function () { return 0; }
+                    }
+                },
+                {
+                    name: "stars2",
+                    assets: "Stars",
+                    position: {
+                        x: function () { return 0; },
+                        y: function () { return 1600; }
+                    }
+                },
+            ],
+            frame: function () {
+            },
+            done: function () {
+                return false; //(<any>window).GAME.getLevel ('intro').getObject('Artemis').getAltitude() > 4000;
+            },
+            init: function (___this) {
+                ___this.game.game.world.setBounds(0, 0, _this.game.width, 4600);
+                var ship_pos = {
+                    x: function () { return window.GAME.game.world.width / 2 - 70; },
+                    y: function () { return window.GAME.game.world.height - 57; },
+                };
+                ___this.addObject(new ship_2.Athena(window.GAME, ship_pos, ___this));
+                window.GAME.addControlScheme([
+                    ship_1.ShipBinding(window.GAME, ___this.getObject('ship')),
+                    {
+                        key: Phaser.KeyCode.R,
+                        callback: function () {
+                            ___this.getObject('ship').reset();
+                        },
+                        press: true
+                    }
+                ]);
+                window.GAME.setGravity(100, 0.1);
+                window.GAME.game.camera.follow(___this.getObject('ship').pObject);
+            }
+        },
     ];
     var missions = [
         [
@@ -603,13 +660,13 @@ function DoGame(game) {
                 title: 'Reach 4000m',
                 description: 'Exit Earth\'s atmosphere',
                 condition: function () {
-                    return window.GAME.getLevel('intro').getObject('Artemis').getAltitude() > 4000;
+                    return window.GAME.getLevel('intro').getObject('ship').getAltitude() > 4000;
                 },
                 onDone: function () {
                     console.log('mission complete');
                 },
                 update: function () {
-                    var a = parseInt(window.GAME.getLevel('intro').getObject('Artemis').getAltitude());
+                    var a = parseInt(window.GAME.getLevel('intro').getObject('ship').getAltitude());
                     if (a < 0) {
                         a = 0;
                     }
@@ -621,6 +678,21 @@ function DoGame(game) {
                     else {
                         $('.alt').css('bottom', x + '%');
                     }
+                }
+            }
+        ],
+        [
+            {
+                title: 'Survive the astroid belt',
+                description: 'Manuever around astroids in the belt',
+                condition: function () {
+                    return false;
+                },
+                onDone: function () {
+                    ;
+                },
+                update: function () {
+                    ;
                 }
             }
         ]
@@ -833,7 +905,7 @@ exports.ShipBinding = function (game, ship) {
 };
 var Ship = (function (_super) {
     __extends(Ship, _super);
-    function Ship(game, name, pos, assets, level) {
+    function Ship(game, name, bodyName, pos, assets, level) {
         if (level === void 0) { level = game.levelsequence.getLevel('intro'); }
         var _this = _super.call(this, game, level, name, pos, assets, { angularRot: 0, SAS: false, thrustOn: false, inSpace: false }) || this;
         _this.collide = function (target, this_target, shapeA, shapeB, contactEquation) {
@@ -899,6 +971,7 @@ var Ship = (function (_super) {
             _this.fuelFlow();
         };
         _this.throttle = 270;
+        _this.angularAcceleration = 0.7;
         _this.engineOn = function () {
             if (_this.LFO <= 0) {
                 return;
@@ -915,7 +988,7 @@ var Ship = (function (_super) {
             }
             _this.monoFlow();
             var angularVelocity = function () { return _this.pObject.body.angularVelocity / 0.05; }; // Convert to correct unit
-            var tempVel = _this.calculate_velocity(0.7, angularVelocity);
+            var tempVel = _this.calculate_velocity(_this.angularAcceleration, angularVelocity);
             _this.pObject.body.rotateRight(tempVel);
             _this.extra.angularRot = tempVel;
             _this.switchTo(_this.assets[2]);
@@ -926,7 +999,7 @@ var Ship = (function (_super) {
             }
             _this.monoFlow();
             var angularVelocity = function () { return _this.pObject.body.angularVelocity / 0.05; }; // Convert to correct unit
-            var tempVel = _this.calculate_velocity(-0.7, angularVelocity);
+            var tempVel = _this.calculate_velocity(-1 * _this.angularAcceleration, angularVelocity);
             _this.pObject.body.rotateRight(tempVel);
             _this.extra.angularRot = tempVel;
             _this.switchTo(_this.assets[3]);
@@ -958,15 +1031,9 @@ var Ship = (function (_super) {
         _this.calculate_velocity = function (acceleration, initialVel) {
             return (acceleration * _this.game.get_ratio()) + initialVel();
         };
-        _this.addBooster = function (booster) {
-            _this.booster = booster;
-            //this.game.game.physics.p2.createPrismaticConstraint (
-            //
-            //)
-        };
         _this.enablePhysics();
         _this.pObject.body.mass = 5;
-        _this.loadBody('Rocket-L');
+        _this.loadBody(bodyName);
         _this.startAlt = _this.pObject.body.y;
         return _this;
         //this.pObject.body.onBeginContact.add(this.collide, this);
@@ -974,16 +1041,58 @@ var Ship = (function (_super) {
     return Ship;
 }(object_1.DynamicSprite));
 exports.Ship = Ship;
-var Booster = (function (_super) {
-    __extends(Booster, _super);
-    function Booster(game, level, name, pos, assets) {
-        var _this = _super.call(this, game, name, pos, assets, level) || this;
-        _this.attached = true;
+var Artemis = (function (_super) {
+    __extends(Artemis, _super);
+    function Artemis(game, pos, level) {
+        var _this = _super.call(this, game, 'ship', 'Artemis', pos, [
+            'Artemis',
+            'ArtemisThrust',
+            'ArtemisL',
+            'ArtemisR',
+            'Explosion'
+        ], level) || this;
+        _this.angularAcceleration = 0.7;
+        _this.throttle = 300;
         return _this;
     }
-    return Booster;
+    return Artemis;
 }(Ship));
-exports.Booster = Booster;
+exports.Artemis = Artemis;
+var Athena = (function (_super) {
+    __extends(Athena, _super);
+    function Athena(game, pos, level) {
+        var _this = _super.call(this, game, 'ship', 'Athena', pos, [
+            'Athena',
+            'AthenaThrust',
+            'AthenaL',
+            'AthenaR',
+            'Explosion'
+        ], level) || this;
+        _this.angularAcceleration = 0.5;
+        _this.throttle = 240;
+        return _this;
+    }
+    return Athena;
+}(Ship));
+exports.Athena = Athena;
+var Vulcan = (function (_super) {
+    __extends(Vulcan, _super);
+    function Vulcan(game, pos, level) {
+        var _this = _super.call(this, game, 'ship', 'Vulcan', pos, [
+            'Vulcan',
+            'VulcanThrust',
+            'VulcanL',
+            'VulcanR',
+            'Explosion'
+        ], level) || this;
+        _this.angularAcceleration = 0.5;
+        _this.throttle = 640;
+        _this.pObject.body.mass = 8;
+        return _this;
+    }
+    return Vulcan;
+}(Ship));
+exports.Vulcan = Vulcan;
 
 },{"./object":7}],9:[function(require,module,exports){
 "use strict";
@@ -1140,6 +1249,7 @@ var Wrapper = (function () {
             // 0: level
             // 1: TextScene
             // 2: Open Mission Control
+            1,
             0,
             2
             //0
@@ -1158,11 +1268,7 @@ var Wrapper = (function () {
     }
     Wrapper.prototype.handleNext = function () {
         if (this.order[this.currentTotal] == 2) {
-            $('.scene-wrapper').removeClass('title');
-            $('.scene-wrapper').removeClass('text');
-            $('.scene-wrapper').addClass('game');
-            $('.mission-control').css('display', 'block');
-            this.game.pause();
+            this.game.openMissionControl();
         }
         else if (this.order[this.currentTotal] == 1) {
             $('.scene-wrapper').removeClass('title');
