@@ -206,6 +206,7 @@ export class Artemis extends Ship {
         ], level);
         this.angularAcceleration = 0.7;
         this.throttle = 300;
+        this.pObject.body.mass = 3;
     }
 }
 
@@ -220,6 +221,7 @@ export class Athena extends Ship {
         ], level);
         this.angularAcceleration = 0.5;
         this.throttle = 240;
+        this.pObject.body.mass = 5;
     }
 }
 

@@ -188,6 +188,7 @@ var Artemis = (function (_super) {
         ], level) || this;
         _this.angularAcceleration = 0.7;
         _this.throttle = 300;
+        _this.pObject.body.mass = 3;
         return _this;
     }
     return Artemis;
@@ -205,6 +206,7 @@ var Athena = (function (_super) {
         ], level) || this;
         _this.angularAcceleration = 0.5;
         _this.throttle = 240;
+        _this.pObject.body.mass = 5;
         return _this;
     }
     return Athena;

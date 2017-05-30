@@ -309,6 +309,9 @@ function DoGame (game: MainGame): void {
             }
         ]
     ]
+}
+
+function add_levels (levels, missions) {
     for (var iter in levels) {
         game.addLevel (levels[iter]);
         for (var miter of missions[iter]) {

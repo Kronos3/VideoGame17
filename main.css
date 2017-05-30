@@ -597,3 +597,105 @@ body {
     top: 50%;
     transform: translate(-50%, -50%);
 }
+
+.difficulty {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    display: block;
+    height: 100%;
+    background: -webkit-radial-gradient(center, ellipse cover, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 97%, rgba(0,0,0,1) 100%);
+}
+
+.difficulty > .dif-choice {
+    top: 30%;
+    transform:  translate(-50%, -50%);
+    width: 25vw;
+    height: 25vw;
+    background: rgba(255,255,255,0.4);
+    border-left: #fff solid 1px;
+}
+
+.difficulty > .dif-choice::before,
+.difficulty > .dif-choice::after {
+    width: 3px;
+    height: 3px;
+    content: '';
+    position: absolute;
+    left: -2.5px;
+    background: #fff;
+    display: block;
+}
+
+.difficulty > .dif-choice::before {
+    top: -1.5px;
+}
+
+.difficulty > .dif-choice::after {
+    bottom: -1.5px;
+}
+
+#easy {
+    left: 20%;
+}
+
+#medium {
+    left: 50%;
+}
+
+#hard {
+    left: 80%;
+}
+
+.difficulty > .dif-choice > img {
+    position: absolute;
+    height: 80%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotateZ(-30deg);
+}
+
+.difficulty > .dif-choice > p {
+    color: #fff;
+    text-transform: uppercase;
+    font-size: 26px;
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+}
+
+.difficulty > .dif-choice.active {
+    transform: translate(-50%, -50%) scale(1.2, 1.2);
+    background: rgba(255,255,255,0.6);
+}
+
+.stats {
+    background: rgba(255,255,255,0.6);
+    top: 60%;
+    position: absolute;
+    border-left: #fff solid 1px;
+    left: 10%;
+    width: 30%;
+    height: 20%;
+}
+
+.stats::before,
+.stats::after {
+    width: 3px;
+    height: 3px;
+    content: '';
+    position: absolute;
+    left: -2.5px;
+    background: #fff;
+    display: block;
+}
+
+.stats::before {
+    top: -1.5px;
+}
+
+.stats::after {
+    bottom: -1.5px;
+}

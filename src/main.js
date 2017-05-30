@@ -278,6 +278,8 @@ function DoGame(game) {
             }
         ]
     ];
+}
+function add_levels(levels, missions) {
     for (var iter in levels) {
         game.addLevel(levels[iter]);
         for (var _i = 0, _a = missions[iter]; _i < _a.length; _i++) {
