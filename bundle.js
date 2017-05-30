@@ -497,8 +497,55 @@ $(document).ready(function () {
             }
         }
     }
+    initDif();
     initGame();
 });
+var shipStats = {
+    easy: {
+        mass: '30%',
+        thrust: '60%',
+        angAcc: '80%'
+    },
+    medium: {
+        mass: '50%',
+        thrust: '50%',
+        angAcc: '70%'
+    },
+    hard: {
+        mass: '100%',
+        thrust: '100%',
+        angAcc: '30%'
+    },
+};
+function setStats(e_stats, so) {
+    $(e_stats[0]).children('.bar').children('span').css('width', so.mass);
+    $(e_stats[1]).children('.bar').children('span').css('width', so.thrust);
+    $(e_stats[2]).children('.bar').children('span').css('width', so.angAcc);
+}
+function initDif() {
+    $('.difficulty > .dif-choice').toArray().forEach(function (element) {
+        element.addEventListener("click", function () {
+            $('.dif-choice.active').removeClass('active');
+            $(element).addClass('active');
+            $('.stats').removeClass('left');
+            $('.stats').removeClass('middle');
+            $('.stats').removeClass('right');
+            var stats = $('.stats > div').toArray();
+            if ($(element).attr('id') == 'easy') {
+                $('.stats').addClass('left');
+                setStats(stats, shipStats.easy);
+            }
+            else if ($(element).attr('id') == 'medium') {
+                $('.stats').addClass('middle');
+                setStats(stats, shipStats.medium);
+            }
+            else if ($(element).attr('id') == 'hard') {
+                $('.stats').addClass('right');
+                setStats(stats, shipStats.hard);
+            }
+        });
+    });
+}
 // Global variables
 var game;
 window.GAME = null;

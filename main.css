@@ -672,13 +672,25 @@ body {
 }
 
 .stats {
-    background: rgba(255,255,255,0.6);
-    top: 60%;
+    background: rgba(255,255,255,0.4);
+    top: 55%;
     position: absolute;
     border-left: #fff solid 1px;
-    left: 10%;
-    width: 30%;
+    width: 30vw;
     height: 20%;
+    transform: translateX(-50%);
+}
+
+.stats.left {
+    left: 20%;
+}
+
+.stats.middle {
+    left: 50%;
+}
+
+.stats.right {
+    left: 80%;
 }
 
 .stats::before,
@@ -698,4 +710,45 @@ body {
 
 .stats::after {
     bottom: -1.5px;
+}
+
+.stats > div {
+    display: block;
+    height: calc(33.33% - 5px);
+    padding: 5px 0 0 5px;
+    color: #fff;
+    position: relative;
+}
+
+.stats .bar {
+    width: calc(100% - 20px);
+    display: block;
+    bottom: 10px;
+    height: 10px;
+    background: rgba(255,255,255,0.2);
+    position: absolute;
+}
+
+.stats .bar > span {
+    position: absolute;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: rgba(255,255,255,0.8);
+    content: '';
+    display: block;
+}
+
+.finish-dif {
+    color: #fff;
+    font-size: 32px;
+    position: absolute;
+    left: 50%;
+    bottom: 10%;
+    transform: translateX(-50%);
+}
+
+.finish-dif:hover {
+    color: #7B7B7B;
+    transform: translateX(-50%) scale(1.2);
 }
