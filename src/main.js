@@ -330,11 +330,7 @@ function difDone() {
     });
 }
 function initShip(___this) {
-    var ship_pos = {
-        x: function () { return window.GAME.game.world.width / 2 - 70; },
-        y: function () { return window.GAME.game.world.height - 57; },
-    };
-    ___this.addObject(new shipClass(window.GAME, ship_pos, ___this));
+    ___this.addObject(new shipClass(window.GAME, ___this));
     window.GAME.addControlScheme([
         ship_1.ShipBinding(window.GAME, ___this.getObject('ship')),
         {

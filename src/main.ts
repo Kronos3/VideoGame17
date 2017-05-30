@@ -355,14 +355,8 @@ function difDone () {
 }
 
 function initShip (___this: Level) {
-    var ship_pos = {
-        x: ():number => {return (<any>window).GAME.game.world.width / 2 - 70},
-        y: ():number => {return (<any>window).GAME.game.world.height - 57},
-    }
-
     ___this.addObject (new shipClass (
         (<any>window).GAME,
-        ship_pos,
         ___this
     ));
     (<any>window).GAME.addControlScheme ([

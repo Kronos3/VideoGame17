@@ -178,17 +178,22 @@ var Ship = (function (_super) {
 exports.Ship = Ship;
 var Artemis = (function (_super) {
     __extends(Artemis, _super);
-    function Artemis(game, pos, level) {
-        var _this = _super.call(this, game, 'ship', 'Artemis', pos, [
+    function Artemis(game, level) {
+        var _this = this;
+        var pos = {
+            x: function () { return window.GAME.game.world.width / 2 - 70; },
+            y: function () { return window.GAME.game.world.height - 48; }
+        };
+        _this = _super.call(this, game, 'ship', 'Artemis', pos, [
             'Artemis',
             'ArtemisThrust',
             'ArtemisL',
             'ArtemisR',
             'Explosion'
         ], level) || this;
-        _this.angularAcceleration = 0.7;
+        _this.angularAcceleration = 1.2;
         _this.throttle = 300;
-        _this.pObject.body.mass = 3;
+        _this.pObject.body.mass = 5;
         return _this;
     }
     return Artemis;
@@ -196,8 +201,13 @@ var Artemis = (function (_super) {
 exports.Artemis = Artemis;
 var Athena = (function (_super) {
     __extends(Athena, _super);
-    function Athena(game, pos, level) {
-        var _this = _super.call(this, game, 'ship', 'Athena', pos, [
+    function Athena(game, level) {
+        var _this = this;
+        var pos = {
+            x: function () { return window.GAME.game.world.width / 2 - 70; },
+            y: function () { return window.GAME.game.world.height - 57; }
+        };
+        _this = _super.call(this, game, 'ship', 'Athena', pos, [
             'Athena',
             'AthenaThrust',
             'AthenaL',
@@ -214,8 +224,13 @@ var Athena = (function (_super) {
 exports.Athena = Athena;
 var Vulcan = (function (_super) {
     __extends(Vulcan, _super);
-    function Vulcan(game, pos, level) {
-        var _this = _super.call(this, game, 'ship', 'Vulcan', pos, [
+    function Vulcan(game, level) {
+        var _this = this;
+        var pos = {
+            x: function () { return window.GAME.game.world.width / 2 - 70; },
+            y: function () { return window.GAME.game.world.height - 69; }
+        };
+        _this = _super.call(this, game, 'ship', 'Vulcan', pos, [
             'Vulcan',
             'VulcanThrust',
             'VulcanL',
@@ -224,7 +239,7 @@ var Vulcan = (function (_super) {
         ], level) || this;
         _this.angularAcceleration = 0.3;
         _this.throttle = 640;
-        _this.pObject.body.mass = 8;
+        _this.pObject.body.mass = 12;
         return _this;
     }
     return Vulcan;

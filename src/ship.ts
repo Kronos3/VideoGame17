@@ -196,7 +196,12 @@ export class Ship extends DynamicSprite {
 }
 
 export class Artemis extends Ship {
-    constructor (game: MainGame, pos: _position, level: Level) {
+    constructor (game: MainGame, level: Level) {
+        var pos = {
+            x: ():number => {return (<any>window).GAME.game.world.width / 2 - 70},
+            y: ():number => {return (<any>window).GAME.game.world.height - 48}
+        }
+        
         super (game, 'ship', 'Artemis', pos, [
             'Artemis',
             'ArtemisThrust',
@@ -204,14 +209,18 @@ export class Artemis extends Ship {
             'ArtemisR',
             'Explosion'
         ], level);
-        this.angularAcceleration = 0.7;
+        this.angularAcceleration = 1.2;
         this.throttle = 300;
-        this.pObject.body.mass = 3;
+        this.pObject.body.mass = 5;
     }
 }
 
 export class Athena extends Ship {
-    constructor (game: MainGame, pos: _position, level: Level) {
+    constructor (game: MainGame, level: Level) {
+        var pos = {
+            x: ():number => {return (<any>window).GAME.game.world.width / 2 - 70},
+            y: ():number => {return (<any>window).GAME.game.world.height - 57}
+        }
         super (game, 'ship', 'Athena', pos, [
             'Athena',
             'AthenaThrust',
@@ -226,7 +235,11 @@ export class Athena extends Ship {
 }
 
 export class Vulcan extends Ship {
-    constructor (game: MainGame, pos: _position, level: Level) {
+    constructor (game: MainGame, level: Level) {
+        var pos = {
+            x: ():number => {return (<any>window).GAME.game.world.width / 2 - 70},
+            y: ():number => {return (<any>window).GAME.game.world.height - 69}
+        }
         super (game, 'ship', 'Vulcan', pos, [
             'Vulcan',
             'VulcanThrust',
@@ -236,6 +249,6 @@ export class Vulcan extends Ship {
         ], level);
         this.angularAcceleration = 0.3;
         this.throttle = 640;
-        this.pObject.body.mass = 8;
+        this.pObject.body.mass = 12;
     }
 }
