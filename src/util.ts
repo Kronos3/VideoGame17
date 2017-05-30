@@ -27,6 +27,6 @@ export function error (message: string) {
         throw new Error (message);
     }
     catch (e) {
-        console.log (e.name, + ': ' + e.message);
+        console.error (e.message);
     }
 }

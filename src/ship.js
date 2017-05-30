@@ -222,7 +222,7 @@ var Vulcan = (function (_super) {
             'VulcanR',
             'Explosion'
         ], level) || this;
-        _this.angularAcceleration = 0.5;
+        _this.angularAcceleration = 0.3;
         _this.throttle = 640;
         _this.pObject.body.mass = 8;
         return _this;

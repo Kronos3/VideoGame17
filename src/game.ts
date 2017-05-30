@@ -89,10 +89,10 @@ export class MainGame {
         this.game.load.image('AthenaThrust', '../resources/textures/Athena/AthenaThrust.png');
         this.game.load.image('AthenaL', '../resources/textures/Athena/AthenaL.png');
         this.game.load.image('AthenaR', '../resources/textures/Athena/AthenaR.png');
-        this.game.load.image('Vulcan', '../resources/textures/Athena/AthenaR.png');
-        this.game.load.image('VulcanR', '../resources/textures/Athena/AthenaR.png');
-        this.game.load.image('VulcanL', '../resources/textures/Athena/AthenaR.png');
-        this.game.load.image('VulcanThrust', '../resources/textures/Athena/AthenaR.png');
+        this.game.load.image('Vulcan', '../resources/textures/Vulcan/Vulcan.png');
+        this.game.load.image('VulcanR', '../resources/textures/Vulcan/VulcanR.png');
+        this.game.load.image('VulcanL', '../resources/textures/Vulcan/VulcanL.png');
+        this.game.load.image('VulcanThrust', '../resources/textures/Vulcan/VulcanThrust.png');
         this.game.load.physics('physicsData', '../resources/physics/mappings.json');
     }
 

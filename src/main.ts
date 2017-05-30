@@ -90,8 +90,10 @@ $( document ).ready(function() {
             
         }
     }
+
+    difDone ();
+
     initDif ();
-    
     initGame ();
 });
 
@@ -234,29 +236,6 @@ function DoGame (game: MainGame): void {
                 return false; //(<any>window).GAME.getLevel ('intro').getObject('Artemis').getAltitude() > 4000;
             },
             init: (___this: Level) => {
-
-                var ship_pos = {
-                    x: ():number => {return (<any>window).GAME.game.world.width / 2 - 70},
-                    y: ():number => {return (<any>window).GAME.game.world.height - 57},
-                }
-
-                ___this.addObject (new Athena (
-                    (<any>window).GAME,
-                    ship_pos,
-                    ___this
-                ));
-                (<any>window).GAME.addControlScheme ([
-                    ShipBinding((<any>window).GAME, <Ship>___this.getObject ('ship')),
-                    {
-                        key: Phaser.KeyCode.R,
-                        callback: () => {
-                            (<Ship>___this.getObject ('ship')).reset();
-                        },
-                        press: true
-                    }
-                ]);
-                (<any>window).GAME.setGravity (100, 0.1);
-                (<any>window).GAME.game.camera.follow(___this.getObject('ship').pObject);
             }
         },
         {
@@ -288,29 +267,6 @@ function DoGame (game: MainGame): void {
             },
             init: (___this: Level) => {
                 ___this.game.game.world.setBounds(0, 0, this.game.width, 4600);
-
-                var ship_pos = {
-                    x: ():number => {return (<any>window).GAME.game.world.width / 2 - 70},
-                    y: ():number => {return (<any>window).GAME.game.world.height - 57},
-                }
-
-                ___this.addObject (new Athena (
-                    (<any>window).GAME,
-                    ship_pos,
-                    ___this
-                ));
-                (<any>window).GAME.addControlScheme ([
-                    ShipBinding((<any>window).GAME, <Ship>___this.getObject ('ship')),
-                    {
-                        key: Phaser.KeyCode.R,
-                        callback: () => {
-                            (<Ship>___this.getObject ('ship')).reset();
-                        },
-                        press: true
-                    }
-                ]);
-                (<any>window).GAME.setGravity (100, 0.1);
-                (<any>window).GAME.game.camera.follow(___this.getObject('ship').pObject);
             }
         },
 
@@ -322,12 +278,19 @@ function DoGame (game: MainGame): void {
                 title: 'Reach 4000m',
                 description: 'Exit Earth\'s atmosphere',
                 condition: () => {
+                    if ((<any>window).GAME.getLevel('intro').getObject('ship') == null){
+                        return false;
+                    }
                     return (<any>window).GAME.getLevel('intro').getObject('ship').getAltitude () > 4000;
                 },
                 onDone: () => {
                     console.log('mission complete');
                 },
                 update: () => {
+                    if ((<any>window).GAME.getLevel('intro').getObject('ship') == null){
+                        (<any>window).GAME.pause ();
+                        return;
+                    }
                     var a = parseInt((<any>window).GAME.getLevel('intro').getObject('ship').getAltitude ());
                     if (a < 0){
                         a = 0;
@@ -359,7 +322,11 @@ function DoGame (game: MainGame): void {
             }
         ]
     ]
+
+    add_levels (levels, missions);
 }
+
+var shipClass;
 
 function add_levels (levels, missions) {
     for (var iter in levels) {
@@ -368,4 +335,46 @@ function add_levels (levels, missions) {
             game.levelsequence.levels[iter].addMission (miter);
         }
     }
+}
+
+function difDone () {
+    $('.finish-dif').get(0).addEventListener ('click', () => {
+        $('.difficulty').css ('display', 'none');
+        if ($('.dif-choice.active').attr('id') == 'easy') {
+            shipClass = Artemis;
+        }
+        else if ($('.dif-choice.active').attr('id') == 'medium') {
+            shipClass = Athena;
+        }
+        else if ($('.dif-choice.active').attr('id') == 'hard') {
+            shipClass = Vulcan;
+        }
+        initShip ((<any>window).GAME.getLevel ('intro'));
+        (<any>window).GAME.resume ();
+    });
+}
+
+function initShip (___this: Level) {
+    var ship_pos = {
+        x: ():number => {return (<any>window).GAME.game.world.width / 2 - 70},
+        y: ():number => {return (<any>window).GAME.game.world.height - 57},
+    }
+
+    ___this.addObject (new shipClass (
+        (<any>window).GAME,
+        ship_pos,
+        ___this
+    ));
+    (<any>window).GAME.addControlScheme ([
+        ShipBinding((<any>window).GAME, <Ship>___this.getObject ('ship')),
+        {
+            key: Phaser.KeyCode.R,
+            callback: () => {
+                (<Ship>___this.getObject ('ship')).reset();
+            },
+            press: true
+        }
+    ]);
+    (<any>window).GAME.setGravity (100, 0.1);
+    (<any>window).GAME.game.camera.follow(___this.getObject('ship').pObject);
 }

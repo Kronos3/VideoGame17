@@ -741,10 +741,11 @@ body {
 
 .finish-dif {
     color: #fff;
-    font-size: 32px;
+    font-size: 42px;
     position: absolute;
     left: 50%;
     bottom: 10%;
+    text-transform: uppercase;
     transform: translateX(-50%);
 }
 

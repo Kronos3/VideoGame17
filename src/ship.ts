@@ -234,7 +234,7 @@ export class Vulcan extends Ship {
             'VulcanR',
             'Explosion'
         ], level);
-        this.angularAcceleration = 0.5;
+        this.angularAcceleration = 0.3;
         this.throttle = 640;
         this.pObject.body.mass = 8;
     }
