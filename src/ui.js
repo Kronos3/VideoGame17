@@ -4,6 +4,9 @@ var UIController = (function () {
     function UIController() {
         var _this = this;
         this.UIElements = [];
+        this.setPlanet = function (x) {
+            $('#planet').attr('src', 'resources/planets/{0}.png'.format(x));
+        };
         this.setElement = function (index, value) {
             $(_this.UIElements[index])
                 .children('.bar')

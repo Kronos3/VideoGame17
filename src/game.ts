@@ -93,6 +93,8 @@ export class MainGame {
         this.game.load.image('VulcanR', '../resources/textures/Vulcan/VulcanR.png');
         this.game.load.image('VulcanL', '../resources/textures/Vulcan/VulcanL.png');
         this.game.load.image('VulcanThrust', '../resources/textures/Vulcan/VulcanThrust.png');
+        this.game.load.image('Meteor-Small', '../resources/textures/objects/Meteor_Small-L.png');
+        this.game.load.image('Meteor', '../resources/textures/objects/Meteor-L.png');
         this.game.load.physics('physicsData', '../resources/physics/mappings.json');
     }
 
@@ -173,6 +175,10 @@ export class MainGame {
 
     get_ratio = () => {
         return 60 / this.game.time.fps;
+    }
+
+    get_fps = () => {
+        return this.game.time.fps;
     }
 
     render = () => {

@@ -249,6 +249,7 @@ function DoGame(game) {
                     y: function () { return window.GAME.game.world.centerY; }
                 };
                 ___this.getObject('ship').reset(false);
+                window.GAME.uicontroller.setPlanet('ceres');
             }
         },
     ];

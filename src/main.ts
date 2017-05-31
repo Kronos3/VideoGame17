@@ -269,6 +269,7 @@ function DoGame (game: MainGame): void {
                     y: ():number => {return (<any>window).GAME.game.world.centerY}
                 };
                 (<Ship>___this.getObject ('ship')).reset (false);
+                (<any>window).GAME.uicontroller.setPlanet ('ceres')
             }
         },
 

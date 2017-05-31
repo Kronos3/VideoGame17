@@ -176,8 +176,8 @@ var Ship = (function (_super) {
         _this.pObject.body.mass = 5;
         _this.loadBody(bodyName);
         _this.startAlt = _this.pObject.body.y;
+        _this.pObject.body.onBeginContact.add(_this.collide, _this);
         return _this;
-        //this.pObject.body.onBeginContact.add(this.collide, this);
     }
     return Ship;
 }(object_1.DynamicSprite));

@@ -9,6 +9,10 @@ export class UIController {
         this.UIElements = <any>document.querySelectorAll('.ui-ob');
     }
 
+    setPlanet = (x: string) => {
+        $('#planet').attr ('src', 'resources/planets/{0}.png'.format (x));
+    }
+
     setElement = (index:number, value: number) => {
         $(this.UIElements[index])
             .children('.bar')

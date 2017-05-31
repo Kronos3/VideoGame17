@@ -153,6 +153,8 @@ var MainGame = (function () {
             _this.game.load.image('VulcanR', '../resources/textures/Vulcan/VulcanR.png');
             _this.game.load.image('VulcanL', '../resources/textures/Vulcan/VulcanL.png');
             _this.game.load.image('VulcanThrust', '../resources/textures/Vulcan/VulcanThrust.png');
+            _this.game.load.image('Meteor-Small', '../resources/textures/objects/Meteor_Small-L.png');
+            _this.game.load.image('Meteor', '../resources/textures/objects/Meteor-L.png');
             _this.game.load.physics('physicsData', '../resources/physics/mappings.json');
         };
         this.pause = function () {
@@ -219,6 +221,9 @@ var MainGame = (function () {
         };
         this.get_ratio = function () {
             return 60 / _this.game.time.fps;
+        };
+        this.get_fps = function () {
+            return _this.game.time.fps;
         };
         this.render = function () {
             _this.game.debug.text('render FPS: ' + (_this.game.time.fps || '--'), 2, 14, "#00ff00");
@@ -683,6 +688,7 @@ function DoGame(game) {
                     y: function () { return window.GAME.game.world.centerY; }
                 };
                 ___this.getObject('ship').reset(false);
+                window.GAME.uicontroller.setPlanet('ceres');
             }
         },
     ];
@@ -1126,8 +1132,8 @@ var Ship = (function (_super) {
         _this.pObject.body.mass = 5;
         _this.loadBody(bodyName);
         _this.startAlt = _this.pObject.body.y;
+        _this.pObject.body.onBeginContact.add(_this.collide, _this);
         return _this;
-        //this.pObject.body.onBeginContact.add(this.collide, this);
     }
     return Ship;
 }(object_1.DynamicSprite));
@@ -1272,6 +1278,9 @@ var UIController = (function () {
     function UIController() {
         var _this = this;
         this.UIElements = [];
+        this.setPlanet = function (x) {
+            $('#planet').attr('src', 'resources/planets/{0}.png'.format(x));
+        };
         this.setElement = function (index, value) {
             $(_this.UIElements[index])
                 .children('.bar')
@@ -1371,6 +1380,14 @@ function move(el, src, desc) {
     desc.push(b);
 }
 exports.move = move;
+function getRandomArbitrary(min, max) {
+    return Math.random() * (max - min) + min;
+}
+exports.getRandomArbitrary = getRandomArbitrary;
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+exports.getRandomInt = getRandomInt;
 
 },{}],12:[function(require,module,exports){
 "use strict";

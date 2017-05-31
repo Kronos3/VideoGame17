@@ -83,6 +83,8 @@ var MainGame = (function () {
             _this.game.load.image('VulcanR', '../resources/textures/Vulcan/VulcanR.png');
             _this.game.load.image('VulcanL', '../resources/textures/Vulcan/VulcanL.png');
             _this.game.load.image('VulcanThrust', '../resources/textures/Vulcan/VulcanThrust.png');
+            _this.game.load.image('Meteor-Small', '../resources/textures/objects/Meteor_Small-L.png');
+            _this.game.load.image('Meteor', '../resources/textures/objects/Meteor-L.png');
             _this.game.load.physics('physicsData', '../resources/physics/mappings.json');
         };
         this.pause = function () {
@@ -149,6 +151,9 @@ var MainGame = (function () {
         };
         this.get_ratio = function () {
             return 60 / _this.game.time.fps;
+        };
+        this.get_fps = function () {
+            return _this.game.time.fps;
         };
         this.render = function () {
             _this.game.debug.text('render FPS: ' + (_this.game.time.fps || '--'), 2, 14, "#00ff00");
