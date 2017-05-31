@@ -36,13 +36,18 @@ var LevelSequence = (function () {
             }
             _this.levels[0].enable();
         };
-        this.nextLevel = function () {
+        this.nextLevel = function (t) {
+            if (t === void 0) { t = false; }
             _this.current++;
-            for (var i = 1; i != _this.levels.length; i++) {
+            for (var i = 0; i != _this.levels.length; i++) {
                 _this.levels[i].disable();
             }
-            _this.levels[_this.current].enable();
-            _this.levels[0].enable();
+            if (t) {
+                UTIL.move(_this.levels[_this.current - 1].getObject('ship'), _this.levels[_this.current - 1].objects, _this.levels[_this.current].objects);
+                _this.levels[_this.current].getObject('ship').level = _this.levels[_this.current];
+                _this.levels[_this.current].init(_this.levels[_this.current]);
+            }
+            _this.levels[_this.current].enable(true);
         };
         ;
     }
@@ -63,7 +68,7 @@ function createLevel(_const) {
             else {
                 // Static Object
                 // Add the object
-                OBJ = new object_1.GameSprite(out.game, out, iter.name, iter.position, iter.assets, iter.extra);
+                OBJ = new object_1.GameSprite(out.game, out, iter.name, iter.position, iter.assets, iter.extra, iter.repeat);
             }
             if (typeof iter.physics !== "undefined") {
                 OBJ.loadBody(iter.physics);
@@ -85,21 +90,24 @@ var Level = (function () {
         this.objects = [];
         this.setframe = function () { return; };
         this.inited = false;
+        this.init = function (l) {
+            _this.binit(l);
+            _this.inited = true;
+        };
         this.frame = function () {
-            _this.missionControl.frame();
-            _this.setframe();
+            if (_this.inited) {
+                _this.missionControl.frame();
+                _this.setframe();
+            }
         };
         this.addMission = function (l) {
             _this.missionControl.addMission(mission_1.generateMission(l));
         };
-        this.enable = function () {
+        this.enable = function (doInit) {
+            if (doInit === void 0) { doInit = false; }
             _this.objects.forEach(function (element) {
                 element.enable();
             });
-            if (!_this.inited) {
-                _this.init(_this);
-                _this.inited = true;
-            }
         };
         this.disable = function () {
             _this.objects.forEach(function (element) {
@@ -141,7 +149,7 @@ var Level = (function () {
         this.game = game;
         this.name = name;
         this.setframe = frame;
-        this.init = init;
+        this.binit = init;
         this.done = done;
         this.missionControl = new mission_2.MissionControl(this);
         this.missionControl.begin();

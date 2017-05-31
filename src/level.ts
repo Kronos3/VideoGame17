@@ -3,6 +3,7 @@ import {KeyBinding} from "./control"
 import {GameSprite} from "./object"
 import {DynamicSprite} from "./object"
 import {MainGame} from "./game"
+import {initShip} from "./main"
 import {_position} from "./object"
 import {MissionContructor} from "./mission"
 import {generateMission} from "./mission"
@@ -47,13 +48,19 @@ export class LevelSequence {
         this.levels[0].enable ();
     }
 
-    nextLevel = () => {
+    nextLevel = (t = false) => {
         this.current++;
-        for (var i = 1; i!= this.levels.length; i++) {
+        for (var i = 0; i!= this.levels.length; i++) {
             this.levels[i].disable ();
         }
-        this.levels[this.current].enable ();
-        this.levels[0].enable ();
+        if (t) {
+            UTIL.move (this.levels[this.current - 1].getObject('ship'),
+                this.levels[this.current - 1].objects,
+                this.levels[this.current].objects);
+            this.levels[this.current].getObject ('ship').level = this.levels[this.current];
+            this.levels[this.current].init(this.levels[this.current]);
+        }
+        this.levels[this.current].enable (true);
     }
 }
 
@@ -65,6 +72,7 @@ export interface ObjectAsset {
     static?: boolean;
     extra?: any;
     tile?: boolean;
+    repeat?: boolean;
 }
 
 export interface BasicAsset {
@@ -94,7 +102,7 @@ export function createLevel (_const: LevelConstructor): Level {
             else {
                 // Static Object
                 // Add the object
-                OBJ = new GameSprite (out.game, out, iter.name, iter.position, iter.assets, iter.extra);
+                OBJ = new GameSprite (out.game, out, iter.name, iter.position, iter.assets, iter.extra, iter.repeat);
             }
             if (typeof iter.physics !== "undefined") {
                 OBJ.loadBody (iter.physics);
@@ -113,7 +121,7 @@ export class Level {
     game: MainGame;
     name: string;
     setframe: () => void = () => {return};
-    init: (l: Level) => void;
+    binit: (l: Level) => void;
     done: () => boolean;
     inited: boolean = false;
     missionControl: MissionControl;
@@ -122,29 +130,32 @@ export class Level {
         this.game = game;
         this.name = name;
         this.setframe = frame;
-        this.init = init;
+        this.binit = init;
         this.done = done;
         this.missionControl = new MissionControl (this);
         this.missionControl.begin ();
     }
 
+    init = (l :Level) => {
+        this.binit (l);
+        this.inited = true;
+    };
+
     frame = () => {
-        this.missionControl.frame ();
-        this.setframe ();
+        if (this.inited) {
+            this.missionControl.frame ();
+            this.setframe ();
+        }
     }
 
     addMission = (l: MissionContructor) => {
         this.missionControl.addMission (generateMission (l));
     }
 
-    enable = () => {
+    enable = (doInit = false) => {
         this.objects.forEach(element => {
             element.enable ();
         });
-        if (!this.inited) {
-            this.init (this);
-            this.inited = true;
-        }
     }
 
     disable = () => {

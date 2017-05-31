@@ -10,7 +10,8 @@ export class Wrapper {
         // 2: Open Mission Control
         1,
         0,
-        2
+        2,
+        0
         //0
     ];
     currentTotal: number = 0;
@@ -28,7 +29,7 @@ export class Wrapper {
         this.handleNext ();
     }
 
-    handleNext () {
+    handleNext (t = false) {
         if (this.order[this.currentTotal] == 2) {
             this.game.openMissionControl();
         }
@@ -47,7 +48,7 @@ export class Wrapper {
             $('.scene-wrapper').removeClass ('text');
             $('.scene-wrapper').addClass ('game');
             this.game.show ();
-            this.game.levelsequence.nextLevel ();
+            this.game.levelsequence.nextLevel (t);
         }
         this.currentTotal++;
     }

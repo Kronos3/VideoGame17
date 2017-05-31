@@ -155,7 +155,6 @@ function setup_pos(e, x_scale, y_scale) {
     $(e).data('yfactor', y_scale);
 }
 function DoGame(game) {
-    var _this = this;
     var levels = [
         {
             name: "intro",
@@ -218,6 +217,7 @@ function DoGame(game) {
                 return false; //(<any>window).GAME.getLevel ('intro').getObject('Artemis').getAltitude() > 4000;
             },
             init: function (___this) {
+                window.GAME.setGravity(100, 0.1);
             }
         },
         {
@@ -229,16 +229,11 @@ function DoGame(game) {
                     assets: "Stars",
                     position: {
                         x: function () { return 0; },
-                        y: function () { return 0; }
-                    }
-                },
-                {
-                    name: "stars2",
-                    assets: "Stars",
-                    position: {
-                        x: function () { return 0; },
-                        y: function () { return 1600; }
-                    }
+                        y: function () { return 0; },
+                        width: 9200,
+                        height: 9200
+                    },
+                    repeat: true
                 },
             ],
             frame: function () {
@@ -247,7 +242,13 @@ function DoGame(game) {
                 return false; //(<any>window).GAME.getLevel ('intro').getObject('Artemis').getAltitude() > 4000;
             },
             init: function (___this) {
-                ___this.game.game.world.setBounds(0, 0, _this.game.width, 4600);
+                window.GAME.setGravity(0, 0.1);
+                ___this.game.game.world.setBounds(0, 0, 9200, 9200);
+                ___this.getObject('ship').pos = {
+                    x: function () { return window.GAME.game.world.centerX; },
+                    y: function () { return window.GAME.game.world.centerY; }
+                };
+                ___this.getObject('ship').reset(false);
             }
         },
     ];
@@ -263,7 +264,6 @@ function DoGame(game) {
                     return window.GAME.getLevel('intro').getObject('ship').getAltitude() > 4000;
                 },
                 onDone: function () {
-                    console.log('mission complete');
                 },
                 update: function () {
                     if (window.GAME.getLevel('intro').getObject('ship') == null) {
@@ -328,19 +328,25 @@ function difDone() {
         initShip(window.GAME.getLevel('intro'));
         window.GAME.resume();
     });
+    $('.mission-control-done').get(0).addEventListener('click', function () {
+        window.GAME.wrapper.handleNext(true);
+        window.GAME.closeMissionControl();
+    });
 }
 function initShip(___this) {
-    ___this.addObject(new shipClass(window.GAME, ___this));
+    var buf = new shipClass(window.GAME, ___this);
+    ___this.addObject(buf);
     window.GAME.addControlScheme([
-        ship_1.ShipBinding(window.GAME, ___this.getObject('ship')),
+        ship_1.ShipBinding(window.GAME, buf),
         {
             key: Phaser.KeyCode.R,
             callback: function () {
-                ___this.getObject('ship').reset();
+                buf.reset();
             },
             press: true
         }
     ]);
-    window.GAME.setGravity(100, 0.1);
-    window.GAME.game.camera.follow(___this.getObject('ship').pObject);
+    window.GAME.game.camera.follow(buf.pObject);
+    ___this.init(___this);
 }
+exports.initShip = initShip;

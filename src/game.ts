@@ -122,6 +122,14 @@ export class MainGame {
             this.pause ();
     }
 
+    closeMissionControl = () => {
+            $('.scene-wrapper').removeClass ('title');
+            $('.scene-wrapper').removeClass ('text');
+            $('.scene-wrapper').addClass ('game');
+            $('.mission-control').css ('display', 'none');
+            this.resume ();
+    }
+
     create = () => {
         var mainCanvas = $(this.game.canvas);
         mainCanvas.detach();

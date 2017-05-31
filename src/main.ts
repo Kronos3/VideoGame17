@@ -236,6 +236,7 @@ function DoGame (game: MainGame): void {
                 return false; //(<any>window).GAME.getLevel ('intro').getObject('Artemis').getAltitude() > 4000;
             },
             init: (___this: Level) => {
+                (<any>window).GAME.setGravity (100, 0.1);
             }
         },
         {
@@ -247,16 +248,11 @@ function DoGame (game: MainGame): void {
                     assets: "Stars",
                     position: {
                         x: ():number => {return 0},
-                        y: ():number => {return 0}
-                    }
-                },
-                {
-                    name: "stars2",
-                    assets: "Stars",
-                    position: {
-                        x: ():number => {return 0},
-                        y: ():number => {return 1600}
-                    }
+                        y: ():number => {return 0},
+                        width: 9200,
+                        height: 9200
+                    },
+                    repeat: true
                 },
                 
             ],
@@ -266,7 +262,13 @@ function DoGame (game: MainGame): void {
                 return false; //(<any>window).GAME.getLevel ('intro').getObject('Artemis').getAltitude() > 4000;
             },
             init: (___this: Level) => {
-                ___this.game.game.world.setBounds(0, 0, this.game.width, 4600);
+                (<any>window).GAME.setGravity (0, 0.1);
+                ___this.game.game.world.setBounds(0, 0, 9200, 9200);
+                ___this.getObject ('ship').pos = {
+                    x: ():number => {return (<any>window).GAME.game.world.centerX},
+                    y: ():number => {return (<any>window).GAME.game.world.centerY}
+                };
+                (<Ship>___this.getObject ('ship')).reset (false);
             }
         },
 
@@ -284,7 +286,6 @@ function DoGame (game: MainGame): void {
                     return (<any>window).GAME.getLevel('intro').getObject('ship').getAltitude () > 4000;
                 },
                 onDone: () => {
-                    console.log('mission complete');
                 },
                 update: () => {
                     if ((<any>window).GAME.getLevel('intro').getObject('ship') == null){
@@ -352,23 +353,28 @@ function difDone () {
         initShip ((<any>window).GAME.getLevel ('intro'));
         (<any>window).GAME.resume ();
     });
+    $('.mission-control-done').get (0).addEventListener ('click', () => {
+        (<any>window).GAME.wrapper.handleNext(true);
+        (<any>window).GAME.closeMissionControl ();
+    })
 }
 
-function initShip (___this: Level) {
-    ___this.addObject (new shipClass (
+export function initShip (___this: Level) {
+    var buf = new shipClass (
         (<any>window).GAME,
         ___this
-    ));
+    );
+    ___this.addObject (buf);
     (<any>window).GAME.addControlScheme ([
-        ShipBinding((<any>window).GAME, <Ship>___this.getObject ('ship')),
+        ShipBinding((<any>window).GAME, <Ship>buf),
         {
             key: Phaser.KeyCode.R,
             callback: () => {
-                (<Ship>___this.getObject ('ship')).reset();
+                (<Ship>buf).reset();
             },
             press: true
         }
     ]);
-    (<any>window).GAME.setGravity (100, 0.1);
-    (<any>window).GAME.game.camera.follow(___this.getObject('ship').pObject);
+    (<any>window).GAME.game.camera.follow(buf.pObject);
+    ___this.init (___this);
 }

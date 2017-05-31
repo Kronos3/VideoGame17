@@ -11,7 +11,8 @@ var Wrapper = (function () {
             // 2: Open Mission Control
             1,
             0,
-            2
+            2,
+            0
             //0
         ];
         this.currentTotal = 0;
@@ -26,7 +27,8 @@ var Wrapper = (function () {
         });
         this.game.wrapper = this;
     }
-    Wrapper.prototype.handleNext = function () {
+    Wrapper.prototype.handleNext = function (t) {
+        if (t === void 0) { t = false; }
         if (this.order[this.currentTotal] == 2) {
             this.game.openMissionControl();
         }
@@ -45,7 +47,7 @@ var Wrapper = (function () {
             $('.scene-wrapper').removeClass('text');
             $('.scene-wrapper').addClass('game');
             this.game.show();
-            this.game.levelsequence.nextLevel();
+            this.game.levelsequence.nextLevel(t);
         }
         this.currentTotal++;
     };

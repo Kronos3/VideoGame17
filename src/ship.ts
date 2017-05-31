@@ -88,7 +88,7 @@ export class Ship extends DynamicSprite {
         this.monoProp -= this.calcUsage (this.monoIsp);
     }
 
-    reset = () => {
+    reset = (t = true) => {
         this.pObject.body.setZeroForce();
         this.pObject.body.setZeroRotation();
         this.pObject.body.setZeroVelocity();
@@ -96,8 +96,11 @@ export class Ship extends DynamicSprite {
         this.pObject.body.y = this.pos.y();
         this.pObject.body.rotation = 0;
         this.isDead = false;
-        this.LFO = this.maxLFO;
-        this.monoProp = this.maxMono;
+        
+        if (t) {
+            this.LFO = this.maxLFO;
+            this.monoProp = this.maxMono;
+        }
         this.game.game.camera.follow (this.pObject);
     }
 
@@ -176,7 +179,7 @@ export class Ship extends DynamicSprite {
     }
 
     postframe = () => {
-        if ((<any>this.extra).SAS && !this.game.game.input.keyboard.isDown (Phaser.Keyboard.LEFT) && this.game.game.input.keyboard.isDown (Phaser.Keyboard.LEFT)) {
+        if ((<any>this.extra).SAS && !this.game.game.input.keyboard.isDown (Phaser.Keyboard.RIGHT) && this.game.game.input.keyboard.isDown (Phaser.Keyboard.LEFT)) {
             this.SAS ();
         }
         (<any>this.extra).thrustOn = false;
@@ -185,6 +188,9 @@ export class Ship extends DynamicSprite {
     }
 
     gravityAction = () => {
+        if (this.game.gravity == 0) {
+            return;
+        }
         var BODY = this.pObject.body;
         var relative_thrust = -( this.game.gravity * this.pObject.body.mass);
         BODY.velocity.y -= (relative_thrust / 100) * this.game.get_ratio();

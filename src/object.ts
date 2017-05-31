@@ -6,24 +6,32 @@ import * as UTIL from "./util"
 export interface _position {
     x(): number;
     y(): number;
+    width?: number;
+    height?: number;
 }
 
 export class GameSprite {
-    pObject: Phaser.Sprite;
+    pObject: Phaser.Sprite | Phaser.TileSprite;
     level: LEVEL.Level;
     game: MainGame;
     asset: string;
     extra: Object;
     name: string;
     pos: _position;
-    constructor (game: MainGame, level: LEVEL.Level, name:string, pos: _position, asset: string, extra?: any) {
+    constructor (game: MainGame, level: LEVEL.Level, name:string, pos: _position, asset: string, extra?: any, repeat = false) {
         this.level = level;
         this.name = name;
         this.game = game;
         this.asset = asset;
         this.extra = extra;
         this.pos = pos;
-        this.pObject = this.game.game.add.sprite (this.pos.x(), this.pos.y(), this.asset);
+        if (repeat || typeof repeat ==='undefined') {
+            this.pObject = this.game.game.add.tileSprite (this.pos.x(), this.pos.y(), this.pos.width, this.pos.height, asset);
+        }
+        else {
+            this.pObject = this.game.game.add.sprite (this.pos.x(), this.pos.y(), this.asset);
+        }
+        
     }
 
     addToLevel (level: LEVEL.Level) {
@@ -69,8 +77,8 @@ export class GameSprite {
     }
 }
 
-
 export class DynamicSprite extends GameSprite {
+    pObject: Phaser.Sprite;
     assets: string[] = [];
     constructor (game: MainGame, level: LEVEL.Level, name:string, pos: _position, assets: string[], extra?: any) {
         super (game, level, name, pos, assets[0], extra);

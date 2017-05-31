@@ -176,6 +176,13 @@ var MainGame = (function () {
             $('.mission-control').css('display', 'block');
             _this.pause();
         };
+        this.closeMissionControl = function () {
+            $('.scene-wrapper').removeClass('title');
+            $('.scene-wrapper').removeClass('text');
+            $('.scene-wrapper').addClass('game');
+            $('.mission-control').css('display', 'none');
+            _this.resume();
+        };
         this.create = function () {
             var mainCanvas = $(_this.game.canvas);
             mainCanvas.detach();
@@ -302,13 +309,18 @@ var LevelSequence = (function () {
             }
             _this.levels[0].enable();
         };
-        this.nextLevel = function () {
+        this.nextLevel = function (t) {
+            if (t === void 0) { t = false; }
             _this.current++;
-            for (var i = 1; i != _this.levels.length; i++) {
+            for (var i = 0; i != _this.levels.length; i++) {
                 _this.levels[i].disable();
             }
-            _this.levels[_this.current].enable();
-            _this.levels[0].enable();
+            if (t) {
+                UTIL.move(_this.levels[_this.current - 1].getObject('ship'), _this.levels[_this.current - 1].objects, _this.levels[_this.current].objects);
+                _this.levels[_this.current].getObject('ship').level = _this.levels[_this.current];
+                _this.levels[_this.current].init(_this.levels[_this.current]);
+            }
+            _this.levels[_this.current].enable(true);
         };
         ;
     }
@@ -329,7 +341,7 @@ function createLevel(_const) {
             else {
                 // Static Object
                 // Add the object
-                OBJ = new object_1.GameSprite(out.game, out, iter.name, iter.position, iter.assets, iter.extra);
+                OBJ = new object_1.GameSprite(out.game, out, iter.name, iter.position, iter.assets, iter.extra, iter.repeat);
             }
             if (typeof iter.physics !== "undefined") {
                 OBJ.loadBody(iter.physics);
@@ -351,21 +363,24 @@ var Level = (function () {
         this.objects = [];
         this.setframe = function () { return; };
         this.inited = false;
+        this.init = function (l) {
+            _this.binit(l);
+            _this.inited = true;
+        };
         this.frame = function () {
-            _this.missionControl.frame();
-            _this.setframe();
+            if (_this.inited) {
+                _this.missionControl.frame();
+                _this.setframe();
+            }
         };
         this.addMission = function (l) {
             _this.missionControl.addMission(mission_1.generateMission(l));
         };
-        this.enable = function () {
+        this.enable = function (doInit) {
+            if (doInit === void 0) { doInit = false; }
             _this.objects.forEach(function (element) {
                 element.enable();
             });
-            if (!_this.inited) {
-                _this.init(_this);
-                _this.inited = true;
-            }
         };
         this.disable = function () {
             _this.objects.forEach(function (element) {
@@ -407,7 +422,7 @@ var Level = (function () {
         this.game = game;
         this.name = name;
         this.setframe = frame;
-        this.init = init;
+        this.binit = init;
         this.done = done;
         this.missionControl = new mission_2.MissionControl(this);
         this.missionControl.begin();
@@ -574,7 +589,6 @@ function setup_pos(e, x_scale, y_scale) {
     $(e).data('yfactor', y_scale);
 }
 function DoGame(game) {
-    var _this = this;
     var levels = [
         {
             name: "intro",
@@ -637,6 +651,7 @@ function DoGame(game) {
                 return false; //(<any>window).GAME.getLevel ('intro').getObject('Artemis').getAltitude() > 4000;
             },
             init: function (___this) {
+                window.GAME.setGravity(100, 0.1);
             }
         },
         {
@@ -648,16 +663,11 @@ function DoGame(game) {
                     assets: "Stars",
                     position: {
                         x: function () { return 0; },
-                        y: function () { return 0; }
-                    }
-                },
-                {
-                    name: "stars2",
-                    assets: "Stars",
-                    position: {
-                        x: function () { return 0; },
-                        y: function () { return 1600; }
-                    }
+                        y: function () { return 0; },
+                        width: 9200,
+                        height: 9200
+                    },
+                    repeat: true
                 },
             ],
             frame: function () {
@@ -666,7 +676,13 @@ function DoGame(game) {
                 return false; //(<any>window).GAME.getLevel ('intro').getObject('Artemis').getAltitude() > 4000;
             },
             init: function (___this) {
-                ___this.game.game.world.setBounds(0, 0, _this.game.width, 4600);
+                window.GAME.setGravity(0, 0.1);
+                ___this.game.game.world.setBounds(0, 0, 9200, 9200);
+                ___this.getObject('ship').pos = {
+                    x: function () { return window.GAME.game.world.centerX; },
+                    y: function () { return window.GAME.game.world.centerY; }
+                };
+                ___this.getObject('ship').reset(false);
             }
         },
     ];
@@ -682,7 +698,6 @@ function DoGame(game) {
                     return window.GAME.getLevel('intro').getObject('ship').getAltitude() > 4000;
                 },
                 onDone: function () {
-                    console.log('mission complete');
                 },
                 update: function () {
                     if (window.GAME.getLevel('intro').getObject('ship') == null) {
@@ -747,22 +762,28 @@ function difDone() {
         initShip(window.GAME.getLevel('intro'));
         window.GAME.resume();
     });
+    $('.mission-control-done').get(0).addEventListener('click', function () {
+        window.GAME.wrapper.handleNext(true);
+        window.GAME.closeMissionControl();
+    });
 }
 function initShip(___this) {
-    ___this.addObject(new shipClass(window.GAME, ___this));
+    var buf = new shipClass(window.GAME, ___this);
+    ___this.addObject(buf);
     window.GAME.addControlScheme([
-        ship_1.ShipBinding(window.GAME, ___this.getObject('ship')),
+        ship_1.ShipBinding(window.GAME, buf),
         {
             key: Phaser.KeyCode.R,
             callback: function () {
-                ___this.getObject('ship').reset();
+                buf.reset();
             },
             press: true
         }
     ]);
-    window.GAME.setGravity(100, 0.1);
-    window.GAME.game.camera.follow(___this.getObject('ship').pObject);
+    window.GAME.game.camera.follow(buf.pObject);
+    ___this.init(___this);
 }
+exports.initShip = initShip;
 
 },{"./background":1,"./game":3,"./ship":8,"./wrapper":12}],6:[function(require,module,exports){
 "use strict";
@@ -850,7 +871,8 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var UTIL = require("./util");
 var GameSprite = (function () {
-    function GameSprite(game, level, name, pos, asset, extra) {
+    function GameSprite(game, level, name, pos, asset, extra, repeat) {
+        if (repeat === void 0) { repeat = false; }
         var _this = this;
         this.resetPosition = function () {
             _this.pObject.x = _this.pos.x();
@@ -888,7 +910,12 @@ var GameSprite = (function () {
         this.asset = asset;
         this.extra = extra;
         this.pos = pos;
-        this.pObject = this.game.game.add.sprite(this.pos.x(), this.pos.y(), this.asset);
+        if (repeat || typeof repeat === 'undefined') {
+            this.pObject = this.game.game.add.tileSprite(this.pos.x(), this.pos.y(), this.pos.width, this.pos.height, asset);
+        }
+        else {
+            this.pObject = this.game.game.add.sprite(this.pos.x(), this.pos.y(), this.asset);
+        }
     }
     GameSprite.prototype.addToLevel = function (level) {
     };
@@ -999,7 +1026,8 @@ var Ship = (function (_super) {
         _this.monoFlow = function () {
             _this.monoProp -= _this.calcUsage(_this.monoIsp);
         };
-        _this.reset = function () {
+        _this.reset = function (t) {
+            if (t === void 0) { t = true; }
             _this.pObject.body.setZeroForce();
             _this.pObject.body.setZeroRotation();
             _this.pObject.body.setZeroVelocity();
@@ -1007,8 +1035,10 @@ var Ship = (function (_super) {
             _this.pObject.body.y = _this.pos.y();
             _this.pObject.body.rotation = 0;
             _this.isDead = false;
-            _this.LFO = _this.maxLFO;
-            _this.monoProp = _this.maxMono;
+            if (t) {
+                _this.LFO = _this.maxLFO;
+                _this.monoProp = _this.maxMono;
+            }
             _this.game.game.camera.follow(_this.pObject);
         };
         _this.explode = function () {
@@ -1074,7 +1104,7 @@ var Ship = (function (_super) {
             _this.switchTo(_this.assets[0]);
         };
         _this.postframe = function () {
-            if (_this.extra.SAS && !_this.game.game.input.keyboard.isDown(Phaser.Keyboard.LEFT) && _this.game.game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
+            if (_this.extra.SAS && !_this.game.game.input.keyboard.isDown(Phaser.Keyboard.RIGHT) && _this.game.game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
                 _this.SAS();
             }
             _this.extra.thrustOn = false;
@@ -1082,6 +1112,9 @@ var Ship = (function (_super) {
             _this.setResources();
         };
         _this.gravityAction = function () {
+            if (_this.game.gravity == 0) {
+                return;
+            }
             var BODY = _this.pObject.body;
             var relative_thrust = -(_this.game.gravity * _this.pObject.body.mass);
             BODY.velocity.y -= (relative_thrust / 100) * _this.game.get_ratio();
@@ -1302,6 +1335,24 @@ String.prototype.format = function () {
             ? args[number] : match;
     });
 };
+Array.prototype.indexOf || (Array.prototype.indexOf = function (d, e) {
+    var a;
+    if (null == this)
+        throw new TypeError('"this" is null or not defined');
+    var c = Object(this), b = c.length >>> 0;
+    if (0 === b)
+        return -1;
+    a = +e || 0;
+    Infinity === Math.abs(a) && (a = 0);
+    if (a >= b)
+        return -1;
+    for (a = Math.max(0 <= a ? a : b - Math.abs(a), 0); a < b;) {
+        if (a in c && c[a] === d)
+            return a;
+        a++;
+    }
+    return -1;
+});
 function error(message) {
     try {
         throw new Error(message);
@@ -1311,6 +1362,15 @@ function error(message) {
     }
 }
 exports.error = error;
+function move(el, src, desc) {
+    var b = el;
+    var index = src.indexOf(el);
+    if (index != -1) {
+        src.splice(index, 1);
+    }
+    desc.push(b);
+}
+exports.move = move;
 
 },{}],12:[function(require,module,exports){
 "use strict";
@@ -1326,7 +1386,8 @@ var Wrapper = (function () {
             // 2: Open Mission Control
             1,
             0,
-            2
+            2,
+            0
             //0
         ];
         this.currentTotal = 0;
@@ -1341,7 +1402,8 @@ var Wrapper = (function () {
         });
         this.game.wrapper = this;
     }
-    Wrapper.prototype.handleNext = function () {
+    Wrapper.prototype.handleNext = function (t) {
+        if (t === void 0) { t = false; }
         if (this.order[this.currentTotal] == 2) {
             this.game.openMissionControl();
         }
@@ -1360,7 +1422,7 @@ var Wrapper = (function () {
             $('.scene-wrapper').removeClass('text');
             $('.scene-wrapper').addClass('game');
             this.game.show();
-            this.game.levelsequence.nextLevel();
+            this.game.levelsequence.nextLevel(t);
         }
         this.currentTotal++;
     };
@@ -1368,4 +1430,4 @@ var Wrapper = (function () {
 }());
 exports.Wrapper = Wrapper;
 
-},{"./type":9}]},{},[2,3,4,5,7,8,9,11,12]);
+},{"./type":9}]},{},[1,2,3,4,5,6,7,8,9,10,11,12]);

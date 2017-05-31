@@ -753,3 +753,18 @@ body {
     color: #7B7B7B;
     transform: translateX(-50%) scale(1.2);
 }
+
+.mission-control-done {
+    color: #fff;
+    font-size: 42px;
+    position: absolute;
+    left: 50%;
+    bottom: 10%;
+    text-transform: uppercase;
+    transform: translateX(-50%);
+}
+
+.mission-control-done:hover {
+    color: #7B7B7B;
+    transform: translateX(-50%) scale(1.2);
+}

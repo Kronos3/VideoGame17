@@ -76,7 +76,8 @@ var Ship = (function (_super) {
         _this.monoFlow = function () {
             _this.monoProp -= _this.calcUsage(_this.monoIsp);
         };
-        _this.reset = function () {
+        _this.reset = function (t) {
+            if (t === void 0) { t = true; }
             _this.pObject.body.setZeroForce();
             _this.pObject.body.setZeroRotation();
             _this.pObject.body.setZeroVelocity();
@@ -84,8 +85,10 @@ var Ship = (function (_super) {
             _this.pObject.body.y = _this.pos.y();
             _this.pObject.body.rotation = 0;
             _this.isDead = false;
-            _this.LFO = _this.maxLFO;
-            _this.monoProp = _this.maxMono;
+            if (t) {
+                _this.LFO = _this.maxLFO;
+                _this.monoProp = _this.maxMono;
+            }
             _this.game.game.camera.follow(_this.pObject);
         };
         _this.explode = function () {
@@ -151,7 +154,7 @@ var Ship = (function (_super) {
             _this.switchTo(_this.assets[0]);
         };
         _this.postframe = function () {
-            if (_this.extra.SAS && !_this.game.game.input.keyboard.isDown(Phaser.Keyboard.LEFT) && _this.game.game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
+            if (_this.extra.SAS && !_this.game.game.input.keyboard.isDown(Phaser.Keyboard.RIGHT) && _this.game.game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
                 _this.SAS();
             }
             _this.extra.thrustOn = false;
@@ -159,6 +162,9 @@ var Ship = (function (_super) {
             _this.setResources();
         };
         _this.gravityAction = function () {
+            if (_this.game.gravity == 0) {
+                return;
+            }
             var BODY = _this.pObject.body;
             var relative_thrust = -(_this.game.gravity * _this.pObject.body.mass);
             BODY.velocity.y -= (relative_thrust / 100) * _this.game.get_ratio();

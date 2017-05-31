@@ -106,6 +106,13 @@ var MainGame = (function () {
             $('.mission-control').css('display', 'block');
             _this.pause();
         };
+        this.closeMissionControl = function () {
+            $('.scene-wrapper').removeClass('title');
+            $('.scene-wrapper').removeClass('text');
+            $('.scene-wrapper').addClass('game');
+            $('.mission-control').css('display', 'none');
+            _this.resume();
+        };
         this.create = function () {
             var mainCanvas = $(_this.game.canvas);
             mainCanvas.detach();

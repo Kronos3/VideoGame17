@@ -22,6 +22,23 @@ String.prototype.format = function(..._args: any[]) {
     });
 }
 
+
+Array.prototype.indexOf || (Array.prototype.indexOf = function(d, e) {
+    var a;
+    if (null == this) throw new TypeError('"this" is null or not defined');
+    var c = Object(this),
+        b = c.length >>> 0;
+    if (0 === b) return -1;
+    a = +e || 0;
+    Infinity === Math.abs(a) && (a = 0);
+    if (a >= b) return -1;
+    for (a = Math.max(0 <= a ? a : b - Math.abs(a), 0); a < b;) {
+        if (a in c && c[a] === d) return a;
+        a++
+    }
+    return -1
+});
+
 export function error (message: string) {
     try {
         throw new Error (message);
@@ -29,4 +46,13 @@ export function error (message: string) {
     catch (e) {
         console.error (e.message);
     }
+}
+
+export function move (el, src:Array<any>, desc: Array<any>) {
+    var b = el;
+    var index = src.indexOf (el);
+    if (index != -1) {
+        src.splice (index, 1);
+    }
+    desc.push (b);
 }

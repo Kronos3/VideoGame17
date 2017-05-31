@@ -12,7 +12,8 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var UTIL = require("./util");
 var GameSprite = (function () {
-    function GameSprite(game, level, name, pos, asset, extra) {
+    function GameSprite(game, level, name, pos, asset, extra, repeat) {
+        if (repeat === void 0) { repeat = false; }
         var _this = this;
         this.resetPosition = function () {
             _this.pObject.x = _this.pos.x();
@@ -50,7 +51,12 @@ var GameSprite = (function () {
         this.asset = asset;
         this.extra = extra;
         this.pos = pos;
-        this.pObject = this.game.game.add.sprite(this.pos.x(), this.pos.y(), this.asset);
+        if (repeat || typeof repeat === 'undefined') {
+            this.pObject = this.game.game.add.tileSprite(this.pos.x(), this.pos.y(), this.pos.width, this.pos.height, asset);
+        }
+        else {
+            this.pObject = this.game.game.add.sprite(this.pos.x(), this.pos.y(), this.asset);
+        }
     }
     GameSprite.prototype.addToLevel = function (level) {
     };
