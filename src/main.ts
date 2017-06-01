@@ -11,6 +11,7 @@ import {Wrapper} from "./wrapper"
 import {Task} from "./background"
 import {Level} from "./level"
 import {MissionContructor} from "./mission"
+import {AstroidBelt} from "./astroid"
 
 function getlength(number) {
     return number.toString().length;
@@ -265,11 +266,17 @@ function DoGame (game: MainGame): void {
                 (<any>window).GAME.setGravity (0, 0.1);
                 ___this.game.game.world.setBounds(0, 0, 9200, 9200);
                 ___this.getObject ('ship').pos = {
-                    x: ():number => {return (<any>window).GAME.game.world.centerX},
+                    x: ():number => {return 70},
                     y: ():number => {return (<any>window).GAME.game.world.centerY}
                 };
                 (<Ship>___this.getObject ('ship')).reset (false);
-                (<any>window).GAME.uicontroller.setPlanet ('ceres')
+                (<any>window).GAME.uicontroller.setPlanet ('ceres');
+
+                // Initialize the Astroid belt;
+                (<any>___this).astroidbelt = new AstroidBelt ((<any>window).GAME, ___this);
+                for (var i=0; i!=160; i++) {
+                    (<any>___this).astroidbelt.spawn ();
+                }
             }
         },
 

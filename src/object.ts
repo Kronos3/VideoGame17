@@ -58,12 +58,13 @@ export class GameSprite {
     }
 
     isStatic: boolean;
-
+    
     disable = () => {
         if (this.pObject.body != null) {
             this.isStatic = this.pObject.body.static;
             this.pObject.body.static = true;
             this.pObject.body.moves = false;
+            //this.pObject.body.collides ();
         }
         this.pObject.visible = false;
     }
@@ -73,6 +74,7 @@ export class GameSprite {
         if (this.pObject.body != null) {
             this.pObject.body.static = this.isStatic;
             this.pObject.body.moves = true;
+            //this.pObject.body.collides (this.level.getAllBodies ());
         }
     }
 }

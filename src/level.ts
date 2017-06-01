@@ -148,6 +148,14 @@ export class Level {
         }
     }
 
+    getAllBodies = () => {
+        var out = [];
+        this.objects.forEach(element => {
+            out.push(element.pObject.body);
+        });
+        return out;
+    }
+
     addMission = (l: MissionContructor) => {
         this.missionControl.addMission (generateMission (l));
     }

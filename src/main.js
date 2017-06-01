@@ -7,6 +7,7 @@ var ship_3 = require("./ship");
 var ship_4 = require("./ship");
 var wrapper_1 = require("./wrapper");
 var background_1 = require("./background");
+var astroid_1 = require("./astroid");
 function getlength(number) {
     return number.toString().length;
 }
@@ -245,11 +246,16 @@ function DoGame(game) {
                 window.GAME.setGravity(0, 0.1);
                 ___this.game.game.world.setBounds(0, 0, 9200, 9200);
                 ___this.getObject('ship').pos = {
-                    x: function () { return window.GAME.game.world.centerX; },
+                    x: function () { return 70; },
                     y: function () { return window.GAME.game.world.centerY; }
                 };
                 ___this.getObject('ship').reset(false);
                 window.GAME.uicontroller.setPlanet('ceres');
+                // Initialize the Astroid belt;
+                ___this.astroidbelt = new astroid_1.AstroidBelt(window.GAME, ___this);
+                for (var i = 0; i != 160; i++) {
+                    ___this.astroidbelt.spawn();
+                }
             }
         },
     ];

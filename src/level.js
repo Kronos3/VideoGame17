@@ -100,6 +100,13 @@ var Level = (function () {
                 _this.setframe();
             }
         };
+        this.getAllBodies = function () {
+            var out = [];
+            _this.objects.forEach(function (element) {
+                out.push(element.pObject.body);
+            });
+            return out;
+        };
         this.addMission = function (l) {
             _this.missionControl.addMission(mission_1.generateMission(l));
         };

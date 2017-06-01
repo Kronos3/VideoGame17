@@ -25,13 +25,13 @@ export class AstroidBelt {
         //Determine type of astroid
         var type = UTIL.getRandomInt (0, 1);
         var pos = {
-            x: UTIL.getRandomInt (0, this.game.game.world.bounds.width),
-            y: UTIL.getRandomInt (0, this.game.game.world.bounds.height)
+            x: () => {return UTIL.getRandomInt (0, this.game.game.world.bounds.width)},
+            y: () => {return UTIL.getRandomInt (0, this.game.game.world.bounds.height)}
         }
         var force = {
-            x: UTIL.getRandomArbitrary (-40, 40),
-            y: UTIL.getRandomArbitrary (-40, 40),
-            r: UTIL.getRandomArbitrary (-2, 2)
+            x: UTIL.getRandomArbitrary (80, 120) * (type ? -1: 1),
+            y: UTIL.getRandomArbitrary (80, 120) * (type ? -1: 1),
+            r: UTIL.getRandomArbitrary (40, 70) * (type ? -1: 1)
         }
         if (type) {
             var buffer = new Astroid (
@@ -40,7 +40,6 @@ export class AstroidBelt {
                 'SMALL-astroid{0}'.format (this.astroids.length),
                 pos, 
                 'Meteor-Small', 'Meteor_Small-L', force);
-            this.astroids.push (buffer);
         }
         else {
             var buffer = new Astroid (
@@ -49,8 +48,9 @@ export class AstroidBelt {
                 'LARGE-astroid{0}'.format (this.astroids.length),
                 pos, 
                 'Meteor', 'Meteor-L', force);
-            this.astroids.push (buffer);
         }
+        this.level.addObject (buffer);
+        this.astroids.push (buffer);
     }
 }
 
@@ -63,12 +63,14 @@ export class Astroid extends GameSprite {
         this.loadBody (this.body);
         this.force = force;
         this.setForce (this.force);
-        this.pObject.body.collideWorldBounds = false;
+        //this.pObject.body.collideWorldBounds = false;
     }
 
     setForce (f: Force) {
         this.pObject.body.velocity.x = f.x;
         this.pObject.body.velocity.y = f.y;
         this.pObject.body.angularForce = f.r;
+        this.pObject.body.damping = 0;
+        this.pObject.body.mass = 100;
     }
 }

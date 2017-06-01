@@ -35,6 +35,7 @@ var GameSprite = (function () {
                 _this.isStatic = _this.pObject.body.static;
                 _this.pObject.body.static = true;
                 _this.pObject.body.moves = false;
+                //this.pObject.body.collides ();
             }
             _this.pObject.visible = false;
         };
@@ -43,6 +44,7 @@ var GameSprite = (function () {
             if (_this.pObject.body != null) {
                 _this.pObject.body.static = _this.isStatic;
                 _this.pObject.body.moves = true;
+                //this.pObject.body.collides (this.level.getAllBodies ());
             }
         };
         this.level = level;
