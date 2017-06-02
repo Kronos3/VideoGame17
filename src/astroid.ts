@@ -60,7 +60,13 @@ export class Astroid extends GameSprite {
     constructor (game: MainGame, level: Level, name: string, pos: _position, asset: string, body: string, force: Force) {
         super (game, level, name, pos, asset);
         this.body = body;
-        this.loadBody (this.body);
+        this.enablePhysics ();
+        if (asset == "Meteor") {
+            this.pObject.body.setCircle (130);
+        }
+        else {
+            this.pObject.body.setCircle (60);
+        }
         this.force = force;
         this.setForce (this.force);
         //this.pObject.body.collideWorldBounds = false;

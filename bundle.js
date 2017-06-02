@@ -51,7 +51,13 @@ var Astroid = (function (_super) {
     function Astroid(game, level, name, pos, asset, body, force) {
         var _this = _super.call(this, game, level, name, pos, asset) || this;
         _this.body = body;
-        _this.loadBody(_this.body);
+        _this.enablePhysics();
+        if (asset == "Meteor") {
+            _this.pObject.body.setCircle(130);
+        }
+        else {
+            _this.pObject.body.setCircle(60);
+        }
         _this.force = force;
         _this.setForce(_this.force);
         return _this;
@@ -769,7 +775,7 @@ function DoGame(game) {
                 window.GAME.uicontroller.setPlanet('ceres');
                 // Initialize the Astroid belt;
                 ___this.astroidbelt = new astroid_1.AstroidBelt(window.GAME, ___this);
-                for (var i = 0; i != 160; i++) {
+                for (var i = 0; i != 200; i++) {
                     ___this.astroidbelt.spawn();
                 }
             }

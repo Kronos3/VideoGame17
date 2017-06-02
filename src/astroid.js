@@ -50,7 +50,13 @@ var Astroid = (function (_super) {
     function Astroid(game, level, name, pos, asset, body, force) {
         var _this = _super.call(this, game, level, name, pos, asset) || this;
         _this.body = body;
-        _this.loadBody(_this.body);
+        _this.enablePhysics();
+        if (asset == "Meteor") {
+            _this.pObject.body.setCircle(130);
+        }
+        else {
+            _this.pObject.body.setCircle(60);
+        }
         _this.force = force;
         _this.setForce(_this.force);
         return _this;

@@ -274,7 +274,7 @@ function DoGame (game: MainGame): void {
 
                 // Initialize the Astroid belt;
                 (<any>___this).astroidbelt = new AstroidBelt ((<any>window).GAME, ___this);
-                for (var i=0; i!=160; i++) {
+                for (var i=0; i!=200; i++) {
                     (<any>___this).astroidbelt.spawn ();
                 }
             }
