@@ -69,6 +69,16 @@ export class Astroid extends GameSprite {
         }
         this.force = force;
         this.setForce (this.force);
+        var vector = this.getVector (
+            this.level.getObject('reference').pObject.body.x,
+            this.level.getObject('reference').pObject.body.y
+        )
+        var distance = Math.sqrt (vector.x ^ 2 + vector.y ^ 2);
+        this.game.game.physics.p2.createDistanceConstraint (
+            this.pObject.body,
+            this.level.getObject ('reference').pObject.body,
+            distance
+        )
         //this.pObject.body.collideWorldBounds = false;
     }
 

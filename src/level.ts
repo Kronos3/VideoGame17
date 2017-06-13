@@ -73,6 +73,7 @@ export interface ObjectAsset {
     extra?: any;
     tile?: boolean;
     repeat?: boolean;
+    init?: (d: GameSprite) => void;
 }
 
 export interface BasicAsset {
@@ -103,6 +104,9 @@ export function createLevel (_const: LevelConstructor): Level {
                 // Static Object
                 // Add the object
                 OBJ = new GameSprite (out.game, out, iter.name, iter.position, iter.assets, iter.extra, iter.repeat);
+            }
+            if (typeof iter.init !== "undefined") {
+                iter.init (OBJ);
             }
             if (typeof iter.physics !== "undefined") {
                 OBJ.loadBody (iter.physics);

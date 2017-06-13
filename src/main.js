@@ -1,12 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var $ = require("jquery");
 var game_1 = require("./game");
 var ship_1 = require("./ship");
 var ship_2 = require("./ship");
 var ship_3 = require("./ship");
 var ship_4 = require("./ship");
 var wrapper_1 = require("./wrapper");
-var background_1 = require("./background");
 var astroid_1 = require("./astroid");
 function getlength(number) {
     return number.toString().length;
@@ -21,19 +21,18 @@ function genImgList(startFrame, endFrame, numlen, prefix, suffix) {
     }
     return out;
 }
-function GIF(images, element, repeat) {
-    if (repeat === void 0) { repeat = true; }
+/*function GIF (images: string[], element: Element, repeat = true) {
     var n = 0;
-    var preLOAD = [];
-    images.forEach(function (element) {
-        var temp = new Image();
-        temp.onload = function () {
-            preLOAD.push(temp);
-        };
+    var preLOAD: HTMLImageElement[] = [];
+    images.forEach(element => {
+        var temp = new Image ();
+        temp.onload = () => {
+            preLOAD.push (temp);
+        }
         temp.src = element;
     });
-    var task = new background_1.Task(function () {
-        console.log(n);
+    var task = new Task (() => {
+        console.log (n);
         $(element).attr('src', images[n]);
         if (repeat && n == images.length) {
             n = 0;
@@ -42,7 +41,7 @@ function GIF(images, element, repeat) {
         n++;
     }, true, 60);
     task.start();
-}
+}*/
 $(document).ready(function () {
     for (var i = 0; i != 50; i++) {
         $("<img src=\"resources/textures/Star.png\" class=\"pos\">").appendTo(".stars");
@@ -236,6 +235,19 @@ function DoGame(game) {
                     },
                     repeat: true
                 },
+                {
+                    name: "reference",
+                    assets: "Meteor",
+                    position: {
+                        x: function () { return -500; },
+                        y: function () { return window.GAME.game.world.height / 2 + 300; }
+                    },
+                    static: true,
+                    init: function (obj) {
+                        obj.enablePhysics();
+                        obj.pObject.body.addCircle(130);
+                    }
+                }
             ],
             frame: function () {
             },

@@ -1,3 +1,4 @@
+import * as $ from 'jquery';
 import {toggleControlScheme} from "./game"
 import {MainGame} from "./game"
 import {LevelConstructor} from "./level"
@@ -8,10 +9,10 @@ import {Athena} from "./ship"
 import {Vulcan} from "./ship"
 import {TextDisplay} from "./type"
 import {Wrapper} from "./wrapper"
-import {Task} from "./background"
 import {Level} from "./level"
 import {MissionContructor} from "./mission"
 import {AstroidBelt} from "./astroid"
+import {GameSprite} from "./object"
 
 function getlength(number) {
     return number.toString().length;
@@ -25,7 +26,7 @@ function genImgList (startFrame:number, endFrame: Number, numlen = 4, prefix = '
     return out;
 }
 
-function GIF (images: string[], element: Element, repeat = true) {
+/*function GIF (images: string[], element: Element, repeat = true) {
     var n = 0;
     var preLOAD: HTMLImageElement[] = [];
     images.forEach(element => {
@@ -45,7 +46,7 @@ function GIF (images: string[], element: Element, repeat = true) {
         n++;
     }, true, 60);
     task.start();
-}
+}*/
 
 $( document ).ready(function() {
     for (var i=0; i != 50; i++) {
@@ -255,7 +256,19 @@ function DoGame (game: MainGame): void {
                     },
                     repeat: true
                 },
-                
+                {
+                    name: "reference",
+                    assets: "Meteor",
+                    position: {
+                        x: ():number => {return -500},
+                        y: (): number => {return (<any>window).GAME.game.world.height / 2 + 300}
+                    },
+                    static: true,
+                    init: (obj: GameSprite) => {
+                        obj.enablePhysics ();
+                        obj.pObject.body.addCircle (130);
+                    }
+                }
             ],
             frame: () => {
             },

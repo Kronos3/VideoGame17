@@ -1,4 +1,4 @@
-export class Task {
+/*export class Task {
     fn: () => void;
     repeat: boolean;
     interval: number;
@@ -21,4 +21,4 @@ export class Task {
     end () {
         clearInterval (this.timer);
     }
-}
+}*/

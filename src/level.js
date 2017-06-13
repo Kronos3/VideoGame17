@@ -70,6 +70,9 @@ function createLevel(_const) {
                 // Add the object
                 OBJ = new object_1.GameSprite(out.game, out, iter.name, iter.position, iter.assets, iter.extra, iter.repeat);
             }
+            if (typeof iter.init !== "undefined") {
+                iter.init(OBJ);
+            }
             if (typeof iter.physics !== "undefined") {
                 OBJ.loadBody(iter.physics);
             }

@@ -47,6 +47,12 @@ var GameSprite = (function () {
                 //this.pObject.body.collides (this.level.getAllBodies ());
             }
         };
+        this.getVector = function (_x, _y) {
+            return {
+                x: _x - _this.pObject.body.x,
+                y: _y - _this.pObject.body.y
+            };
+        };
         this.level = level;
         this.name = name;
         this.game = game;

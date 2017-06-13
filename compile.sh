@@ -1,2 +1,2 @@
 tsc --watch &
-watchify src/*.js -o bundle.js -v
+cd src && watchify src -o bundle.js -v

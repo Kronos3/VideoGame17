@@ -1,24 +1,24 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-var Task = (function () {
-    function Task(fn, repeat, interval) {
-        if (repeat === void 0) { repeat = true; }
-        if (interval === void 0) { interval = 60; }
+/*export class Task {
+    fn: () => void;
+    repeat: boolean;
+    interval: number;
+    timer: NodeJS.Timer;
+    constructor (fn: () => void, repeat = true, interval = 60) {
         this.fn = fn;
         this.repeat = repeat;
-        this.interval = interval;
+        this.interval =interval;
     }
-    Task.prototype.start = function () {
+
+    start () {
         if (this.repeat) {
-            this.timer = setInterval(this.fn, this.interval);
+            this.timer = setInterval (this.fn, this.interval);
         }
         else {
-            this.timer = setTimeout(this.fn, 0);
+            this.timer = setTimeout (this.fn, 0);
         }
-    };
-    Task.prototype.end = function () {
-        clearInterval(this.timer);
-    };
-    return Task;
-}());
-exports.Task = Task;
+    }
+
+    end () {
+        clearInterval (this.timer);
+    }
+}*/ 

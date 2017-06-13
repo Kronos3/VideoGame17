@@ -77,6 +77,13 @@ export class GameSprite {
             //this.pObject.body.collides (this.level.getAllBodies ());
         }
     }
+
+    getVector = (_x: number, _y:number) => {
+        return {
+            x: _x - this.pObject.body.x,
+            y: _y - this.pObject.body.y
+        }
+    }
 }
 
 export class DynamicSprite extends GameSprite {

@@ -59,6 +59,9 @@ var Astroid = (function (_super) {
         }
         _this.force = force;
         _this.setForce(_this.force);
+        var vector = _this.getVector(_this.level.getObject('reference').pObject.body.x, _this.level.getObject('reference').pObject.body.y);
+        var distance = Math.sqrt(vector.x ^ 2 + vector.y ^ 2);
+        _this.game.game.physics.p2.createDistanceConstraint(_this.pObject.body, _this.level.getObject('reference').pObject.body, distance);
         return _this;
         //this.pObject.body.collideWorldBounds = false;
     }
