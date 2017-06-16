@@ -44,7 +44,7 @@ function genImgList(startFrame, endFrame, numlen, prefix, suffix) {
 }*/
 $(document).ready(function () {
     for (var i = 0; i != 50; i++) {
-        $("<img src=\"resources/textures/Star.png\" class=\"pos\">").appendTo(".stars");
+        $("<img src=\"resources/textures/Intro/Star.png\" class=\"pos\">").appendTo(".stars");
     }
     for (var i = 0; i != $('.stars > img').length; i++) {
         setup_pos($('.stars > img').get(i), (Math.random() * (-0.08 - 0.08) + 0.08).toFixed(4), (Math.random() * (-0.120 - 0.12) + 0.12).toFixed(4));

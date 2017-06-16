@@ -50,7 +50,7 @@ function genImgList (startFrame:number, endFrame: Number, numlen = 4, prefix = '
 
 $( document ).ready(function() {
     for (var i=0; i != 50; i++) {
-        $( "<img src=\"resources/textures/Star.png\" class=\"pos\">" ).appendTo( ".stars" )
+        $( "<img src=\"resources/textures/Intro/Star.png\" class=\"pos\">" ).appendTo( ".stars" )
     }
     
     for (var i = 0; i != $('.stars > img').length; i++) {

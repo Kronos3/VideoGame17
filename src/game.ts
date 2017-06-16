@@ -79,12 +79,12 @@ export class MainGame {
         this.game.load.image('ArtemisThrust', '../resources/textures/Artemis/ArtemisThrust.png');
         this.game.load.image('ArtemisL', '../resources/textures/Artemis/ArtemisL.png');
         this.game.load.image('ArtemisR', '../resources/textures/Artemis/ArtemisR.png');
-        this.game.load.image('Launch-L', '../resources/textures/Launch-L.png');
-        this.game.load.image('Fore', '../resources/textures/Foreground-L.png');
-        this.game.load.image('Mountain-E', '../resources/textures/BG_1-L.png');
-        this.game.load.image('Sky', '../resources/textures/Sky Gradient Color Overlay-L.png');
-        this.game.load.image('Back', '../resources/textures/Background-L.png');
-        this.game.load.image('Stars', '../resources/textures/stars.png');
+        this.game.load.image('Launch-L', '../resources/textures/Level1/Launch-L.png');
+        this.game.load.image('Fore', '../resources/textures/Level1/Foreground-L.png');
+        this.game.load.image('Mountain-E', '../resources/textures/Level1/BG_1-L.png');
+        this.game.load.image('Sky', '../resources/textures/Level1/Sky Gradient Color Overlay-L.png');
+        this.game.load.image('Back', '../resources/textures/Level1/Background-L.png');
+        this.game.load.image('Stars', '../resources/textures/Level1/stars.png');
         this.game.load.image('Explosion', '../resources/textures/explosion.png');
         this.game.load.image('Athena', '../resources/textures/Athena/Athena.png');
         this.game.load.image('AthenaThrust', '../resources/textures/Athena/AthenaThrust.png');
