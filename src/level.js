@@ -39,15 +39,13 @@ var LevelSequence = (function () {
         this.nextLevel = function (t) {
             if (t === void 0) { t = false; }
             _this.current++;
-            for (var i = 0; i != _this.levels.length; i++) {
-                _this.levels[i].disable();
-            }
             if (t) {
                 UTIL.move(_this.levels[_this.current - 1].getObject('ship'), _this.levels[_this.current - 1].objects, _this.levels[_this.current].objects);
                 _this.levels[_this.current].getObject('ship').level = _this.levels[_this.current];
                 _this.levels[_this.current].init(_this.levels[_this.current]);
+                _this.levels[_this.current - 1].disable(true);
             }
-            _this.levels[_this.current].enable(true);
+            _this.levels[_this.current].enable();
         };
         ;
     }
@@ -113,15 +111,15 @@ var Level = (function () {
         this.addMission = function (l) {
             _this.missionControl.addMission(mission_1.generateMission(l));
         };
-        this.enable = function (doInit) {
-            if (doInit === void 0) { doInit = false; }
+        this.enable = function () {
             _this.objects.forEach(function (element) {
                 element.enable();
             });
         };
-        this.disable = function () {
+        this.disable = function (destroy) {
+            if (destroy === void 0) { destroy = false; }
             _this.objects.forEach(function (element) {
-                element.disable();
+                element.disable(destroy);
             });
         };
         this.addObjectFromAsset = function (name, _pos, extra) {

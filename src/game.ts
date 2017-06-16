@@ -53,7 +53,6 @@ export class MainGame {
             $('.loading').css('display', 'none');
         }, 1000);
         this.uicontroller = new UIController ();
-        this.playerCollisionGroup = this.game.physics.p2.createCollisionGroup();
     }
 
     game: Phaser.Game;
@@ -148,6 +147,7 @@ export class MainGame {
         this.game.camera.bounds.top = 0;
         this.game.physics.p2.boundsCollidesWith = [];
         this.levelsequence.initGame ();
+        this.playerCollisionGroup = this.game.physics.p2.createCollisionGroup();
 
     }
 

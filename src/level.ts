@@ -50,17 +50,15 @@ export class LevelSequence {
 
     nextLevel = (t = false) => {
         this.current++;
-        for (var i = 0; i!= this.levels.length; i++) {
-            this.levels[i].disable ();
-        }
         if (t) {
             UTIL.move (this.levels[this.current - 1].getObject('ship'),
                 this.levels[this.current - 1].objects,
                 this.levels[this.current].objects);
             this.levels[this.current].getObject ('ship').level = this.levels[this.current];
             this.levels[this.current].init(this.levels[this.current]);
+            this.levels[this.current - 1].disable (true);
         }
-        this.levels[this.current].enable (true);
+        this.levels[this.current].enable ();
     }
 }
 
@@ -164,15 +162,15 @@ export class Level {
         this.missionControl.addMission (generateMission (l));
     }
 
-    enable = (doInit = false) => {
+    enable = () => {
         this.objects.forEach(element => {
             element.enable ();
         });
     }
 
-    disable = () => {
-        this.objects.forEach(element => {
-            element.disable ();
+    disable = (destroy = false) => {
+        this.objects.forEach((element) => {
+            element.disable (destroy);
         });
     }
 

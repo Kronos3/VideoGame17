@@ -34,10 +34,6 @@ export class GameSprite {
         
     }
 
-    addToLevel (level: LEVEL.Level) {
-
-    }
-
     resetPosition = () => {
         this.pObject.x = this.pos.x ();
         this.pObject.y = this.pos.y ();
@@ -59,7 +55,7 @@ export class GameSprite {
 
     isStatic: boolean;
     
-    disable = () => {
+    disable = (destroy=false) => {
         if (this.pObject.body != null) {
             this.isStatic = this.pObject.body.static;
             this.pObject.body.static = true;
@@ -67,6 +63,9 @@ export class GameSprite {
             //this.pObject.body.collides ();
         }
         this.pObject.visible = false;
+        if (destroy) {
+            this.pObject.destroy()
+        }
     }
 
     enable = () => {

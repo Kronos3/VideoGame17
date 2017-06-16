@@ -129,6 +129,7 @@ var MainGame = (function () {
             _this.game.camera.bounds.top = 0;
             _this.game.physics.p2.boundsCollidesWith = [];
             _this.levelsequence.initGame();
+            _this.playerCollisionGroup = _this.game.physics.p2.createCollisionGroup();
         };
         this.isLoaded = false;
         this.getGravity = function () {
@@ -200,7 +201,6 @@ var MainGame = (function () {
             $('.loading').css('display', 'none');
         }, 1000);
         this.uicontroller = new ui_1.UIController();
-        this.playerCollisionGroup = this.game.physics.p2.createCollisionGroup();
     }
     return MainGame;
 }());

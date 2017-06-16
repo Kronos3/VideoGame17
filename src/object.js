@@ -30,7 +30,8 @@ var GameSprite = (function () {
             _this.pObject.body.clearShapes();
             _this.pObject.body.loadPolygon('physicsData', key);
         };
-        this.disable = function () {
+        this.disable = function (destroy) {
+            if (destroy === void 0) { destroy = false; }
             if (_this.pObject.body != null) {
                 _this.isStatic = _this.pObject.body.static;
                 _this.pObject.body.static = true;
@@ -38,6 +39,9 @@ var GameSprite = (function () {
                 //this.pObject.body.collides ();
             }
             _this.pObject.visible = false;
+            if (destroy) {
+                _this.pObject.destroy();
+            }
         };
         this.enable = function () {
             _this.pObject.visible = true;
@@ -66,8 +70,6 @@ var GameSprite = (function () {
             this.pObject = this.game.game.add.sprite(this.pos.x(), this.pos.y(), this.asset);
         }
     }
-    GameSprite.prototype.addToLevel = function (level) {
-    };
     return GameSprite;
 }());
 exports.GameSprite = GameSprite;
