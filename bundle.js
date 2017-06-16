@@ -10475,7 +10475,6 @@ var MainGame = (function () {
             _this.game.load.image('Sky', '../resources/textures/Level1/Sky Gradient Color Overlay-L.png');
             _this.game.load.image('Back', '../resources/textures/Level1/Background-L.png');
             _this.game.load.image('Stars', '../resources/textures/Level1/stars.png');
-            _this.game.load.image('Explosion', '../resources/textures/explosion.png');
             _this.game.load.image('Athena', '../resources/textures/Athena/Athena.png');
             _this.game.load.image('AthenaThrust', '../resources/textures/Athena/AthenaThrust.png');
             _this.game.load.image('AthenaL', '../resources/textures/Athena/AthenaL.png');
