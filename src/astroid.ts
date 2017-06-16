@@ -21,17 +21,12 @@ export class AstroidBelt {
         this.level = level;
     }
 
-    spawn = () => { // Spawn an astroid
+    spawn = (i:number, total:number) => { // Spawn an astroid
         //Determine type of astroid
         var type = UTIL.getRandomInt (0, 1);
         var pos = {
-            x: () => {return UTIL.getRandomInt (0, this.game.game.world.bounds.width)},
-            y: () => {return UTIL.getRandomInt (0, this.game.game.world.bounds.height)}
-        }
-        var force = {
-            x: UTIL.getRandomArbitrary (80, 120) * (type ? -1: 1),
-            y: UTIL.getRandomArbitrary (80, 120) * (type ? -1: 1),
-            r: UTIL.getRandomArbitrary (40, 70) * (type ? -1: 1)
+            x: () => {return UTIL.getRandomInt (120, this.game.game.world.width)},
+            y: () => {return UTIL.getRandomInt (0, this.game.game.world.height)}
         }
         if (type) {
             var buffer = new Astroid (
@@ -39,7 +34,7 @@ export class AstroidBelt {
                 this.level,
                 'SMALL-astroid{0}'.format (this.astroids.length),
                 pos, 
-                'Meteor-Small', 'Meteor_Small-L', force);
+                'Meteor-Small', 'Meteor_Small-L');
         }
         else {
             var buffer = new Astroid (
@@ -47,7 +42,7 @@ export class AstroidBelt {
                 this.level,
                 'LARGE-astroid{0}'.format (this.astroids.length),
                 pos, 
-                'Meteor', 'Meteor-L', force);
+                'Meteor', 'Meteor-L');
         }
         this.level.addObject (buffer);
         this.astroids.push (buffer);
@@ -56,8 +51,7 @@ export class AstroidBelt {
 
 export class Astroid extends GameSprite {
     body: string;
-    force: Force;
-    constructor (game: MainGame, level: Level, name: string, pos: _position, asset: string, body: string, force: Force) {
+    constructor (game: MainGame, level: Level, name: string, pos: _position, asset: string, body: string) {
         super (game, level, name, pos, asset);
         this.body = body;
         this.enablePhysics ();
@@ -67,19 +61,15 @@ export class Astroid extends GameSprite {
         else {
             this.pObject.body.setCircle (60);
         }
-        this.force = force;
-        this.setForce (this.force);
-        var vector = this.getVector (
-            this.level.getObject('reference').pObject.body.x,
-            this.level.getObject('reference').pObject.body.y
-        )
-        var distance = Math.sqrt (vector.x ^ 2 + vector.y ^ 2);
-        this.game.game.physics.p2.createDistanceConstraint (
-            this.pObject.body,
-            this.level.getObject ('reference').pObject.body,
-            distance
-        )
+        this.pObject.body.mass = 30;
+
+
+        //this.pObject.body.createBodyCallback(this.game.game.physics.p2.walls.top, this.collideTop, this);
         //this.pObject.body.collideWorldBounds = false;
+    }
+
+    collideTop (body1, body2) {
+        console.log(this);
     }
 
     setForce (f: Force) {

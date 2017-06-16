@@ -178,6 +178,7 @@ var Ship = (function (_super) {
         _this.startAlt = _this.pObject.body.y;
         _this.pObject.body.onBeginContact.add(_this.collide, _this);
         return _this;
+        // this.
     }
     return Ship;
 }(object_1.DynamicSprite));

@@ -53,6 +53,7 @@ export class MainGame {
             $('.loading').css('display', 'none');
         }, 1000);
         this.uicontroller = new UIController ();
+        this.playerCollisionGroup = this.game.physics.p2.createCollisionGroup();
     }
 
     game: Phaser.Game;
@@ -62,6 +63,7 @@ export class MainGame {
     assets: string[] = [];
     gravity: number;
     uicontroller: UIController;
+    playerCollisionGroup: Phaser.Physics.P2.CollisionGroup;
 
 
     addControlScheme = (bindings: KeyBinding[], captureInput = true) => {

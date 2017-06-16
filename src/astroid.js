@@ -18,23 +18,18 @@ var AstroidBelt = (function () {
     function AstroidBelt(game, level) {
         var _this = this;
         this.astroids = [];
-        this.spawn = function () {
+        this.spawn = function (i, total) {
             //Determine type of astroid
             var type = UTIL.getRandomInt(0, 1);
             var pos = {
-                x: function () { return UTIL.getRandomInt(0, _this.game.game.world.bounds.width); },
-                y: function () { return UTIL.getRandomInt(0, _this.game.game.world.bounds.height); }
-            };
-            var force = {
-                x: UTIL.getRandomArbitrary(80, 120) * (type ? -1 : 1),
-                y: UTIL.getRandomArbitrary(80, 120) * (type ? -1 : 1),
-                r: UTIL.getRandomArbitrary(40, 70) * (type ? -1 : 1)
+                x: function () { return UTIL.getRandomInt(120, _this.game.game.world.width); },
+                y: function () { return UTIL.getRandomInt(0, _this.game.game.world.height); }
             };
             if (type) {
-                var buffer = new Astroid(_this.game, _this.level, 'SMALL-astroid{0}'.format(_this.astroids.length), pos, 'Meteor-Small', 'Meteor_Small-L', force);
+                var buffer = new Astroid(_this.game, _this.level, 'SMALL-astroid{0}'.format(_this.astroids.length), pos, 'Meteor-Small', 'Meteor_Small-L');
             }
             else {
-                var buffer = new Astroid(_this.game, _this.level, 'LARGE-astroid{0}'.format(_this.astroids.length), pos, 'Meteor', 'Meteor-L', force);
+                var buffer = new Astroid(_this.game, _this.level, 'LARGE-astroid{0}'.format(_this.astroids.length), pos, 'Meteor', 'Meteor-L');
             }
             _this.level.addObject(buffer);
             _this.astroids.push(buffer);
@@ -47,7 +42,7 @@ var AstroidBelt = (function () {
 exports.AstroidBelt = AstroidBelt;
 var Astroid = (function (_super) {
     __extends(Astroid, _super);
-    function Astroid(game, level, name, pos, asset, body, force) {
+    function Astroid(game, level, name, pos, asset, body) {
         var _this = _super.call(this, game, level, name, pos, asset) || this;
         _this.body = body;
         _this.enablePhysics();
@@ -57,14 +52,14 @@ var Astroid = (function (_super) {
         else {
             _this.pObject.body.setCircle(60);
         }
-        _this.force = force;
-        _this.setForce(_this.force);
-        var vector = _this.getVector(_this.level.getObject('reference').pObject.body.x, _this.level.getObject('reference').pObject.body.y);
-        var distance = Math.sqrt(vector.x ^ 2 + vector.y ^ 2);
-        _this.game.game.physics.p2.createDistanceConstraint(_this.pObject.body, _this.level.getObject('reference').pObject.body, distance);
+        _this.pObject.body.mass = 30;
         return _this;
+        //this.pObject.body.createBodyCallback(this.game.game.physics.p2.walls.top, this.collideTop, this);
         //this.pObject.body.collideWorldBounds = false;
     }
+    Astroid.prototype.collideTop = function (body1, body2) {
+        console.log(this);
+    };
     Astroid.prototype.setForce = function (f) {
         this.pObject.body.velocity.x = f.x;
         this.pObject.body.velocity.y = f.y;

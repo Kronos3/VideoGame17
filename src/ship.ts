@@ -39,6 +39,7 @@ export class Ship extends DynamicSprite {
         this.loadBody (bodyName);
         this.startAlt = this.pObject.body.y;
         this.pObject.body.onBeginContact.add(this.collide, this);
+        // this.
     }
 
     collide = (target: Phaser.Physics.P2.Body, this_target: Phaser.Physics.P2.Body, shapeA, shapeB, contactEquation) => {

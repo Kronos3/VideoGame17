@@ -10274,23 +10274,18 @@ var AstroidBelt = (function () {
     function AstroidBelt(game, level) {
         var _this = this;
         this.astroids = [];
-        this.spawn = function () {
+        this.spawn = function (i, total) {
             //Determine type of astroid
             var type = UTIL.getRandomInt(0, 1);
             var pos = {
-                x: function () { return UTIL.getRandomInt(0, _this.game.game.world.bounds.width); },
-                y: function () { return UTIL.getRandomInt(0, _this.game.game.world.bounds.height); }
-            };
-            var force = {
-                x: UTIL.getRandomArbitrary(80, 120) * (type ? -1 : 1),
-                y: UTIL.getRandomArbitrary(80, 120) * (type ? -1 : 1),
-                r: UTIL.getRandomArbitrary(40, 70) * (type ? -1 : 1)
+                x: function () { return UTIL.getRandomInt(120, _this.game.game.world.width); },
+                y: function () { return UTIL.getRandomInt(0, _this.game.game.world.height); }
             };
             if (type) {
-                var buffer = new Astroid(_this.game, _this.level, 'SMALL-astroid{0}'.format(_this.astroids.length), pos, 'Meteor-Small', 'Meteor_Small-L', force);
+                var buffer = new Astroid(_this.game, _this.level, 'SMALL-astroid{0}'.format(_this.astroids.length), pos, 'Meteor-Small', 'Meteor_Small-L');
             }
             else {
-                var buffer = new Astroid(_this.game, _this.level, 'LARGE-astroid{0}'.format(_this.astroids.length), pos, 'Meteor', 'Meteor-L', force);
+                var buffer = new Astroid(_this.game, _this.level, 'LARGE-astroid{0}'.format(_this.astroids.length), pos, 'Meteor', 'Meteor-L');
             }
             _this.level.addObject(buffer);
             _this.astroids.push(buffer);
@@ -10303,7 +10298,7 @@ var AstroidBelt = (function () {
 exports.AstroidBelt = AstroidBelt;
 var Astroid = (function (_super) {
     __extends(Astroid, _super);
-    function Astroid(game, level, name, pos, asset, body, force) {
+    function Astroid(game, level, name, pos, asset, body) {
         var _this = _super.call(this, game, level, name, pos, asset) || this;
         _this.body = body;
         _this.enablePhysics();
@@ -10313,14 +10308,14 @@ var Astroid = (function (_super) {
         else {
             _this.pObject.body.setCircle(60);
         }
-        _this.force = force;
-        _this.setForce(_this.force);
-        var vector = _this.getVector(_this.level.getObject('reference').pObject.body.x, _this.level.getObject('reference').pObject.body.y);
-        var distance = Math.sqrt(vector.x ^ 2 + vector.y ^ 2);
-        _this.game.game.physics.p2.createDistanceConstraint(_this.pObject.body, _this.level.getObject('reference').pObject.body, distance);
+        _this.pObject.body.mass = 30;
         return _this;
+        //this.pObject.body.createBodyCallback(this.game.game.physics.p2.walls.top, this.collideTop, this);
         //this.pObject.body.collideWorldBounds = false;
     }
+    Astroid.prototype.collideTop = function (body1, body2) {
+        console.log(this);
+    };
     Astroid.prototype.setForce = function (f) {
         this.pObject.body.velocity.x = f.x;
         this.pObject.body.velocity.y = f.y;
@@ -10332,7 +10327,7 @@ var Astroid = (function (_super) {
 }(object_1.GameSprite));
 exports.Astroid = Astroid;
 
-},{"./object":9,"./util":13}],3:[function(require,module,exports){
+},{"./object":10,"./util":14}],3:[function(require,module,exports){
 /*export class Task {
     fn: () => void;
     repeat: boolean;
@@ -10359,6 +10354,8 @@ exports.Astroid = Astroid;
 }*/ 
 
 },{}],4:[function(require,module,exports){
+console.error("Error: Cannot find module '/home/atuser/git/VideoGame17/src/src' from '/home/atuser/git/VideoGame17/src'");
+},{}],5:[function(require,module,exports){
 "use strict";
 /// <reference path="../imports/phaser.d.ts" />
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -10401,7 +10398,7 @@ var ControlScheme = (function () {
 }());
 exports.ControlScheme = ControlScheme;
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -10604,12 +10601,13 @@ var MainGame = (function () {
             $('.loading').css('display', 'none');
         }, 1000);
         this.uicontroller = new ui_1.UIController();
+        this.playerCollisionGroup = this.game.physics.p2.createCollisionGroup();
     }
     return MainGame;
 }());
 exports.MainGame = MainGame;
 
-},{"./control":4,"./level":6,"./ui":12}],6:[function(require,module,exports){
+},{"./control":5,"./level":7,"./ui":13}],7:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var object_1 = require("./object");
@@ -10780,7 +10778,7 @@ var Level = (function () {
 }());
 exports.Level = Level;
 
-},{"./mission":8,"./object":9,"./util":13}],7:[function(require,module,exports){
+},{"./mission":9,"./object":10,"./util":14}],8:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var $ = require("jquery");
@@ -11048,8 +11046,8 @@ function DoGame(game) {
                 window.GAME.uicontroller.setPlanet('ceres');
                 // Initialize the Astroid belt;
                 ___this.astroidbelt = new astroid_1.AstroidBelt(window.GAME, ___this);
-                for (var i = 0; i != 200; i++) {
-                    ___this.astroidbelt.spawn();
+                for (var i = 0; i != 600; i++) {
+                    ___this.astroidbelt.spawn(i, 200);
                 }
             }
         },
@@ -11153,7 +11151,7 @@ function initShip(___this) {
 }
 exports.initShip = initShip;
 
-},{"./astroid":2,"./game":5,"./ship":10,"./wrapper":14,"jquery":1}],8:[function(require,module,exports){
+},{"./astroid":2,"./game":6,"./ship":11,"./wrapper":15,"jquery":1}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 function generateMission(m) {
@@ -11224,7 +11222,7 @@ var Mission = (function () {
 }());
 exports.Mission = Mission;
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -11323,7 +11321,7 @@ var DynamicSprite = (function (_super) {
 }(GameSprite));
 exports.DynamicSprite = DynamicSprite;
 
-},{"./util":13}],10:[function(require,module,exports){
+},{"./util":14}],11:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -11504,6 +11502,7 @@ var Ship = (function (_super) {
         _this.startAlt = _this.pObject.body.y;
         _this.pObject.body.onBeginContact.add(_this.collide, _this);
         return _this;
+        // this.
     }
     return Ship;
 }(object_1.DynamicSprite));
@@ -11578,7 +11577,7 @@ var Vulcan = (function (_super) {
 }(Ship));
 exports.Vulcan = Vulcan;
 
-},{"./object":9}],11:[function(require,module,exports){
+},{"./object":10}],12:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var TextDisplay = (function () {
@@ -11641,7 +11640,7 @@ var TextDisplay = (function () {
 }());
 exports.TextDisplay = TextDisplay;
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var UIController = (function () {
@@ -11691,7 +11690,7 @@ var UIController = (function () {
 }());
 exports.UIController = UIController;
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 function find(a, b) {
@@ -11759,7 +11758,7 @@ function getRandomInt(min, max) {
 }
 exports.getRandomInt = getRandomInt;
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var type_1 = require("./type");
@@ -11817,4 +11816,4 @@ var Wrapper = (function () {
 }());
 exports.Wrapper = Wrapper;
 
-},{"./type":11}]},{},[2,3,4,5,6,7,8,9,10,11,12,13,14]);
+},{"./type":12}]},{},[2,3,4,5,6,7,8,9,10,11,12,13,14,15]);

@@ -200,6 +200,7 @@ var MainGame = (function () {
             $('.loading').css('display', 'none');
         }, 1000);
         this.uicontroller = new ui_1.UIController();
+        this.playerCollisionGroup = this.game.physics.p2.createCollisionGroup();
     }
     return MainGame;
 }());
