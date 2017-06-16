@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var $ = require("jquery");
 var UIController = (function () {
     function UIController() {
         var _this = this;

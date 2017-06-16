@@ -234,8 +234,8 @@ var Vulcan = (function (_super) {
     function Vulcan(game, level) {
         var _this = this;
         var pos = {
-            x: function () { return window.GAME.game.world.width / 2 - 70; },
-            y: function () { return window.GAME.game.world.height - 69; }
+            x: function () { return window.GAME.game.world.width / 2 - 90; },
+            y: function () { return window.GAME.game.world.height - 110; }
         };
         _this = _super.call(this, game, 'ship', 'Vulcan', pos, [
             'Vulcan',

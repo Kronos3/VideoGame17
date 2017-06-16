@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var type_1 = require("./type");
+var $ = require("jquery");
 var Wrapper = (function () {
     function Wrapper(game, scene_text) {
         var _this = this;

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var $ = require("jquery");
 function generateMission(m) {
     var e = $("<div class=\"mission\">\
     <p class=\"title\">{0}</p>\

@@ -2,6 +2,7 @@
 import * as LEVEL from "./level"
 import {MainGame} from "./game"
 import * as UTIL from "./util"
+import * as $ from 'jquery';
 
 export interface _position {
     x(): number;

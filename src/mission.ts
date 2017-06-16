@@ -1,5 +1,6 @@
 import * as UTIL from "./util"
 import {Level} from "./level"
+import * as $ from 'jquery';
 
 export interface MissionContructor {
     title: string;

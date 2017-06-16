@@ -11,6 +11,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var UTIL = require("./util");
+var $ = require("jquery");
 var GameSprite = (function () {
     function GameSprite(game, level, name, pos, asset, extra, repeat) {
         if (repeat === void 0) { repeat = false; }

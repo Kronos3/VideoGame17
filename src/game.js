@@ -16,6 +16,7 @@ var level_1 = require("./level");
 var level_2 = require("./level");
 var level_3 = require("./level");
 var ui_1 = require("./ui");
+var $ = require("jquery");
 var toggleControlScheme = (function (_super) {
     __extends(toggleControlScheme, _super);
     function toggleControlScheme(game, _bindings, captureInput, enabled) {
@@ -84,6 +85,8 @@ var MainGame = (function () {
             _this.game.load.image('VulcanThrust', '../resources/textures/Vulcan/VulcanThrust.png');
             _this.game.load.image('Meteor-Small', '../resources/textures/objects/Meteor_Small-L.png');
             _this.game.load.image('Meteor', '../resources/textures/objects/Meteor-L.png');
+            _this.game.load.image('Meteor-Ice', '../resources/textures/objects/Ice.png');
+            _this.game.load.image('Meteor-3', '../resources/textures/objects/Meteor-L.png');
             _this.game.load.physics('physicsData', '../resources/physics/mappings.json');
         };
         this.pause = function () {

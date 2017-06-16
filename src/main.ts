@@ -286,10 +286,7 @@ function DoGame (game: MainGame): void {
                 (<any>window).GAME.uicontroller.setPlanet ('ceres');
 
                 // Initialize the Astroid belt;
-                (<any>___this).astroidbelt = new AstroidBelt ((<any>window).GAME, ___this);
-                for (var i=0; i!=600; i++) {
-                    (<any>___this).astroidbelt.spawn (i, 200);
-                }
+                //(<any>___this).astroidbelt = new AstroidBelt ((<any>window).GAME, ___this);
             }
         },
 

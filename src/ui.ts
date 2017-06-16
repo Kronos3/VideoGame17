@@ -1,6 +1,7 @@
 /// <reference path="../imports/phaser.d.ts" />
 /// <reference path="../imports/p2.d.ts" />
 import {MainGame} from "./game"
+import * as $ from 'jquery';
 
 export class UIController {
     UIElements : Element[] = [];

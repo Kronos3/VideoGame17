@@ -1,24 +1,24 @@
 {
-    "name": "videogame17",
-    "main": "main.js",
-    "version": "1.7.2",
-    "description": "TSA Game 2017",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/Kronos3/VideoGame17.git"
-    },
-    "dependencies": {
-        "http-server": "0.8.0",
-        "jquery": "^3.2.1"
-    },
-    "devDependencies": {
-        "@types/jquery": "^2.0.46",
-        "typescript": "^1.8.9"
-    },
-    "scripts": {
-        "tsc": "node node_modules/typescript/bin/tsc",
-        "browserify": "browserify game.js -o game.js -s game",
-        "listen": "node node_modules/http-server/bin/http-server",
-        "all": "npm run tsc &&  npm run browserify && npm run listen"
-    }
+  "name": "videogame17",
+  "main": "main.js",
+  "version": "1.7.2",
+  "description": "TSA Game 2017",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Kronos3/VideoGame17.git"
+  },
+  "dependencies": {
+    "http-server": "0.8.0",
+    "jquery": "^3.2.1"
+  },
+  "devDependencies": {
+    "@types/jquery": "^2.0.46",
+    "typescript": "^2.5.0-dev.20170616"
+  },
+  "scripts": {
+    "tsc": "node node_modules/typescript/bin/tsc",
+    "browserify": "browserify game.js -o game.js -s game",
+    "listen": "node node_modules/http-server/bin/http-server",
+    "all": "npm run tsc &&  npm run browserify && npm run listen"
+  }
 }

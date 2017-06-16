@@ -1,5 +1,6 @@
 import {MainGame} from "./game"
 import {TextDisplay} from "./type"
+import * as $ from 'jquery';
 
 export class Wrapper {
     game: MainGame;

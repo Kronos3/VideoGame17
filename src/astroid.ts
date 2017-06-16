@@ -16,36 +16,52 @@ export class AstroidBelt {
     game: MainGame;
     level: Level;
     astroids: Astroid[] = [];
-    constructor (game: MainGame, level: Level) {
+    totalMeteor: number;
+    constructor (game: MainGame, level: Level, n:number) {
         this.game = game;
         this.level = level;
+        this.totalMeteor = n;
+        this.game.game.time.events.loop(
+            Phaser.Timer.SECOND,
+            this.spawn,
+            this);
     }
 
-    spawn = (i:number, total:number) => { // Spawn an astroid
-        //Determine type of astroid
-        var type = UTIL.getRandomInt (0, 1);
-        var pos = {
-            x: () => {return UTIL.getRandomInt (120, this.game.game.world.width)},
-            y: () => {return UTIL.getRandomInt (0, this.game.game.world.height)}
-        }
-        if (type) {
+    spawn () {
+        var type = UTIL.getRandomInt (0, 3);
+        if (type == 0) {
             var buffer = new Astroid (
                 this.game,
                 this.level,
                 'SMALL-astroid{0}'.format (this.astroids.length),
-                pos, 
+                {
+                    x: () => {return this.game.game.world.randomX},
+                    y: () => {return this.game.game.world.height}
+                }, 
                 'Meteor-Small', 'Meteor_Small-L');
         }
-        else {
+        else if (type == 1) {
             var buffer = new Astroid (
                 this.game,
                 this.level,
                 'LARGE-astroid{0}'.format (this.astroids.length),
-                pos, 
+                {
+                    x: () => {return this.game.game.world.randomX},
+                    y: () => {return this.game.game.world.height}
+                }, 
                 'Meteor', 'Meteor-L');
         }
-        this.level.addObject (buffer);
-        this.astroids.push (buffer);
+        else if (type == 2) {
+            var buffer = new Astroid (
+                this.game,
+                this.level,
+                'LARGE-astroid{0}'.format (this.astroids.length),
+                {
+                    x: () => {return this.game.game.world.randomX},
+                    y: () => {return this.game.game.world.height}
+                }, 
+                'Meteor', 'Meteor-L');
+        }
     }
 }
 

@@ -244,8 +244,8 @@ export class Athena extends Ship {
 export class Vulcan extends Ship {
     constructor (game: MainGame, level: Level) {
         var pos = {
-            x: ():number => {return (<any>window).GAME.game.world.width / 2 - 70},
-            y: ():number => {return (<any>window).GAME.game.world.height - 69}
+            x: ():number => {return (<any>window).GAME.game.world.width / 2 - 90},
+            y: ():number => {return (<any>window).GAME.game.world.height - 110}
         }
         super (game, 'ship', 'Vulcan', pos, [
             'Vulcan',

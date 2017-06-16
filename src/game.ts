@@ -9,6 +9,7 @@ import {createLevel} from "./level"
 import {UIController} from "./ui"
 import * as UTIL from "./util"
 import {Wrapper} from "./wrapper"
+import * as $ from 'jquery';
 
 export class toggleControlScheme extends ControlScheme {
     enabled: boolean;
@@ -95,6 +96,8 @@ export class MainGame {
         this.game.load.image('VulcanThrust', '../resources/textures/Vulcan/VulcanThrust.png');
         this.game.load.image('Meteor-Small', '../resources/textures/objects/Meteor_Small-L.png');
         this.game.load.image('Meteor', '../resources/textures/objects/Meteor-L.png');
+        this.game.load.image('Meteor-Ice', '../resources/textures/objects/Ice.png');
+        this.game.load.image('Meteor-3', '../resources/textures/objects/Meteor-L.png');
         this.game.load.physics('physicsData', '../resources/physics/mappings.json');
     }
 

@@ -15,28 +15,35 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var object_1 = require("./object");
 var UTIL = require("./util");
 var AstroidBelt = (function () {
-    function AstroidBelt(game, level) {
-        var _this = this;
+    function AstroidBelt(game, level, n) {
         this.astroids = [];
-        this.spawn = function (i, total) {
-            //Determine type of astroid
-            var type = UTIL.getRandomInt(0, 1);
-            var pos = {
-                x: function () { return UTIL.getRandomInt(120, _this.game.game.world.width); },
-                y: function () { return UTIL.getRandomInt(0, _this.game.game.world.height); }
-            };
-            if (type) {
-                var buffer = new Astroid(_this.game, _this.level, 'SMALL-astroid{0}'.format(_this.astroids.length), pos, 'Meteor-Small', 'Meteor_Small-L');
-            }
-            else {
-                var buffer = new Astroid(_this.game, _this.level, 'LARGE-astroid{0}'.format(_this.astroids.length), pos, 'Meteor', 'Meteor-L');
-            }
-            _this.level.addObject(buffer);
-            _this.astroids.push(buffer);
-        };
         this.game = game;
         this.level = level;
+        this.totalMeteor = n;
+        this.game.game.time.events.loop(Phaser.Timer.SECOND, this.spawn, this);
     }
+    AstroidBelt.prototype.spawn = function () {
+        var _this = this;
+        var type = UTIL.getRandomInt(0, 3);
+        if (type == 0) {
+            var buffer = new Astroid(this.game, this.level, 'SMALL-astroid{0}'.format(this.astroids.length), {
+                x: function () { return _this.game.game.world.randomX; },
+                y: function () { return _this.game.game.world.height; }
+            }, 'Meteor-Small', 'Meteor_Small-L');
+        }
+        else if (type == 1) {
+            var buffer = new Astroid(this.game, this.level, 'LARGE-astroid{0}'.format(this.astroids.length), {
+                x: function () { return _this.game.game.world.randomX; },
+                y: function () { return _this.game.game.world.height; }
+            }, 'Meteor', 'Meteor-L');
+        }
+        else if (type == 2) {
+            var buffer = new Astroid(this.game, this.level, 'LARGE-astroid{0}'.format(this.astroids.length), {
+                x: function () { return _this.game.game.world.randomX; },
+                y: function () { return _this.game.game.world.height; }
+            }, 'Meteor', 'Meteor-L');
+        }
+    };
     return AstroidBelt;
 }());
 exports.AstroidBelt = AstroidBelt;
