@@ -136,6 +136,7 @@ export class Level {
         this.done = done;
         this.missionControl = new MissionControl (this);
         this.missionControl.begin ();
+        this.frameFunctions = []
     }
 
     init = (l :Level) => {
@@ -143,10 +144,19 @@ export class Level {
         this.inited = true;
     };
 
+    frameFunctions: (() => void)[];
+    
+    addFrame = (a: () => void) => {
+        this.frameFunctions.push (a);
+    }
+
     frame = () => {
         if (this.inited) {
             this.missionControl.frame ();
             this.setframe ();
+        }
+        for (var i of this.frameFunctions) {
+            i ();
         }
     }
 

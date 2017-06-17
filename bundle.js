@@ -10304,48 +10304,74 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var object_1 = require("./object");
 var UTIL = require("./util");
 var AstroidBelt = (function () {
-    function AstroidBelt(game, level, n) {
+    function AstroidBelt(game, level, total) {
+        var _this = this;
         this.astroids = [];
+        this.frame = function () {
+            for (var _i = 0, _a = _this.astroids; _i < _a.length; _i++) {
+                var i = _a[_i];
+                if (!i.dead) {
+                    i.frame();
+                }
+            }
+        };
         this.game = game;
         this.level = level;
-        this.totalMeteor = n;
-        this.game.game.time.events.loop(Phaser.Timer.SECOND, this.spawn, this);
+        this.game.game.time.events.loop(500, this.loop, this);
+        this.total = total;
     }
+    AstroidBelt.prototype.loop = function () {
+        if (this.astroids.length > this.total) {
+            return;
+        }
+        this.spawn();
+    };
     AstroidBelt.prototype.spawn = function () {
         var _this = this;
         var type = UTIL.getRandomInt(0, 3);
+        var xrange = {
+            min: this.game.levelsequence.getCurrent().getObject('ship').pObject.x + 600,
+            max: this.game.levelsequence.getCurrent().getObject('ship').pObject.x + 2500,
+        };
+        var pos = {
+            x: function () { return UTIL.getRandomInt(xrange.min, xrange.max); },
+            y: function () { return _this.game.game.world.height; }
+        };
         if (type == 0) {
-            var buffer = new Astroid(this.game, this.level, 'SMALL-astroid{0}'.format(this.astroids.length), {
-                x: function () { return _this.game.game.world.randomX; },
-                y: function () { return _this.game.game.world.height; }
-            }, 'Meteor-Small');
+            var buffer = new Astroid(this, this.game, this.level, 'SMALL-astroid{0}'.format(this.astroids.length), pos, 'Meteor-Small');
         }
         else if (type == 1) {
-            var buffer = new Astroid(this.game, this.level, 'LARGE-astroid{0}'.format(this.astroids.length), {
-                x: function () { return _this.game.game.world.randomX; },
-                y: function () { return _this.game.game.world.height; }
-            }, 'Meteor');
+            var buffer = new Astroid(this, this.game, this.level, 'LARGE-astroid{0}'.format(this.astroids.length), pos, 'Meteor');
         }
         else if (type == 2) {
-            var buffer = new Astroid(this.game, this.level, '3-astroid{0}'.format(this.astroids.length), {
-                x: function () { return _this.game.game.world.randomX; },
-                y: function () { return _this.game.game.world.height; }
-            }, 'Meteor-3');
+            var buffer = new Astroid(this, this.game, this.level, '3-astroid{0}'.format(this.astroids.length), pos, 'Meteor-3');
         }
         else if (type == 3) {
-            var buffer = new Astroid(this.game, this.level, 'ice-astroid{0}'.format(this.astroids.length), {
-                x: function () { return _this.game.game.world.randomX; },
-                y: function () { return _this.game.game.world.height; }
-            }, 'Meteor-Ice');
+            var buffer = new Astroid(this, this.game, this.level, 'ice-astroid{0}'.format(this.astroids.length), pos, 'Meteor-Ice');
         }
+        this.astroids.push(buffer);
     };
     return AstroidBelt;
 }());
 exports.AstroidBelt = AstroidBelt;
 var Astroid = (function (_super) {
     __extends(Astroid, _super);
-    function Astroid(game, level, name, pos, asset) {
-        var _this = _super.call(this, game, level, name, pos, asset) || this;
+    function Astroid(belt, game, level, name, pos, asset) {
+        var _this = _super.call(this, game, level, name, pos, [asset]) || this;
+        _this.collide = function (target, this_target, shapeA, shapeB, contactEquation) {
+            if (contactEquation[0] != null) {
+                if (shapeB.id == 14) {
+                    _this.dead = true;
+                    _this.pObject.destroy();
+                    _this.parent.spawn();
+                }
+            }
+        };
+        _this.frame = function () {
+            _this.pObject.body.velocity.x = 0;
+            _this.pObject.body.velocity.y = -500;
+        };
+        _this.parent = belt;
         _this.enablePhysics();
         if (asset == "Meteor-Small") {
             _this.pObject.body.setCircle(60);
@@ -10357,13 +10383,17 @@ var Astroid = (function (_super) {
             _this.pObject.body.setCircle(130);
         }
         else if (asset == "Meteor-Ice") {
-            _this.pObject.body.setCircle(60);
+            _this.pObject.body.setCircle(30);
         }
         _this.pObject.body.mass = 30;
+        _this.pObject.body.onBeginContact.add(_this.collide, _this);
+        _this.dead = false;
+        _this.pObject.body.velocity.x = 0;
+        _this.pObject.body.velocity.y = -1;
         return _this;
     }
     return Astroid;
-}(object_1.GameSprite));
+}(object_1.DynamicSprite));
 exports.Astroid = Astroid;
 
 },{"./object":11,"./util":15}],4:[function(require,module,exports){
@@ -10751,10 +10781,17 @@ var Level = (function () {
             _this.binit(l);
             _this.inited = true;
         };
+        this.addFrame = function (a) {
+            _this.frameFunctions.push(a);
+        };
         this.frame = function () {
             if (_this.inited) {
                 _this.missionControl.frame();
                 _this.setframe();
+            }
+            for (var _i = 0, _a = _this.frameFunctions; _i < _a.length; _i++) {
+                var i = _a[_i];
+                i();
             }
         };
         this.getAllBodies = function () {
@@ -10817,6 +10854,7 @@ var Level = (function () {
         this.done = done;
         this.missionControl = new mission_2.MissionControl(this);
         this.missionControl.begin();
+        this.frameFunctions = [];
     }
     return Level;
 }());
@@ -10832,6 +10870,7 @@ var ship_2 = require("./ship");
 var ship_3 = require("./ship");
 var ship_4 = require("./ship");
 var wrapper_1 = require("./wrapper");
+var astroid_1 = require("./astroid");
 function getlength(number) {
     return number.toString().length;
 }
@@ -11080,7 +11119,7 @@ function DoGame(game) {
             },
             init: function (___this) {
                 window.GAME.setGravity(0, 0.1);
-                ___this.game.game.world.setBounds(0, 0, 9200, 9200);
+                ___this.game.game.world.setBounds(0, 0, 9200, 2500);
                 ___this.getObject('ship').pos = {
                     x: function () { return 70; },
                     y: function () { return window.GAME.game.world.centerY; }
@@ -11088,7 +11127,8 @@ function DoGame(game) {
                 ___this.getObject('ship').reset(false);
                 window.GAME.uicontroller.setPlanet('ceres');
                 // Initialize the Astroid belt;
-                //(<any>___this).astroidbelt = new AstroidBelt ((<any>window).GAME, ___this);
+                ___this.astroidbelt = new astroid_1.AstroidBelt(window.GAME, ___this, 15);
+                ___this.addFrame(___this.astroidbelt.frame);
             }
         },
     ];
@@ -11191,7 +11231,7 @@ function initShip(___this) {
 }
 exports.initShip = initShip;
 
-},{"./game":7,"./ship":12,"./wrapper":16,"jquery":1}],10:[function(require,module,exports){
+},{"./astroid":3,"./game":7,"./ship":12,"./wrapper":16,"jquery":1}],10:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var $ = require("jquery");

@@ -95,10 +95,17 @@ var Level = (function () {
             _this.binit(l);
             _this.inited = true;
         };
+        this.addFrame = function (a) {
+            _this.frameFunctions.push(a);
+        };
         this.frame = function () {
             if (_this.inited) {
                 _this.missionControl.frame();
                 _this.setframe();
+            }
+            for (var _i = 0, _a = _this.frameFunctions; _i < _a.length; _i++) {
+                var i = _a[_i];
+                i();
             }
         };
         this.getAllBodies = function () {
@@ -161,6 +168,7 @@ var Level = (function () {
         this.done = done;
         this.missionControl = new mission_2.MissionControl(this);
         this.missionControl.begin();
+        this.frameFunctions = [];
     }
     return Level;
 }());

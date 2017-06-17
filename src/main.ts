@@ -277,7 +277,7 @@ function DoGame (game: MainGame): void {
             },
             init: (___this: Level) => {
                 (<any>window).GAME.setGravity (0, 0.1);
-                ___this.game.game.world.setBounds(0, 0, 9200, 9200);
+                ___this.game.game.world.setBounds(0, 0, 9200, 2500);
                 ___this.getObject ('ship').pos = {
                     x: ():number => {return 70},
                     y: ():number => {return (<any>window).GAME.game.world.centerY}
@@ -286,7 +286,8 @@ function DoGame (game: MainGame): void {
                 (<any>window).GAME.uicontroller.setPlanet ('ceres');
 
                 // Initialize the Astroid belt;
-                //(<any>___this).astroidbelt = new AstroidBelt ((<any>window).GAME, ___this);
+                (<any>___this).astroidbelt = new AstroidBelt ((<any>window).GAME, ___this, 15);
+                ___this.addFrame ((<any>___this).astroidbelt.frame)
             }
         },
 
