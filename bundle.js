@@ -10285,19 +10285,25 @@ var AstroidBelt = (function () {
             var buffer = new Astroid(this.game, this.level, 'SMALL-astroid{0}'.format(this.astroids.length), {
                 x: function () { return _this.game.game.world.randomX; },
                 y: function () { return _this.game.game.world.height; }
-            }, 'Meteor-Small', 'Meteor_Small-L');
+            }, 'Meteor-Small');
         }
         else if (type == 1) {
             var buffer = new Astroid(this.game, this.level, 'LARGE-astroid{0}'.format(this.astroids.length), {
                 x: function () { return _this.game.game.world.randomX; },
                 y: function () { return _this.game.game.world.height; }
-            }, 'Meteor', 'Meteor-L');
+            }, 'Meteor');
         }
         else if (type == 2) {
-            var buffer = new Astroid(this.game, this.level, 'LARGE-astroid{0}'.format(this.astroids.length), {
+            var buffer = new Astroid(this.game, this.level, '3-astroid{0}'.format(this.astroids.length), {
                 x: function () { return _this.game.game.world.randomX; },
                 y: function () { return _this.game.game.world.height; }
-            }, 'Meteor', 'Meteor-L');
+            }, 'Meteor-3');
+        }
+        else if (type == 3) {
+            var buffer = new Astroid(this.game, this.level, 'ice-astroid{0}'.format(this.astroids.length), {
+                x: function () { return _this.game.game.world.randomX; },
+                y: function () { return _this.game.game.world.height; }
+            }, 'Meteor-Ice');
         }
     };
     return AstroidBelt;
@@ -10305,31 +10311,24 @@ var AstroidBelt = (function () {
 exports.AstroidBelt = AstroidBelt;
 var Astroid = (function (_super) {
     __extends(Astroid, _super);
-    function Astroid(game, level, name, pos, asset, body) {
+    function Astroid(game, level, name, pos, asset) {
         var _this = _super.call(this, game, level, name, pos, asset) || this;
-        _this.body = body;
         _this.enablePhysics();
-        if (asset == "Meteor") {
+        if (asset == "Meteor-Small") {
+            _this.pObject.body.setCircle(60);
+        }
+        else if (asset == "Meteor") {
             _this.pObject.body.setCircle(130);
         }
-        else {
+        else if (asset == "Meteor-3") {
+            _this.pObject.body.setCircle(130);
+        }
+        else if (asset == "Meteor-Ice") {
             _this.pObject.body.setCircle(60);
         }
         _this.pObject.body.mass = 30;
         return _this;
-        //this.pObject.body.createBodyCallback(this.game.game.physics.p2.walls.top, this.collideTop, this);
-        //this.pObject.body.collideWorldBounds = false;
     }
-    Astroid.prototype.collideTop = function (body1, body2) {
-        console.log(this);
-    };
-    Astroid.prototype.setForce = function (f) {
-        this.pObject.body.velocity.x = f.x;
-        this.pObject.body.velocity.y = f.y;
-        this.pObject.body.angularForce = f.r;
-        this.pObject.body.damping = 0;
-        this.pObject.body.mass = 100;
-    };
     return Astroid;
 }(object_1.GameSprite));
 exports.Astroid = Astroid;
@@ -10494,7 +10493,7 @@ var MainGame = (function () {
             _this.game.load.image('Meteor-Small', '../resources/textures/objects/Meteor_Small-L.png');
             _this.game.load.image('Meteor', '../resources/textures/objects/Meteor-L.png');
             _this.game.load.image('Meteor-Ice', '../resources/textures/objects/Ice.png');
-            _this.game.load.image('Meteor-3', '../resources/textures/objects/Meteor-L.png');
+            _this.game.load.image('Meteor-3', '../resources/textures/objects/Meteor_03.png');
             _this.game.load.physics('physicsData', '../resources/physics/mappings.json');
         };
         this.pause = function () {

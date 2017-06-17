@@ -86,7 +86,7 @@ var MainGame = (function () {
             _this.game.load.image('Meteor-Small', '../resources/textures/objects/Meteor_Small-L.png');
             _this.game.load.image('Meteor', '../resources/textures/objects/Meteor-L.png');
             _this.game.load.image('Meteor-Ice', '../resources/textures/objects/Ice.png');
-            _this.game.load.image('Meteor-3', '../resources/textures/objects/Meteor-L.png');
+            _this.game.load.image('Meteor-3', '../resources/textures/objects/Meteor_03.png');
             _this.game.load.physics('physicsData', '../resources/physics/mappings.json');
         };
         this.pause = function () {

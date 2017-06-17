@@ -38,7 +38,7 @@ export class AstroidBelt {
                     x: () => {return this.game.game.world.randomX},
                     y: () => {return this.game.game.world.height}
                 }, 
-                'Meteor-Small', 'Meteor_Small-L');
+                'Meteor-Small');
         }
         else if (type == 1) {
             var buffer = new Astroid (
@@ -49,50 +49,52 @@ export class AstroidBelt {
                     x: () => {return this.game.game.world.randomX},
                     y: () => {return this.game.game.world.height}
                 }, 
-                'Meteor', 'Meteor-L');
+                'Meteor');
         }
         else if (type == 2) {
             var buffer = new Astroid (
                 this.game,
                 this.level,
-                'LARGE-astroid{0}'.format (this.astroids.length),
+                '3-astroid{0}'.format (this.astroids.length),
                 {
                     x: () => {return this.game.game.world.randomX},
                     y: () => {return this.game.game.world.height}
                 }, 
-                'Meteor', 'Meteor-L');
+                'Meteor-3');
+        }
+        else if (type == 3) {
+            var buffer = new Astroid (
+                this.game,
+                this.level,
+                'ice-astroid{0}'.format (this.astroids.length),
+                {
+                    x: () => {return this.game.game.world.randomX},
+                    y: () => {return this.game.game.world.height}
+                }, 
+                'Meteor-Ice');
         }
     }
 }
 
 export class Astroid extends GameSprite {
     body: string;
-    constructor (game: MainGame, level: Level, name: string, pos: _position, asset: string, body: string) {
+    constructor (game: MainGame, level: Level, name: string, pos: _position, asset: string) {
         super (game, level, name, pos, asset);
-        this.body = body;
         this.enablePhysics ();
-        if (asset == "Meteor") {
+        if (asset == "Meteor-Small") {
+            this.pObject.body.setCircle (60);
+        }
+        else if (asset == "Meteor") {
             this.pObject.body.setCircle (130);
         }
-        else {
+        else if (asset == "Meteor-3") {
+            this.pObject.body.setCircle (130);
+        }
+        else if (asset == "Meteor-Ice") {
             this.pObject.body.setCircle (60);
         }
         this.pObject.body.mass = 30;
-
-
-        //this.pObject.body.createBodyCallback(this.game.game.physics.p2.walls.top, this.collideTop, this);
-        //this.pObject.body.collideWorldBounds = false;
     }
 
-    collideTop (body1, body2) {
-        console.log(this);
-    }
 
-    setForce (f: Force) {
-        this.pObject.body.velocity.x = f.x;
-        this.pObject.body.velocity.y = f.y;
-        this.pObject.body.angularForce = f.r;
-        this.pObject.body.damping = 0;
-        this.pObject.body.mass = 100;
-    }
 }
