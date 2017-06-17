@@ -42,7 +42,7 @@ var AstroidBelt = (function () {
         var type = UTIL.getRandomInt(0, 3);
         var xrange = {
             min: this.game.levelsequence.getCurrent().getObject('ship').pObject.x + 600,
-            max: this.game.levelsequence.getCurrent().getObject('ship').pObject.x + 2500,
+            max: this.game.levelsequence.getCurrent().getObject('ship').pObject.x + 4500,
         };
         var pos = {
             x: function () { return UTIL.getRandomInt(xrange.min, xrange.max); },

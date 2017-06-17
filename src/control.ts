@@ -1,5 +1,3 @@
-/// <reference path="../imports/phaser.d.ts" />
-
 export interface KeyBinding {
   key: number;
   callback: (_args?: any[]) => void;

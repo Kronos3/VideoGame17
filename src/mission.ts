@@ -1,30 +1,32 @@
 import * as UTIL from "./util"
 import {Level} from "./level"
 import * as $ from 'jquery';
+import {MainGame} from "./game"
 
-export interface MissionContructor {
+export interface MissionConstructor {
     title: string;
     description: string;
+    html: string;
     condition: () => boolean;
     onDone: () => void;
     update?: () => void;
     CustomElement?: string;
 }
 
-export function generateMission (m: MissionContructor) {
+export function generateMission (m: MissionConstructor) {
     var e = $( "<div class=\"mission\">\
     <p class=\"title\">{0}</p>\
     <p class=\"description\">{1}</p>\
 </div>".format (m.title, m.description));
-    return new Mission (e.get(0), m.condition, m.title, m.onDone, m.description, m.update);
+    return new Mission (e.get(0), m.html, m.condition, m.title, m.onDone, m.description, m.update);
 }
 
 export class MissionControl {
     missionIndex: number = 0;
     missions: Mission[] = [];
-    level: Level;
-    constructor (level: Level) {
-        this.level = level;
+    game: MainGame;
+    constructor (game: MainGame) {
+        this.game = game;
     }
 
     addMission = (m: Mission) => {
@@ -35,16 +37,19 @@ export class MissionControl {
 
     begin = () => {
         this.missionIndex = 0;
+        $('.active-mission').html (this.missions[this.missionIndex].elementUI);
     }
 
     nextMission = () => {
+        this.game.wrapper.handleNext ();
         this.missionIndex++;
+        $('.active-mission').html (this.missions[this.missionIndex].elementUI);
     }
 
     frame = () => {
         var current_mission = this.missions[this.missionIndex];
         if (typeof current_mission === 'undefined') {
-            this.level.game.wrapper.handleNext();
+            this.game.wrapper.handleNext();
             return;
         }
         current_mission.frame ();
@@ -59,12 +64,14 @@ export class Mission {
     title: string;
     desc: string;
     element: Element;
+    elementUI: string;
     condition: () => boolean;
     update: () => void;
     onDone: () => void;
     missionControl: MissionControl;
-    constructor(e: Element, condition: () => boolean, title: string, onDone: () => void, desc?: string, update?: () => void) {
+    constructor(e: Element, uie: string, condition: () => boolean, title: string, onDone: () => void, desc?: string, update?: () => void) {
         this.element = e;
+        this.elementUI = uie;
         this.title = title;
         this.desc = desc;
         this.condition = condition;

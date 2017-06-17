@@ -1,5 +1,4 @@
 "use strict";
-/// <reference path="../imports/phaser.d.ts" />
 Object.defineProperty(exports, "__esModule", { value: true });
 var ControlScheme = (function () {
     function ControlScheme(game, _bindings, captureInput, enabled) {

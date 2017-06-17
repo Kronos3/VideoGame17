@@ -6,11 +6,11 @@ function generateMission(m) {
     <p class=\"title\">{0}</p>\
     <p class=\"description\">{1}</p>\
 </div>".format(m.title, m.description));
-    return new Mission(e.get(0), m.condition, m.title, m.onDone, m.description, m.update);
+    return new Mission(e.get(0), m.html, m.condition, m.title, m.onDone, m.description, m.update);
 }
 exports.generateMission = generateMission;
 var MissionControl = (function () {
-    function MissionControl(level) {
+    function MissionControl(game) {
         var _this = this;
         this.missionIndex = 0;
         this.missions = [];
@@ -21,14 +21,17 @@ var MissionControl = (function () {
         };
         this.begin = function () {
             _this.missionIndex = 0;
+            $('.active-mission').html(_this.missions[_this.missionIndex].elementUI);
         };
         this.nextMission = function () {
+            _this.game.wrapper.handleNext();
             _this.missionIndex++;
+            $('.active-mission').html(_this.missions[_this.missionIndex].elementUI);
         };
         this.frame = function () {
             var current_mission = _this.missions[_this.missionIndex];
             if (typeof current_mission === 'undefined') {
-                _this.level.game.wrapper.handleNext();
+                _this.game.wrapper.handleNext();
                 return;
             }
             current_mission.frame();
@@ -36,13 +39,13 @@ var MissionControl = (function () {
                 $(current_mission.element).addClass('current');
             }
         };
-        this.level = level;
+        this.game = game;
     }
     return MissionControl;
 }());
 exports.MissionControl = MissionControl;
 var Mission = (function () {
-    function Mission(e, condition, title, onDone, desc, update) {
+    function Mission(e, uie, condition, title, onDone, desc, update) {
         var _this = this;
         this.complete = false;
         this.setControl = function (c) {
@@ -59,6 +62,7 @@ var Mission = (function () {
             _this.update();
         };
         this.element = e;
+        this.elementUI = uie;
         this.title = title;
         this.desc = desc;
         this.condition = condition;

@@ -230,7 +230,7 @@ function DoGame(game) {
                     position: {
                         x: function () { return 0; },
                         y: function () { return 0; },
-                        width: 9200,
+                        width: 18000,
                         height: 2500
                     },
                     repeat: true
@@ -256,7 +256,7 @@ function DoGame(game) {
             },
             init: function (___this) {
                 window.GAME.setGravity(0, 0.1);
-                ___this.game.game.world.setBounds(0, 0, 9200, 2500);
+                ___this.game.game.world.setBounds(0, 0, 18000, 2500);
                 ___this.getObject('ship').pos = {
                     x: function () { return 70; },
                     y: function () { return window.GAME.game.world.centerY; }
@@ -270,64 +270,71 @@ function DoGame(game) {
         },
     ];
     var missions = [
-        [
-            {
-                title: 'Reach 4000m',
-                description: 'Exit Earth\'s atmosphere',
-                condition: function () {
-                    if (window.GAME.getLevel('intro').getObject('ship') == null) {
-                        return false;
-                    }
-                    return window.GAME.getLevel('intro').getObject('ship').getAltitude() > 4000;
-                },
-                onDone: function () {
-                },
-                update: function () {
-                    if (window.GAME.getLevel('intro').getObject('ship') == null) {
-                        window.GAME.pause();
-                        return;
-                    }
-                    var a = parseInt(window.GAME.getLevel('intro').getObject('ship').getAltitude());
-                    if (a < 0) {
-                        a = 0;
-                    }
-                    $('.alt').text(a + 'M');
-                    var x = (.95 * (a / 40));
-                    if (x > 95) {
-                        $('.alt').css('bottom', '95%');
-                    }
-                    else {
-                        $('.alt').css('bottom', x + '%');
-                    }
-                }
-            }
-        ],
-        [
-            {
-                title: 'Survive the astroid belt',
-                description: 'Manuever around astroids in the belt',
-                condition: function () {
+        {
+            title: 'Reach 4000m',
+            description: 'Exit Earth\'s atmosphere',
+            html: "\
+                <div class=\"altitude\">\
+                    <p>Reach 4000m</p>\
+                    <span class=\"alt\">0m</span>\
+                    <span class=\"alt-line\"></span>\
+                </div>",
+            condition: function () {
+                if (window.GAME.getLevel('intro').getObject('ship') == null) {
                     return false;
-                },
-                onDone: function () {
-                    ;
-                },
-                update: function () {
-                    ;
+                }
+                return window.GAME.getLevel('intro').getObject('ship').getAltitude() > 4000;
+            },
+            onDone: function () {
+            },
+            update: function () {
+                if (window.GAME.getLevel('intro').getObject('ship') == null) {
+                    window.GAME.pause();
+                    return;
+                }
+                var a = parseInt(window.GAME.levelsequence.getCurrent().getObject('ship').getAltitude());
+                if (a < 0) {
+                    a = 0;
+                }
+                $('.alt').text(a + 'M');
+                var x = (.95 * (a / 40));
+                if (x > 95) {
+                    $('.alt').css('bottom', '95%');
+                }
+                else {
+                    $('.alt').css('bottom', x + '%');
                 }
             }
-        ]
+        },
+        {
+            title: 'Survive the astroid belt',
+            description: 'Manuever around astroids in the belt',
+            html: '\
+                <div>\
+                <p>Survive the asteroid belt</p>\
+                </div>',
+            condition: function () {
+                return false;
+            },
+            onDone: function () {
+                ;
+            },
+            update: function () {
+                ;
+            }
+        }
     ];
     add_levels(levels, missions);
+    game.missionControl.begin();
 }
 var shipClass;
 function add_levels(levels, missions) {
     for (var iter in levels) {
         game.addLevel(levels[iter]);
-        for (var _i = 0, _a = missions[iter]; _i < _a.length; _i++) {
-            var miter = _a[_i];
-            game.levelsequence.levels[iter].addMission(miter);
-        }
+    }
+    for (var _i = 0, missions_1 = missions; _i < missions_1.length; _i++) {
+        var miter = missions_1[_i];
+        game.addMission(miter);
     }
 }
 function difDone() {

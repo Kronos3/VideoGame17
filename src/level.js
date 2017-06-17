@@ -2,8 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var object_1 = require("./object");
 var object_2 = require("./object");
-var mission_1 = require("./mission");
-var mission_2 = require("./mission");
 var UTIL = require("./util");
 var LevelSequence = (function () {
     function LevelSequence() {
@@ -100,7 +98,6 @@ var Level = (function () {
         };
         this.frame = function () {
             if (_this.inited) {
-                _this.missionControl.frame();
                 _this.setframe();
             }
             for (var _i = 0, _a = _this.frameFunctions; _i < _a.length; _i++) {
@@ -114,9 +111,6 @@ var Level = (function () {
                 out.push(element.pObject.body);
             });
             return out;
-        };
-        this.addMission = function (l) {
-            _this.missionControl.addMission(mission_1.generateMission(l));
         };
         this.enable = function () {
             _this.objects.forEach(function (element) {
@@ -150,7 +144,6 @@ var Level = (function () {
                     return i;
                 }
             }
-            UTIL.error('Object {0} could not be found'.format(name));
             return null;
         };
         this.addObject = function (obj) {
@@ -166,8 +159,6 @@ var Level = (function () {
         this.setframe = frame;
         this.binit = init;
         this.done = done;
-        this.missionControl = new mission_2.MissionControl(this);
-        this.missionControl.begin();
         this.frameFunctions = [];
     }
     return Level;

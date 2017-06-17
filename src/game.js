@@ -17,6 +17,8 @@ var level_2 = require("./level");
 var level_3 = require("./level");
 var ui_1 = require("./ui");
 var $ = require("jquery");
+var mission_1 = require("./mission");
+var mission_2 = require("./mission");
 var toggleControlScheme = (function (_super) {
     __extends(toggleControlScheme, _super);
     function toggleControlScheme(game, _bindings, captureInput, enabled) {
@@ -56,6 +58,9 @@ var MainGame = (function () {
         this.controls = [];
         this.levelsequence = new level_1.LevelSequence();
         this.assets = [];
+        this.addMission = function (l) {
+            _this.missionControl.addMission(mission_1.generateMission(l));
+        };
         this.addControlScheme = function (bindings, captureInput) {
             if (captureInput === void 0) { captureInput = true; }
             var temp = new toggleControlScheme(_this.game, bindings, captureInput);
@@ -154,6 +159,8 @@ var MainGame = (function () {
                 _this.wrapper.handleNext();
                 return;
             }
+            // MissionControl
+            _this.missionControl.frame();
             // Per-Level
             _this.levelsequence.getCurrent().frame();
         };
@@ -208,6 +215,7 @@ var MainGame = (function () {
             $('.loading').css('display', 'none');
         }, 1000);
         this.uicontroller = new ui_1.UIController();
+        this.missionControl = new mission_2.MissionControl(this);
     }
     return MainGame;
 }());

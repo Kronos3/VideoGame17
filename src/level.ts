@@ -5,9 +5,6 @@ import {DynamicSprite} from "./object"
 import {MainGame} from "./game"
 import {initShip} from "./main"
 import {_position} from "./object"
-import {MissionContructor} from "./mission"
-import {generateMission} from "./mission"
-import {MissionControl} from "./mission"
 import * as UTIL from "./util"
 
 export class LevelSequence {
@@ -126,7 +123,6 @@ export class Level {
     binit: (l: Level) => void;
     done: () => boolean;
     inited: boolean = false;
-    missionControl: MissionControl;
 
     constructor (game: MainGame,  name: string, done: () => boolean, frame = () => {return}, init = (l: Level) => {return}) {
         this.game = game;
@@ -134,8 +130,6 @@ export class Level {
         this.setframe = frame;
         this.binit = init;
         this.done = done;
-        this.missionControl = new MissionControl (this);
-        this.missionControl.begin ();
         this.frameFunctions = []
     }
 
@@ -152,7 +146,6 @@ export class Level {
 
     frame = () => {
         if (this.inited) {
-            this.missionControl.frame ();
             this.setframe ();
         }
         for (var i of this.frameFunctions) {
@@ -166,10 +159,6 @@ export class Level {
             out.push(element.pObject.body);
         });
         return out;
-    }
-
-    addMission = (l: MissionContructor) => {
-        this.missionControl.addMission (generateMission (l));
     }
 
     enable = () => {
@@ -204,7 +193,6 @@ export class Level {
                 return i;
             }
         }
-        UTIL.error ('Object {0} could not be found'.format (name));
         return null;
     }
 

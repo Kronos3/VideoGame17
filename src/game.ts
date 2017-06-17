@@ -10,6 +10,9 @@ import {UIController} from "./ui"
 import * as UTIL from "./util"
 import {Wrapper} from "./wrapper"
 import * as $ from 'jquery';
+import {MissionConstructor} from "./mission"
+import {generateMission} from "./mission"
+import {MissionControl} from "./mission"
 
 export class toggleControlScheme extends ControlScheme {
     enabled: boolean;
@@ -54,6 +57,7 @@ export class MainGame {
             $('.loading').css('display', 'none');
         }, 1000);
         this.uicontroller = new UIController ();
+        this.missionControl = new MissionControl (this);
     }
 
     game: Phaser.Game;
@@ -64,7 +68,12 @@ export class MainGame {
     gravity: number;
     uicontroller: UIController;
     playerCollisionGroup: Phaser.Physics.P2.CollisionGroup;
+    missionControl: MissionControl;
 
+
+    addMission = (l: MissionConstructor) => {
+        this.missionControl.addMission (generateMission (l));
+    }
 
     addControlScheme = (bindings: KeyBinding[], captureInput = true) => {
         var temp: toggleControlScheme = new toggleControlScheme (this.game, bindings, captureInput);
@@ -177,6 +186,9 @@ export class MainGame {
             this.wrapper.handleNext ();
             return;
         }
+        
+        // MissionControl
+        this.missionControl.frame ();
 
         // Per-Level
         this.levelsequence.getCurrent ().frame ();

@@ -10,7 +10,7 @@ import {Vulcan} from "./ship"
 import {TextDisplay} from "./type"
 import {Wrapper} from "./wrapper"
 import {Level} from "./level"
-import {MissionContructor} from "./mission"
+import {MissionConstructor} from "./mission"
 import {AstroidBelt} from "./astroid"
 import {GameSprite} from "./object"
 
@@ -251,7 +251,7 @@ function DoGame (game: MainGame): void {
                     position: {
                         x: ():number => {return 0},
                         y: ():number => {return 0},
-                        width: 9200,
+                        width: 18000,
                         height: 2500
                     },
                     repeat: true
@@ -277,7 +277,7 @@ function DoGame (game: MainGame): void {
             },
             init: (___this: Level) => {
                 (<any>window).GAME.setGravity (0, 0.1);
-                ___this.game.game.world.setBounds(0, 0, 9200, 2500);
+                ___this.game.game.world.setBounds(0, 0, 18000, 2500);
                 ___this.getObject ('ship').pos = {
                     x: ():number => {return 70},
                     y: ():number => {return (<any>window).GAME.game.world.centerY}
@@ -293,57 +293,64 @@ function DoGame (game: MainGame): void {
 
     ]
 
-    var missions: MissionContructor [][] = [
-        [
-            {
-                title: 'Reach 4000m',
-                description: 'Exit Earth\'s atmosphere',
-                condition: () => {
-                    if ((<any>window).GAME.getLevel('intro').getObject('ship') == null){
-                        return false;
-                    }
-                    return (<any>window).GAME.getLevel('intro').getObject('ship').getAltitude () > 4000;
-                },
-                onDone: () => {
-                },
-                update: () => {
-                    if ((<any>window).GAME.getLevel('intro').getObject('ship') == null){
-                        (<any>window).GAME.pause ();
-                        return;
-                    }
-                    var a = parseInt((<any>window).GAME.getLevel('intro').getObject('ship').getAltitude ());
-                    if (a < 0){
-                        a = 0;
-                    }
-                    $('.alt').text (a + 'M');
-                    var x = (.95 * (a/40));
-                    if (x > 95) {
-                        $('.alt').css ('bottom', '95%')
-                    }
-                    else {
-                        $('.alt').css ('bottom', x + '%')
-                    }
-                }
-            }
-        ],
-        [
-            {
-                title: 'Survive the astroid belt',
-                description: 'Manuever around astroids in the belt',
-                condition: () => {
+    var missions: MissionConstructor [] = [
+        {
+            title: 'Reach 4000m',
+            description: 'Exit Earth\'s atmosphere',
+            html: "\
+                <div class=\"altitude\">\
+                    <p>Reach 4000m</p>\
+                    <span class=\"alt\">0m</span>\
+                    <span class=\"alt-line\"></span>\
+                </div>",
+            condition: () => {
+                if ((<any>window).GAME.getLevel('intro').getObject('ship') == null){
                     return false;
-                },
-                onDone: () => {
-                    ;
-                },
-                update: () => {
-                    ;
+                }
+                return (<any>window).GAME.getLevel('intro').getObject('ship').getAltitude () > 4000;
+            },
+            onDone: () => {
+            },
+            update: () => {
+                if ((<any>window).GAME.getLevel('intro').getObject('ship') == null){
+                    (<any>window).GAME.pause ();
+                    return;
+                }
+                var a = parseInt((<any>window).GAME.levelsequence.getCurrent().getObject('ship').getAltitude ());
+                if (a < 0){
+                    a = 0;
+                }
+                $('.alt').text (a + 'M');
+                var x = (.95 * (a/40));
+                if (x > 95) {
+                    $('.alt').css ('bottom', '95%')
+                }
+                else {
+                    $('.alt').css ('bottom', x + '%')
                 }
             }
-        ]
+        },
+        {
+            title: 'Survive the astroid belt',
+            description: 'Manuever around astroids in the belt',
+            html: '\
+                <div>\
+                <p>Survive the asteroid belt</p>\
+                </div>',
+            condition: () => {
+                return false;
+            },
+            onDone: () => {
+                ;
+            },
+            update: () => {
+                ;
+            }
+        }
     ]
 
     add_levels (levels, missions);
+    game.missionControl.begin ();
 }
 
 var shipClass;
@@ -351,9 +358,10 @@ var shipClass;
 function add_levels (levels, missions) {
     for (var iter in levels) {
         game.addLevel (levels[iter]);
-        for (var miter of missions[iter]) {
-            game.levelsequence.levels[iter].addMission (miter);
-        }
+        
+    }
+    for (var miter of missions) {
+        game.addMission (miter);
     }
 }
 
