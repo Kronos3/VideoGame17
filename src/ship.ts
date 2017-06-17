@@ -5,6 +5,7 @@ import {KeyBinding} from "./control"
 import {MainGame} from "./game"
 import {Level} from "./level"
 import {_position} from "./object"
+import {Animation} from "./animation"
 
 export var ShipBinding = (game: MainGame, ship: Ship): KeyBinding => {return {
         key: -1, // Run every frame
@@ -31,7 +32,14 @@ export var ShipBinding = (game: MainGame, ship: Ship): KeyBinding => {return {
     }
 };
 
+interface vector {
+    x: number;
+    y: number;
+}
+
 export class Ship extends DynamicSprite {
+    explosionAnimation: Animation;
+
     constructor (game: MainGame, name:string, bodyName: string, pos: _position, assets: string[], level=game.levelsequence.getLevel ('intro')) {
         super (game, level, name, pos, assets, {angularRot: 0, SAS: false, thrustOn: false, inSpace: false});
         this.enablePhysics ();
@@ -39,22 +47,95 @@ export class Ship extends DynamicSprite {
         this.loadBody (bodyName);
         this.startAlt = this.pObject.body.y;
         this.pObject.body.onBeginContact.add(this.collide, this);
-        // this.
+        this.explosionAnimation = new Animation (this, [
+            "ex1",
+            "ex2",
+            "ex3",
+            "ex4",
+            "ex5"
+        ],
+        () => {
+            this.reset ();
+        }, 50);
     }
 
     collide = (target: Phaser.Physics.P2.Body, this_target: Phaser.Physics.P2.Body, shapeA, shapeB, contactEquation) => {
         if(contactEquation[0]!=null) {
-            var res = Phaser.Point.distance(
-                new Phaser.Point(
-                    contactEquation[0].bodyB.velocity[0],
-                    contactEquation[0].bodyB.velocity[1]
-                ),
-                new Phaser.Point(0,0));
-            if (res > 30) {
+            var ship = contactEquation[0].bodyA;
+            var asteroid = contactEquation[0].bodyB;
+            
+            // calculate angle of vectors
+
+            /*if (res > 900) {
                 this.explode ();
                 this.game.game.time.events.add(300, this.reset, this);
+            }*/
+
+            var v1m: vector = {
+                x:shapeA.body.velocity[0],
+                y: shapeA.body.velocity[1]
+            };
+            var v2m: vector;
+            var is_x: boolean;
+
+            switch (shapeB.id){
+                case 12: // Left wall
+                    v2m = {
+                        x: 0,
+                        y: 1
+                    }
+                    is_x = false;
+                    break;
+                case 13: // Right wall
+                    v2m = {
+                        x: 0,
+                        y: 1
+                    }
+                    is_x = false;
+                    break;
+                case 14: // Top wall
+                    v2m = {
+                        x: 1,
+                        y: 0
+                    }
+                    is_x = true;
+                    break;
+                case 15: // Bottom wall
+                    v2m = {
+                        x: 1,
+                        y: 0
+                    }
+                    is_x = true;
+                    break;
+                default:
+                    v2m = {
+                        x: shapeB.body.velocity[0],
+                        y: shapeB.body.velocity[1]
+                    }
+            }
+
+            var a = this.vectorAngle (v1m, v2m);
+            if (!is_x) {
+                a = 90 - a;
+            }
+
+            a %= 90;
+            a = Math.abs(a);
+            var r = a/90;
+
+            var cx = Math.abs(shapeB.body.velocity[0] - shapeA.body.velocity[0]);
+            var cy = Math.abs(shapeB.body.velocity[1] - shapeA.body.velocity[1]);
+
+            var magnitude = (cx * (1 - r)) + (cy * r);
+            if (magnitude > 25) {
+                this.explode ();
             }
         }
+    }
+
+    vectorAngle = (v1: vector, v2: vector) => {
+        var b =  Math.atan2(v1.y, v1.x) / Math.PI * 180;
+        return b;
     }
 
     startAlt: number;
@@ -106,7 +187,7 @@ export class Ship extends DynamicSprite {
     }
 
     explode = () => {
-        this.switchTo ('Explosion');
+        this.explosionAnimation.run ();
         this.isDead = true;
         this.game.game.camera.follow (null);
         this.pObject.body.setZeroForce();
@@ -214,7 +295,12 @@ export class Artemis extends Ship {
             'ArtemisThrust',
             'ArtemisL',
             'ArtemisR',
-            'Explosion'
+            'Explosion',
+            "ex1",
+            "ex2",
+            "ex3",
+            "ex4",
+            "ex5"
         ], level);
         this.angularAcceleration = 1.2;
         this.throttle = 300;
@@ -233,7 +319,12 @@ export class Athena extends Ship {
             'AthenaThrust',
             'AthenaL',
             'AthenaR',
-            'Explosion'
+            'Explosion',
+            "ex1",
+            "ex2",
+            "ex3",
+            "ex4",
+            "ex5"
         ], level);
         this.angularAcceleration = 0.5;
         this.throttle = 240;
@@ -252,7 +343,12 @@ export class Vulcan extends Ship {
             'VulcanThrust',
             'VulcanL',
             'VulcanR',
-            'Explosion'
+            'Explosion',
+            "ex1",
+            "ex2",
+            "ex3",
+            "ex4",
+            "ex5"
         ], level);
         this.angularAcceleration = 0.3;
         this.throttle = 640;

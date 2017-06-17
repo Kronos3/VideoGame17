@@ -98,6 +98,11 @@ export class MainGame {
         this.game.load.image('Meteor', '../resources/textures/objects/Meteor-L.png');
         this.game.load.image('Meteor-Ice', '../resources/textures/objects/Ice.png');
         this.game.load.image('Meteor-3', '../resources/textures/objects/Meteor_03.png');
+        this.game.load.image('ex1', '../resources/animated/explosion/Explosion_01.png');
+        this.game.load.image('ex2', '../resources/animated/explosion/Explosion_02.png');
+        this.game.load.image('ex3', '../resources/animated/explosion/Explosion_03.png');
+        this.game.load.image('ex4', '../resources/animated/explosion/Explosion_04.png');
+        this.game.load.image('ex5', '../resources/animated/explosion/Explosion_05.png');
         this.game.load.physics('physicsData', '../resources/physics/mappings.json');
     }
 

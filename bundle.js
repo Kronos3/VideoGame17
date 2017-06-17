@@ -10255,6 +10255,39 @@ return jQuery;
 
 },{}],2:[function(require,module,exports){
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var Animation = (function () {
+    function Animation(obj, animationAssets, callback, interval, intervalAfter) {
+        if (interval === void 0) { interval = 50; }
+        if (intervalAfter === void 0) { intervalAfter = 300; }
+        var _this = this;
+        this.run = function () {
+            _this.parent.game.game.time.events.add(_this.interval, _this.setFrame, _this);
+        };
+        this.setFrame = function () {
+            _this.parent.switchTo(_this.animationAssets[_this.current]);
+            _this.current++;
+            if (_this.current > _this.animationAssets.length) {
+                _this.parent.game.game.time.events.add(_this.intervalAfter, _this.callback, _this);
+                _this.current = 0;
+            }
+            else {
+                _this.parent.game.game.time.events.add(_this.interval, _this.setFrame, _this);
+            }
+        };
+        this.parent = obj;
+        this.animationAssets = animationAssets;
+        this.interval = interval;
+        this.intervalAfter = intervalAfter;
+        this.current = 0;
+        this.callback = callback;
+    }
+    return Animation;
+}());
+exports.Animation = Animation;
+
+},{}],3:[function(require,module,exports){
+"use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -10333,7 +10366,7 @@ var Astroid = (function (_super) {
 }(object_1.GameSprite));
 exports.Astroid = Astroid;
 
-},{"./object":10,"./util":14}],3:[function(require,module,exports){
+},{"./object":11,"./util":15}],4:[function(require,module,exports){
 /*export class Task {
     fn: () => void;
     repeat: boolean;
@@ -10359,9 +10392,9 @@ exports.Astroid = Astroid;
     }
 }*/ 
 
-},{}],4:[function(require,module,exports){
-console.error("Error: Cannot find module '/home/atuser/git/VideoGame17/src/src' from '/home/atuser/git/VideoGame17/src'");
 },{}],5:[function(require,module,exports){
+console.error("Error: Cannot find module '/home/atuser/git/VideoGame17/src/src' from '/home/atuser/git/VideoGame17/src'");
+},{}],6:[function(require,module,exports){
 "use strict";
 /// <reference path="../imports/phaser.d.ts" />
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -10404,7 +10437,7 @@ var ControlScheme = (function () {
 }());
 exports.ControlScheme = ControlScheme;
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -10494,6 +10527,11 @@ var MainGame = (function () {
             _this.game.load.image('Meteor', '../resources/textures/objects/Meteor-L.png');
             _this.game.load.image('Meteor-Ice', '../resources/textures/objects/Ice.png');
             _this.game.load.image('Meteor-3', '../resources/textures/objects/Meteor_03.png');
+            _this.game.load.image('ex1', '../resources/animated/explosion/Explosion_01.png');
+            _this.game.load.image('ex2', '../resources/animated/explosion/Explosion_02.png');
+            _this.game.load.image('ex3', '../resources/animated/explosion/Explosion_03.png');
+            _this.game.load.image('ex4', '../resources/animated/explosion/Explosion_04.png');
+            _this.game.load.image('ex5', '../resources/animated/explosion/Explosion_05.png');
             _this.game.load.physics('physicsData', '../resources/physics/mappings.json');
         };
         this.pause = function () {
@@ -10615,7 +10653,7 @@ var MainGame = (function () {
 }());
 exports.MainGame = MainGame;
 
-},{"./control":5,"./level":7,"./ui":13,"jquery":1}],7:[function(require,module,exports){
+},{"./control":6,"./level":8,"./ui":14,"jquery":1}],8:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var object_1 = require("./object");
@@ -10784,7 +10822,7 @@ var Level = (function () {
 }());
 exports.Level = Level;
 
-},{"./mission":9,"./object":10,"./util":14}],8:[function(require,module,exports){
+},{"./mission":10,"./object":11,"./util":15}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var $ = require("jquery");
@@ -11153,7 +11191,7 @@ function initShip(___this) {
 }
 exports.initShip = initShip;
 
-},{"./game":6,"./ship":11,"./wrapper":15,"jquery":1}],9:[function(require,module,exports){
+},{"./game":7,"./ship":12,"./wrapper":16,"jquery":1}],10:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var $ = require("jquery");
@@ -11225,7 +11263,7 @@ var Mission = (function () {
 }());
 exports.Mission = Mission;
 
-},{"jquery":1}],10:[function(require,module,exports){
+},{"jquery":1}],11:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -11327,7 +11365,7 @@ var DynamicSprite = (function (_super) {
 }(GameSprite));
 exports.DynamicSprite = DynamicSprite;
 
-},{"./util":14,"jquery":1}],11:[function(require,module,exports){
+},{"./util":15,"jquery":1}],12:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -11343,6 +11381,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /// <reference path="../imports/phaser.d.ts" />
 /// <reference path="../imports/p2.d.ts" />
 var object_1 = require("./object");
+var animation_1 = require("./animation");
 exports.ShipBinding = function (game, ship) {
     return {
         key: -1,
@@ -11375,12 +11414,72 @@ var Ship = (function (_super) {
         var _this = _super.call(this, game, level, name, pos, assets, { angularRot: 0, SAS: false, thrustOn: false, inSpace: false }) || this;
         _this.collide = function (target, this_target, shapeA, shapeB, contactEquation) {
             if (contactEquation[0] != null) {
-                var res = Phaser.Point.distance(new Phaser.Point(contactEquation[0].bodyB.velocity[0], contactEquation[0].bodyB.velocity[1]), new Phaser.Point(0, 0));
-                if (res > 30) {
+                var ship = contactEquation[0].bodyA;
+                var asteroid = contactEquation[0].bodyB;
+                // calculate angle of vectors
+                /*if (res > 900) {
+                    this.explode ();
+                    this.game.game.time.events.add(300, this.reset, this);
+                }*/
+                var v1m = {
+                    x: shapeA.body.velocity[0],
+                    y: shapeA.body.velocity[1]
+                };
+                var v2m;
+                var is_x;
+                switch (shapeB.id) {
+                    case 12:
+                        v2m = {
+                            x: 0,
+                            y: 1
+                        };
+                        is_x = false;
+                        break;
+                    case 13:
+                        v2m = {
+                            x: 0,
+                            y: 1
+                        };
+                        is_x = false;
+                        break;
+                    case 14:
+                        v2m = {
+                            x: 1,
+                            y: 0
+                        };
+                        is_x = true;
+                        break;
+                    case 15:
+                        v2m = {
+                            x: 1,
+                            y: 0
+                        };
+                        is_x = true;
+                        break;
+                    default:
+                        v2m = {
+                            x: shapeB.body.velocity[0],
+                            y: shapeB.body.velocity[1]
+                        };
+                }
+                var a = _this.vectorAngle(v1m, v2m);
+                if (!is_x) {
+                    a = 90 - a;
+                }
+                a %= 90;
+                a = Math.abs(a);
+                var r = a / 90;
+                var cx = Math.abs(shapeB.body.velocity[0] - shapeA.body.velocity[0]);
+                var cy = Math.abs(shapeB.body.velocity[1] - shapeA.body.velocity[1]);
+                var magnitude = (cx * (1 - r)) + (cy * r);
+                if (magnitude > 25) {
                     _this.explode();
-                    _this.game.game.time.events.add(300, _this.reset, _this);
                 }
             }
+        };
+        _this.vectorAngle = function (v1, v2) {
+            var b = Math.atan2(v1.y, v1.x) / Math.PI * 180;
+            return b;
         };
         _this.isDead = false;
         _this.maxLFO = 1000;
@@ -11422,7 +11521,7 @@ var Ship = (function (_super) {
             _this.game.game.camera.follow(_this.pObject);
         };
         _this.explode = function () {
-            _this.switchTo('Explosion');
+            _this.explosionAnimation.run();
             _this.isDead = true;
             _this.game.game.camera.follow(null);
             _this.pObject.body.setZeroForce();
@@ -11507,8 +11606,16 @@ var Ship = (function (_super) {
         _this.loadBody(bodyName);
         _this.startAlt = _this.pObject.body.y;
         _this.pObject.body.onBeginContact.add(_this.collide, _this);
+        _this.explosionAnimation = new animation_1.Animation(_this, [
+            "ex1",
+            "ex2",
+            "ex3",
+            "ex4",
+            "ex5"
+        ], function () {
+            _this.reset();
+        }, 50);
         return _this;
-        // this.
     }
     return Ship;
 }(object_1.DynamicSprite));
@@ -11526,7 +11633,12 @@ var Artemis = (function (_super) {
             'ArtemisThrust',
             'ArtemisL',
             'ArtemisR',
-            'Explosion'
+            'Explosion',
+            "ex1",
+            "ex2",
+            "ex3",
+            "ex4",
+            "ex5"
         ], level) || this;
         _this.angularAcceleration = 1.2;
         _this.throttle = 300;
@@ -11549,7 +11661,12 @@ var Athena = (function (_super) {
             'AthenaThrust',
             'AthenaL',
             'AthenaR',
-            'Explosion'
+            'Explosion',
+            "ex1",
+            "ex2",
+            "ex3",
+            "ex4",
+            "ex5"
         ], level) || this;
         _this.angularAcceleration = 0.5;
         _this.throttle = 240;
@@ -11572,7 +11689,12 @@ var Vulcan = (function (_super) {
             'VulcanThrust',
             'VulcanL',
             'VulcanR',
-            'Explosion'
+            'Explosion',
+            "ex1",
+            "ex2",
+            "ex3",
+            "ex4",
+            "ex5"
         ], level) || this;
         _this.angularAcceleration = 0.3;
         _this.throttle = 640;
@@ -11583,7 +11705,7 @@ var Vulcan = (function (_super) {
 }(Ship));
 exports.Vulcan = Vulcan;
 
-},{"./object":10}],12:[function(require,module,exports){
+},{"./animation":2,"./object":11}],13:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var TextDisplay = (function () {
@@ -11646,7 +11768,7 @@ var TextDisplay = (function () {
 }());
 exports.TextDisplay = TextDisplay;
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var $ = require("jquery");
@@ -11697,7 +11819,7 @@ var UIController = (function () {
 }());
 exports.UIController = UIController;
 
-},{"jquery":1}],14:[function(require,module,exports){
+},{"jquery":1}],15:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 function find(a, b) {
@@ -11765,7 +11887,7 @@ function getRandomInt(min, max) {
 }
 exports.getRandomInt = getRandomInt;
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var type_1 = require("./type");
@@ -11824,4 +11946,4 @@ var Wrapper = (function () {
 }());
 exports.Wrapper = Wrapper;
 
-},{"./type":12,"jquery":1}]},{},[2,3,4,5,6,7,8,9,10,11,12,13,14,15]);
+},{"./type":13,"jquery":1}]},{},[3,4,5,6,7,8,9,10,11,12,13,14,15,16]);
