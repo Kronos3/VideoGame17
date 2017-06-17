@@ -272,7 +272,7 @@ var Artemis = (function (_super) {
             "ex4",
             "ex5"
         ], level) || this;
-        _this.angularAcceleration = 1.2;
+        _this.angularAcceleration = 2.2;
         _this.throttle = 300;
         _this.pObject.body.mass = 5;
         return _this;
@@ -300,7 +300,7 @@ var Athena = (function (_super) {
             "ex4",
             "ex5"
         ], level) || this;
-        _this.angularAcceleration = 0.5;
+        _this.angularAcceleration = 1;
         _this.throttle = 240;
         _this.pObject.body.mass = 5;
         return _this;
@@ -328,7 +328,7 @@ var Vulcan = (function (_super) {
             "ex4",
             "ex5"
         ], level) || this;
-        _this.angularAcceleration = 0.3;
+        _this.angularAcceleration = 0.8;
         _this.throttle = 640;
         _this.pObject.body.mass = 12;
         return _this;

@@ -615,6 +615,8 @@ body {
     height: 25vw;
     background: rgba(255,255,255,0.4);
     border-left: #fff solid 1px;
+    max-width: 350px;
+    max-height: 300px;
 }
 
 .difficulty > .dif-choice::before,
@@ -679,6 +681,7 @@ body {
     width: 30vw;
     height: 20%;
     transform: translateX(-50%);
+    max-width: 420px;
 }
 
 .stats.left {

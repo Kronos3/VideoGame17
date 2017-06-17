@@ -125,7 +125,7 @@ export class Astroid extends DynamicSprite {
     }
 
     frame = () => {
-        this.pObject.body.velocity.x = 0;
+        this.pObject.body.velocity.x %= 40;
         this.pObject.body.velocity.y = -500;
     }
 }

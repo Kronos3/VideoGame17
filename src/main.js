@@ -231,7 +231,7 @@ function DoGame(game) {
                         x: function () { return 0; },
                         y: function () { return 0; },
                         width: 9200,
-                        height: 9200
+                        height: 2500
                     },
                     repeat: true
                 },

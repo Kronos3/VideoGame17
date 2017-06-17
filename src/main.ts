@@ -252,7 +252,7 @@ function DoGame (game: MainGame): void {
                         x: ():number => {return 0},
                         y: ():number => {return 0},
                         width: 9200,
-                        height: 9200
+                        height: 2500
                     },
                     repeat: true
                 },

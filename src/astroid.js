@@ -79,7 +79,7 @@ var Astroid = (function (_super) {
             }
         };
         _this.frame = function () {
-            _this.pObject.body.velocity.x = 0;
+            _this.pObject.body.velocity.x %= 40;
             _this.pObject.body.velocity.y = -500;
         };
         _this.parent = belt;
