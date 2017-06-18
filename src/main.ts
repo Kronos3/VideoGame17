@@ -13,6 +13,8 @@ import {Level} from "./level"
 import {MissionConstructor} from "./mission"
 import {AstroidBelt} from "./astroid"
 import {GameSprite} from "./object"
+import {Rover} from "./rover"
+import {RoverBinding} from "./rover"
 
 function getlength(number) {
     return number.toString().length;
@@ -450,6 +452,16 @@ export function initShip (___this: Level) {
         (<any>window).GAME,
         ___this
     );
+
+    var roverbuff = new Rover ((<any>window).GAME,
+        ___this, 'rover', 'Rover',
+        {
+            x: ():number => {return (<any>window).GAME.game.world.width / 2 - 90},
+            y: ():number => {return (<any>window).GAME.game.world.height - 110}
+        }, [
+            'rover1'
+        ])
+
     ___this.addObject (buf);
     (<any>window).GAME.addControlScheme ([
         ShipBinding((<any>window).GAME, <Ship>buf),
@@ -459,7 +471,8 @@ export function initShip (___this: Level) {
                 (<Ship>buf).reset();
             },
             press: true
-        }
+        },
+        RoverBinding ((<any>window).GAME, roverbuff)
     ]);
     (<any>window).GAME.game.camera.follow(buf.pObject);
     ___this.init (___this);

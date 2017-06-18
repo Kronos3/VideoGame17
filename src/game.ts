@@ -112,7 +112,9 @@ export class MainGame {
         this.game.load.image('ex3', '../resources/animated/explosion/Explosion_03.png');
         this.game.load.image('ex4', '../resources/animated/explosion/Explosion_04.png');
         this.game.load.image('ex5', '../resources/animated/explosion/Explosion_05.png');
+        this.game.load.image('rover1', '../resources/textures/rover/01.png');
         this.game.load.physics('physicsData', '../resources/physics/mappings.json');
+        this.game.load.atlasJSONHash ('rover', '../resources/animated/rover/rover.png', '../resources/animated/rover/rover.json')
     }
 
     pause = () => {

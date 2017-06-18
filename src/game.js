@@ -97,7 +97,9 @@ var MainGame = (function () {
             _this.game.load.image('ex3', '../resources/animated/explosion/Explosion_03.png');
             _this.game.load.image('ex4', '../resources/animated/explosion/Explosion_04.png');
             _this.game.load.image('ex5', '../resources/animated/explosion/Explosion_05.png');
+            _this.game.load.image('rover1', '../resources/textures/rover/01.png');
             _this.game.load.physics('physicsData', '../resources/physics/mappings.json');
+            _this.game.load.atlasJSONHash('rover', '../resources/animated/rover/rover.png', '../resources/animated/rover/rover.json');
         };
         this.pause = function () {
             _this.game.paused = true;

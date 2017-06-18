@@ -8,6 +8,8 @@ var ship_3 = require("./ship");
 var ship_4 = require("./ship");
 var wrapper_1 = require("./wrapper");
 var astroid_1 = require("./astroid");
+var rover_1 = require("./rover");
+var rover_2 = require("./rover");
 function getlength(number) {
     return number.toString().length;
 }
@@ -417,6 +419,12 @@ function difDone() {
 }
 function initShip(___this) {
     var buf = new shipClass(window.GAME, ___this);
+    var roverbuff = new rover_1.Rover(window.GAME, ___this, 'rover', 'Rover', {
+        x: function () { return window.GAME.game.world.width / 2 - 90; },
+        y: function () { return window.GAME.game.world.height - 110; }
+    }, [
+        'rover1'
+    ]);
     ___this.addObject(buf);
     window.GAME.addControlScheme([
         ship_1.ShipBinding(window.GAME, buf),
@@ -426,7 +434,8 @@ function initShip(___this) {
                 buf.reset();
             },
             press: true
-        }
+        },
+        rover_2.RoverBinding(window.GAME, roverbuff)
     ]);
     window.GAME.game.camera.follow(buf.pObject);
     ___this.init(___this);

@@ -11,7 +11,7 @@ export var ShipBinding = (game: MainGame, ship: Ship): KeyBinding => {return {
         key: -1, // Run every frame
         callback: () => {
             if (!ship.isDead) {
-               ship.preframe ();
+                ship.preframe ();
                 if (game.game.input.keyboard.isDown (Phaser.Keyboard.RIGHT)) {
                     ship.rightRCS ();
                 }

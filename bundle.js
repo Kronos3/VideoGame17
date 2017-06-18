@@ -10412,7 +10412,33 @@ var Astroid = (function (_super) {
 }(object_1.DynamicSprite));
 exports.Astroid = Astroid;
 
-},{"./object":9,"./util":13}],4:[function(require,module,exports){
+},{"./object":10,"./util":15}],4:[function(require,module,exports){
+/*export class Task {
+    fn: () => void;
+    repeat: boolean;
+    interval: number;
+    timer: NodeJS.Timer;
+    constructor (fn: () => void, repeat = true, interval = 60) {
+        this.fn = fn;
+        this.repeat = repeat;
+        this.interval =interval;
+    }
+
+    start () {
+        if (this.repeat) {
+            this.timer = setInterval (this.fn, this.interval);
+        }
+        else {
+            this.timer = setTimeout (this.fn, 0);
+        }
+    }
+
+    end () {
+        clearInterval (this.timer);
+    }
+}*/ 
+
+},{}],5:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ControlScheme = (function () {
@@ -10454,7 +10480,7 @@ var ControlScheme = (function () {
 }());
 exports.ControlScheme = ControlScheme;
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -10554,7 +10580,9 @@ var MainGame = (function () {
             _this.game.load.image('ex3', '../resources/animated/explosion/Explosion_03.png');
             _this.game.load.image('ex4', '../resources/animated/explosion/Explosion_04.png');
             _this.game.load.image('ex5', '../resources/animated/explosion/Explosion_05.png');
+            _this.game.load.image('rover1', '../resources/textures/rover/01.png');
             _this.game.load.physics('physicsData', '../resources/physics/mappings.json');
+            _this.game.load.atlasJSONHash('rover', '../resources/animated/rover/rover.png', '../resources/animated/rover/rover.json');
         };
         this.pause = function () {
             _this.game.paused = true;
@@ -10675,7 +10703,7 @@ var MainGame = (function () {
 }());
 exports.MainGame = MainGame;
 
-},{"./control":4,"./level":6,"./mission":8,"./ui":12,"jquery":1}],6:[function(require,module,exports){
+},{"./control":5,"./level":7,"./mission":9,"./ui":14,"jquery":1}],7:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var object_1 = require("./object");
@@ -10843,7 +10871,7 @@ var Level = (function () {
 }());
 exports.Level = Level;
 
-},{"./object":9,"./util":13}],7:[function(require,module,exports){
+},{"./object":10,"./util":15}],8:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var $ = require("jquery");
@@ -10854,6 +10882,8 @@ var ship_3 = require("./ship");
 var ship_4 = require("./ship");
 var wrapper_1 = require("./wrapper");
 var astroid_1 = require("./astroid");
+var rover_1 = require("./rover");
+var rover_2 = require("./rover");
 function getlength(number) {
     return number.toString().length;
 }
@@ -11263,6 +11293,12 @@ function difDone() {
 }
 function initShip(___this) {
     var buf = new shipClass(window.GAME, ___this);
+    var roverbuff = new rover_1.Rover(window.GAME, ___this, 'rover', 'Rover', {
+        x: function () { return window.GAME.game.world.width / 2 - 90; },
+        y: function () { return window.GAME.game.world.height - 110; }
+    }, [
+        'rover1'
+    ]);
     ___this.addObject(buf);
     window.GAME.addControlScheme([
         ship_1.ShipBinding(window.GAME, buf),
@@ -11272,14 +11308,15 @@ function initShip(___this) {
                 buf.reset();
             },
             press: true
-        }
+        },
+        rover_2.RoverBinding(window.GAME, roverbuff)
     ]);
     window.GAME.game.camera.follow(buf.pObject);
     ___this.init(___this);
 }
 exports.initShip = initShip;
 
-},{"./astroid":3,"./game":5,"./ship":10,"./wrapper":14,"jquery":1}],8:[function(require,module,exports){
+},{"./astroid":3,"./game":6,"./rover":11,"./ship":12,"./wrapper":16,"jquery":1}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var $ = require("jquery");
@@ -11355,7 +11392,7 @@ var Mission = (function () {
 }());
 exports.Mission = Mission;
 
-},{"jquery":1}],9:[function(require,module,exports){
+},{"jquery":1}],10:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -11457,7 +11494,80 @@ var DynamicSprite = (function (_super) {
 }(GameSprite));
 exports.DynamicSprite = DynamicSprite;
 
-},{"./util":13,"jquery":1}],10:[function(require,module,exports){
+},{"./util":15,"jquery":1}],11:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+/// <reference path="../imports/phaser.d.ts" />
+/// <reference path="../imports/p2.d.ts" />
+var object_1 = require("./object");
+exports.RoverBinding = function (game, rover) {
+    return {
+        key: -1,
+        callback: function () {
+            rover.preframe();
+        }
+    };
+};
+var Rover = (function (_super) {
+    __extends(Rover, _super);
+    function Rover(game, level, name, bodyName, pos, assets) {
+        var _this = _super.call(this, game, level, name, pos, assets) || this;
+        _this.driveForward = function () {
+            _this.pObject.animations.play('rover');
+        };
+        _this.preframe = function () {
+            _this.gravityAction();
+            _this.pObject.animations.stop();
+        };
+        _this.gravityAction = function () {
+            if (_this.game.gravity == 0) {
+                return;
+            }
+            var BODY = _this.pObject.body;
+            var relative_thrust = -(_this.game.gravity * _this.pObject.body.mass);
+            BODY.velocity.y -= (relative_thrust / 100) * _this.game.get_ratio();
+        };
+        _this.calculate_velocity = function (acceleration, initialVel) {
+            return (acceleration * _this.game.get_ratio()) + initialVel();
+        };
+        _this.pObject.destroy();
+        _this.pObject = _this.game.game.add.sprite(300, _this.game.game.world.height - 200, 'rover', '01.png');
+        _this.bodyName = bodyName;
+        _this.loadBody(bodyName);
+        _this.drive = {
+            leftWheel: new p2.Circle(({ radius: 0.4 })),
+            middleWheel: new p2.Circle(({ radius: 0.4 })),
+            rightWheel: new p2.Circle(({ radius: 0.4 }))
+        };
+        _this.pObject.body.debug = true;
+        _this.drive.leftWheel = _this.pObject.body.addShape(_this.drive.leftWheel, -30, 20);
+        _this.drive.middleWheel = _this.pObject.body.addShape(_this.drive.middleWheel, 0, 20);
+        _this.drive.rightWheel = _this.pObject.body.addShape(_this.drive.rightWheel, 30, 20);
+        _this.pObject.animations.add('rover', [
+            '01.png',
+            '02.png',
+            '03.png',
+            '04.png'
+        ], 10, true, false);
+        _this.facingRight = true;
+        _this.pObject.body.mass = 5;
+        return _this;
+    }
+    return Rover;
+}(object_1.DynamicSprite));
+exports.Rover = Rover;
+
+},{"./object":10}],12:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -11797,7 +11907,7 @@ var Vulcan = (function (_super) {
 }(Ship));
 exports.Vulcan = Vulcan;
 
-},{"./animation":2,"./object":9}],11:[function(require,module,exports){
+},{"./animation":2,"./object":10}],13:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var TextDisplay = (function () {
@@ -11864,7 +11974,7 @@ var TextDisplay = (function () {
 }());
 exports.TextDisplay = TextDisplay;
 
-},{}],12:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var $ = require("jquery");
@@ -11915,7 +12025,7 @@ var UIController = (function () {
 }());
 exports.UIController = UIController;
 
-},{"jquery":1}],13:[function(require,module,exports){
+},{"jquery":1}],15:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 function find(a, b) {
@@ -11983,7 +12093,7 @@ function getRandomInt(min, max) {
 }
 exports.getRandomInt = getRandomInt;
 
-},{}],14:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var type_1 = require("./type");
@@ -12044,4 +12154,4 @@ var Wrapper = (function () {
 }());
 exports.Wrapper = Wrapper;
 
-},{"./type":11,"jquery":1}]},{},[2,3,4,5,6,7,8,9,10,11,12,13,14]);
+},{"./type":13,"jquery":1}]},{},[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]);

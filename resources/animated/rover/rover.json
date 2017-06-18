@@ -1,0 +1,44 @@
+{"frames": {
+
+"01.png":
+{
+	"frame": {"x":1,"y":1,"w":78,"h":56},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":56},
+	"sourceSize": {"w":78,"h":56}
+},
+"02.png":
+{
+	"frame": {"x":1,"y":59,"w":78,"h":56},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":56},
+	"sourceSize": {"w":78,"h":56}
+},
+"03.png":
+{
+	"frame": {"x":1,"y":117,"w":78,"h":55},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":1,"w":78,"h":55},
+	"sourceSize": {"w":78,"h":56}
+},
+"04.png":
+{
+	"frame": {"x":1,"y":174,"w":78,"h":55},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":1,"w":78,"h":55},
+	"sourceSize": {"w":78,"h":56}
+}},
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "rover.png",
+	"format": "RGBA8888",
+	"size": {"w":80,"h":230},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:acc0c78241f6539ea1e44920860b38d7:82da1e105e63201dd79630c63dd1c8e9:fd8249bd40e329906ee56cf9795a8e5e$"
+}
+}
