@@ -10329,13 +10329,14 @@ var AstroidBelt = (function () {
     AstroidBelt.prototype.spawn = function () {
         var _this = this;
         var type = UTIL.getRandomInt(0, 3);
+        var _type = UTIL.getRandomInt(0, 1);
         var xrange = {
             min: this.game.levelsequence.getCurrent().getObject('ship').pObject.x + 600,
             max: this.game.levelsequence.getCurrent().getObject('ship').pObject.x + 4500,
         };
         var pos = {
             x: function () { return UTIL.getRandomInt(xrange.min, xrange.max); },
-            y: function () { return _this.game.game.world.height; }
+            y: function () { return _type ? _this.game.game.world.height : 0; }
         };
         if (type == 0) {
             var buffer = new Astroid(this, this.game, this.level, 'SMALL-astroid{0}'.format(this.astroids.length), pos, 'Meteor-Small');
@@ -10360,7 +10361,12 @@ var Astroid = (function (_super) {
         var _this = _super.call(this, game, level, name, pos, [asset]) || this;
         _this.collide = function (target, this_target, shapeA, shapeB, contactEquation) {
             if (contactEquation[0] != null) {
-                if (shapeB.id == 14) {
+                if (shapeB.id == 14 && _this.pos.y() != 0) {
+                    _this.dead = true;
+                    _this.pObject.destroy();
+                    _this.parent.spawn();
+                }
+                else if (shapeB.id == 15 && _this.pos.y() == 0) {
                     _this.dead = true;
                     _this.pObject.destroy();
                     _this.parent.spawn();
@@ -10369,7 +10375,12 @@ var Astroid = (function (_super) {
         };
         _this.frame = function () {
             _this.pObject.body.velocity.x %= 40;
-            _this.pObject.body.velocity.y = -500;
+            if (_this.pos.y() != 0) {
+                _this.pObject.body.velocity.y = -500;
+            }
+            else {
+                _this.pObject.body.velocity.y = 500;
+            }
         };
         _this.parent = belt;
         _this.enablePhysics();
@@ -10389,7 +10400,12 @@ var Astroid = (function (_super) {
         _this.pObject.body.onBeginContact.add(_this.collide, _this);
         _this.dead = false;
         _this.pObject.body.velocity.x = 0;
-        _this.pObject.body.velocity.y = -1;
+        if (_this.pos.y() != 0) {
+            _this.pObject.body.velocity.y = -1;
+        }
+        else {
+            _this.pObject.body.velocity.y = 1;
+        }
         return _this;
     }
     return Astroid;
@@ -10562,9 +10578,6 @@ var MainGame = (function () {
             _this.pause();
         };
         this.closeMissionControl = function () {
-            $('.scene-wrapper').removeClass('title');
-            $('.scene-wrapper').removeClass('text');
-            $('.scene-wrapper').addClass('game');
             $('.mission-control').css('display', 'none');
             _this.resume();
         };
@@ -10973,6 +10986,11 @@ function initGame() {
     game.addControlScheme(testControlBindings);
     var story = [
         ['2061', 'The International Space Exploration Administration (ISEA) is coming off their recent success of their manned mission to Mars.', 'Now, they have set their sights on the next stepping stone in the solar system: Jupiter\'s moons.', 'The ISEA believes that landing a spacecraft near Jupiter will reveal new information about the gas giants and the remainder of the solar system.', 'However, this journey will encounter new challenges that will threaten the lives of the astronauts and the reputation of the ISEA.'],
+        ['The journey to Jupiter was a success.',
+            'Your ship is now in high orbit around Jupiter',
+            'A maneuver was executed and you are now in orbit around Jupiter\'s vulcanic planet',
+            'IO'
+        ]
     ];
     window.MAIN = new wrapper_1.Wrapper(window.GAME, story);
 }
@@ -11067,6 +11085,41 @@ function DoGame(game) {
                         height: 2500
                     },
                     repeat: true
+                }
+            ],
+            frame: function () {
+            },
+            done: function () {
+                return false; //(<any>window).GAME.getLevel ('intro').getObject('Artemis').getAltitude() > 4000;
+            },
+            init: function (___this) {
+                window.GAME.setGravity(0, 0.1);
+                ___this.game.game.world.setBounds(0, 0, 12000, 2500);
+                ___this.getObject('ship').pos = {
+                    x: function () { return 70; },
+                    y: function () { return window.GAME.game.world.centerY; }
+                };
+                ___this.getObject('ship').reset(false);
+                window.GAME.uicontroller.setPlanet('ceres');
+                // Initialize the Astroid belt;
+                ___this.astroidbelt = new astroid_1.AstroidBelt(window.GAME, ___this, 5);
+                ___this.addFrame(___this.astroidbelt.frame);
+            }
+        },
+        {
+            name: "IO",
+            game: window.GAME,
+            objects: [
+                {
+                    name: "iobackdrop",
+                    assets: "Back",
+                    position: {
+                        x: function () { return 0; },
+                        y: function () { return 0; },
+                        width: 18000,
+                        height: 2500
+                    },
+                    repeat: true
                 },
                 {
                     name: "reference",
@@ -11089,7 +11142,7 @@ function DoGame(game) {
             },
             init: function (___this) {
                 window.GAME.setGravity(0, 0.1);
-                ___this.game.game.world.setBounds(0, 0, 18000, 2500);
+                ___this.game.game.world.setBounds(0, 0, 12000, 2500);
                 ___this.getObject('ship').pos = {
                     x: function () { return 70; },
                     y: function () { return window.GAME.game.world.centerY; }
@@ -11145,6 +11198,24 @@ function DoGame(game) {
             html: '\
                 <div>\
                 <p>Survive the asteroid belt</p>\
+                </div>',
+            condition: function () {
+                return window.GAME.levelsequence.getCurrent().getObject('ship').pObject.x > 9500;
+            },
+            onDone: function () {
+                ;
+            },
+            update: function () {
+                ;
+            }
+        },
+        {
+            title: 'Collect surface samples',
+            description: 'Collect surface samples on IO to analyze composition of ground.',
+            html: '\
+                <div>\
+                <p>Collect surface samples</p>\
+                <p class=\"alt\">Collect surface samples on IO to analyze composition of ground.</p>\
                 </div>',
             condition: function () {
                 return false;
@@ -11733,6 +11804,13 @@ var TextDisplay = (function () {
     function TextDisplay(element, text, onDone) {
         var _this = this;
         this.skip = false;
+        this.handleClick = function () {
+            _this.skip = true;
+            if (_this.betweenTimeout != -1) {
+                clearTimeout(_this.betweenTimeout);
+                _this.fnCall();
+            }
+        };
         this.typeWriter = function (text, i, fnCallback) {
             _this.fnCall = fnCallback;
             _this.betweenTimeout = -1;
@@ -11758,9 +11836,13 @@ var TextDisplay = (function () {
         this.done = false;
         this.start = function (i) {
             if (i === void 0) { i = 0; }
+            if (i == 0) {
+                document.querySelector(".scene.scene1").addEventListener("click", _this.handleClick);
+            }
             if (typeof _this.text[i] == 'undefined') {
                 if (!_this.done) {
                     _this.done = true;
+                    document.querySelector(".scene.scene1").removeEventListener("click", _this.handleClick);
                     _this.onDone();
                 }
                 return;
@@ -11777,13 +11859,6 @@ var TextDisplay = (function () {
         this.text = text;
         this.onDone = onDone;
         this.element = element;
-        document.querySelector(".scene.scene1").addEventListener("click", function () {
-            _this.skip = true;
-            if (_this.betweenTimeout != -1) {
-                clearTimeout(_this.betweenTimeout);
-                _this.fnCall();
-            }
-        });
     }
     return TextDisplay;
 }());
@@ -11924,19 +11999,21 @@ var Wrapper = (function () {
             1,
             0,
             2,
+            0,
+            1,
+            2,
             0
-            //0
         ];
         this.currentTotal = 0;
         this.currentText = 0;
-        this.textDone = function () {
+        this.textdone = function () {
             _this.handleNext();
         };
         this.game = game;
         scene_text.forEach(function (element) {
-            _this.scenes.push(new type_1.TextDisplay($('.buf.anim-typewriter').get(0), element, _this.textDone));
-            _this.game.levelsequence.current = 0;
+            _this.scenes.push(new type_1.TextDisplay($('.buf.anim-typewriter').get(0), element, _this.textdone));
         });
+        this.game.levelsequence.current = 0;
         this.game.wrapper = this;
     }
     Wrapper.prototype.handleNext = function (t) {
@@ -11945,13 +12022,13 @@ var Wrapper = (function () {
             this.game.openMissionControl();
         }
         else if (this.order[this.currentTotal] == 1) {
+            this.scenes[this.currentText].start();
+            this.currentText++;
             $('.scene-wrapper').removeClass('title');
             $('.scene-wrapper').removeClass('game');
             $('.scene-wrapper').addClass('text');
-            this.scenes[this.currentText].start();
-            this.currentText++;
         }
-        else {
+        else if (this.order[this.currentTotal] == 0) {
             if (!this.game.isLoaded) {
                 return;
             }

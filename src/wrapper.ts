@@ -12,21 +12,23 @@ export class Wrapper {
         1,
         0,
         2,
+        0,
+        1,
+        2,
         0
-        //0
     ];
     currentTotal: number = 0;
     currentText: number = 0;
     constructor (game: MainGame, scene_text: string[][]) {
         this.game = game;
         scene_text.forEach(element => {
-            this.scenes.push (new TextDisplay ($('.buf.anim-typewriter').get(0), element, this.textDone));
-            this.game.levelsequence.current = 0;
+            this.scenes.push (new TextDisplay ($('.buf.anim-typewriter').get(0), element, this.textdone));
         });
+        this.game.levelsequence.current = 0;
         this.game.wrapper = this;
     }
 
-    textDone = () => {
+    textdone  = () =>{
         this.handleNext ();
     }
 
@@ -35,13 +37,13 @@ export class Wrapper {
             this.game.openMissionControl();
         }
         else if (this.order[this.currentTotal] == 1) {
+            this.scenes[this.currentText].start();
+            this.currentText++;
             $('.scene-wrapper').removeClass ('title');
             $('.scene-wrapper').removeClass ('game');
             $('.scene-wrapper').addClass ('text');
-            this.scenes[this.currentText].start();
-            this.currentText++;
         }
-        else {
+        else if (this.order[this.currentTotal] == 0) {
             if (!this.game.isLoaded) {
                 return;
             }

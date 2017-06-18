@@ -121,9 +121,6 @@ var MainGame = (function () {
             _this.pause();
         };
         this.closeMissionControl = function () {
-            $('.scene-wrapper').removeClass('title');
-            $('.scene-wrapper').removeClass('text');
-            $('.scene-wrapper').addClass('game');
             $('.mission-control').css('display', 'none');
             _this.resume();
         };

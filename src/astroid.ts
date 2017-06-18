@@ -34,13 +34,14 @@ export class AstroidBelt {
 
     spawn () {
         var type = UTIL.getRandomInt (0, 3);
+        var _type = UTIL.getRandomInt (0, 1);
         var xrange = {
             min: this.game.levelsequence.getCurrent().getObject ('ship').pObject.x + 600,
             max: this.game.levelsequence.getCurrent().getObject ('ship').pObject.x + 4500,
         }
         var pos = {
             x: () => {return UTIL.getRandomInt (xrange.min, xrange.max)},
-            y: () => {return this.game.game.world.height}
+            y: () => {return _type ? this.game.game.world.height : 0}
         }
         if (type == 0) {
             var buffer = new Astroid (this,
@@ -110,13 +111,23 @@ export class Astroid extends DynamicSprite {
         this.pObject.body.onBeginContact.add(this.collide, this);
         this.dead = false;
         this.pObject.body.velocity.x = 0;
-        this.pObject.body.velocity.y = -1;
+        if (this.pos.y() != 0) {
+            this.pObject.body.velocity.y = -1;
+        }
+        else {
+            this.pObject.body.velocity.y = 1;
+        }
     }
 
     collide = (target: Phaser.Physics.P2.Body, this_target: Phaser.Physics.P2.Body, shapeA, shapeB, contactEquation) => {
         if(contactEquation[0]!=null) {
 
-            if (shapeB.id == 14) {
+            if (shapeB.id == 14 && this.pos.y() != 0) {
+                this.dead = true;
+                this.pObject.destroy ();
+                this.parent.spawn ();
+            }
+            else if (shapeB.id == 15 && this.pos.y() == 0) {
                 this.dead = true;
                 this.pObject.destroy ();
                 this.parent.spawn ();
@@ -126,6 +137,11 @@ export class Astroid extends DynamicSprite {
 
     frame = () => {
         this.pObject.body.velocity.x %= 40;
-        this.pObject.body.velocity.y = -500;
+        if (this.pos.y() != 0) {
+            this.pObject.body.velocity.y = -500;
+        }
+        else {
+            this.pObject.body.velocity.y = 500;
+        }
     }
 }

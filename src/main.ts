@@ -159,6 +159,11 @@ function initGame () {
     game.addControlScheme(testControlBindings);
     var story = [
         ['2061', 'The International Space Exploration Administration (ISEA) is coming off their recent success of their manned mission to Mars.', 'Now, they have set their sights on the next stepping stone in the solar system: Jupiter\'s moons.', 'The ISEA believes that landing a spacecraft near Jupiter will reveal new information about the gas giants and the remainder of the solar system.', 'However, this journey will encounter new challenges that will threaten the lives of the astronauts and the reputation of the ISEA.'],
+        ['The journey to Jupiter was a success.',
+        'Your ship is now in high orbit around Jupiter',
+        'A maneuver was executed and you are now in orbit around Jupiter\'s vulcanic planet',
+        'IO'
+        ]
     ];
     (<any>window).MAIN = new Wrapper ((<any>window).GAME, story);
 };
@@ -255,6 +260,42 @@ function DoGame (game: MainGame): void {
                         height: 2500
                     },
                     repeat: true
+                }
+            ],
+            frame: () => {
+            },
+            done: () => {
+                return false; //(<any>window).GAME.getLevel ('intro').getObject('Artemis').getAltitude() > 4000;
+            },
+            init: (___this: Level) => {
+                (<any>window).GAME.setGravity (0, 0.1);
+                ___this.game.game.world.setBounds(0, 0, 12000, 2500);
+                ___this.getObject ('ship').pos = {
+                    x: ():number => {return 70},
+                    y: ():number => {return (<any>window).GAME.game.world.centerY}
+                };
+                (<Ship>___this.getObject ('ship')).reset (false);
+                (<any>window).GAME.uicontroller.setPlanet ('ceres');
+
+                // Initialize the Astroid belt;
+                (<any>___this).astroidbelt = new AstroidBelt ((<any>window).GAME, ___this, 5);
+                ___this.addFrame ((<any>___this).astroidbelt.frame)
+            }
+        },
+        {
+            name: "IO",
+            game: (<any>window).GAME,
+            objects: [
+                {
+                    name: "iobackdrop",
+                    assets: "Back",
+                    position: {
+                        x: ():number => {return 0},
+                        y: ():number => {return 0},
+                        width: 18000,
+                        height: 2500
+                    },
+                    repeat: true
                 },
                 {
                     name: "reference",
@@ -277,7 +318,7 @@ function DoGame (game: MainGame): void {
             },
             init: (___this: Level) => {
                 (<any>window).GAME.setGravity (0, 0.1);
-                ___this.game.game.world.setBounds(0, 0, 18000, 2500);
+                ___this.game.game.world.setBounds(0, 0, 12000, 2500);
                 ___this.getObject ('ship').pos = {
                     x: ():number => {return 70},
                     y: ():number => {return (<any>window).GAME.game.world.centerY}
@@ -336,6 +377,24 @@ function DoGame (game: MainGame): void {
             html: '\
                 <div>\
                 <p>Survive the asteroid belt</p>\
+                </div>',
+            condition: () => {
+                return (<any>window).GAME.levelsequence.getCurrent().getObject('ship').pObject.x > 9500;
+            },
+            onDone: () => {
+                ;
+            },
+            update: () => {
+                ;
+            }
+        },
+        {
+            title: 'Collect surface samples',
+            description: 'Collect surface samples on IO to analyze composition of ground.',
+            html: '\
+                <div>\
+                <p>Collect surface samples</p>\
+                <p class=\"alt\">Collect surface samples on IO to analyze composition of ground.</p>\
                 </div>',
             condition: () => {
                 return false;

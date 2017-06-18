@@ -4,6 +4,13 @@ var TextDisplay = (function () {
     function TextDisplay(element, text, onDone) {
         var _this = this;
         this.skip = false;
+        this.handleClick = function () {
+            _this.skip = true;
+            if (_this.betweenTimeout != -1) {
+                clearTimeout(_this.betweenTimeout);
+                _this.fnCall();
+            }
+        };
         this.typeWriter = function (text, i, fnCallback) {
             _this.fnCall = fnCallback;
             _this.betweenTimeout = -1;
@@ -29,9 +36,13 @@ var TextDisplay = (function () {
         this.done = false;
         this.start = function (i) {
             if (i === void 0) { i = 0; }
+            if (i == 0) {
+                document.querySelector(".scene.scene1").addEventListener("click", _this.handleClick);
+            }
             if (typeof _this.text[i] == 'undefined') {
                 if (!_this.done) {
                     _this.done = true;
+                    document.querySelector(".scene.scene1").removeEventListener("click", _this.handleClick);
                     _this.onDone();
                 }
                 return;
@@ -48,13 +59,6 @@ var TextDisplay = (function () {
         this.text = text;
         this.onDone = onDone;
         this.element = element;
-        document.querySelector(".scene.scene1").addEventListener("click", function () {
-            _this.skip = true;
-            if (_this.betweenTimeout != -1) {
-                clearTimeout(_this.betweenTimeout);
-                _this.fnCall();
-            }
-        });
     }
     return TextDisplay;
 }());

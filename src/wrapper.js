@@ -13,19 +13,21 @@ var Wrapper = (function () {
             1,
             0,
             2,
+            0,
+            1,
+            2,
             0
-            //0
         ];
         this.currentTotal = 0;
         this.currentText = 0;
-        this.textDone = function () {
+        this.textdone = function () {
             _this.handleNext();
         };
         this.game = game;
         scene_text.forEach(function (element) {
-            _this.scenes.push(new type_1.TextDisplay($('.buf.anim-typewriter').get(0), element, _this.textDone));
-            _this.game.levelsequence.current = 0;
+            _this.scenes.push(new type_1.TextDisplay($('.buf.anim-typewriter').get(0), element, _this.textdone));
         });
+        this.game.levelsequence.current = 0;
         this.game.wrapper = this;
     }
     Wrapper.prototype.handleNext = function (t) {
@@ -34,13 +36,13 @@ var Wrapper = (function () {
             this.game.openMissionControl();
         }
         else if (this.order[this.currentTotal] == 1) {
+            this.scenes[this.currentText].start();
+            this.currentText++;
             $('.scene-wrapper').removeClass('title');
             $('.scene-wrapper').removeClass('game');
             $('.scene-wrapper').addClass('text');
-            this.scenes[this.currentText].start();
-            this.currentText++;
         }
-        else {
+        else if (this.order[this.currentTotal] == 0) {
             if (!this.game.isLoaded) {
                 return;
             }

@@ -9,13 +9,14 @@ export class TextDisplay {
         this.text = text;
         this.onDone = onDone;
         this.element = element;
-        document.querySelector(".scene.scene1").addEventListener("click", () => {
-            this.skip = true;
-            if (this.betweenTimeout != -1) {
-                clearTimeout (this.betweenTimeout);
-                this.fnCall ();
-            }
-        });
+    }
+
+    handleClick = () => {
+        this.skip = true;
+        if (this.betweenTimeout != -1) {
+            clearTimeout (this.betweenTimeout);
+            this.fnCall ();
+        }
     }
 
     typeWriter = (text:string, i, fnCallback: () => void) => {
@@ -47,9 +48,13 @@ export class TextDisplay {
     done: boolean = false;
 
     start = (i = 0) => {
+        if (i == 0) {
+            document.querySelector(".scene.scene1").addEventListener("click", this.handleClick);
+        }
         if (typeof this.text[i] == 'undefined'){
             if (!this.done) {
                 this.done = true;
+                document.querySelector(".scene.scene1").removeEventListener("click", this.handleClick);
                 this.onDone ();
             }
             return
