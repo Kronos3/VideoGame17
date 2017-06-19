@@ -11,19 +11,39 @@ export var RoverBinding = (game: MainGame, rover: Rover): KeyBinding => {return 
         key: -1, // Run every frame
         callback: () => {
             rover.preframe ();
+            if (game.game.input.keyboard.isDown (Phaser.Keyboard.RIGHT)) {
+                rover.driveForward ();
+            }
+            else if (game.game.input.keyboard.isDown (Phaser.Keyboard.LEFT)) {
+                rover.driveBackward ();
+            }
+            else {
+                rover.stopAnim ();
+            }
         }
     }
 };
 
-interface Drive {
-    leftWheel: p2.Shape | p2.Circle;
-    middleWheel: p2.Shape | p2.Circle;
-    rightWheel: p2.Shape | p2.Circle;
+interface Wheels {
+    left: p2.Shape | p2.Circle;
+    middle: p2.Shape | p2.Circle;
+    right: p2.Shape | p2.Circle;
+}
+
+interface WheelConstaints {
+    left: p2.RevoluteConstraint;
+    middle: p2.RevoluteConstraint;
+    right: p2.RevoluteConstraint;
 }
 
 export class Rover extends DynamicSprite {
     bodyName: string;
-    drive: Drive;
+    backWheel: Phaser.Sprite;
+    frontWheel: Phaser.Sprite;
+    wheels: Phaser.Group;
+    wheelMaterial: Phaser.Physics.P2.Material;
+    worldMaterial: Phaser.Physics.P2.Material;
+
     constructor (game: MainGame,
                  level: Level,
                  name:string,
@@ -36,18 +56,6 @@ export class Rover extends DynamicSprite {
         this.bodyName = bodyName;
         this.loadBody (bodyName);
         
-        this.drive = {
-            leftWheel: new p2.Circle (<any>({radius:0.4})),
-            middleWheel: new p2.Circle (<any>({radius:0.4})),
-            rightWheel: new p2.Circle (<any>({radius:0.4}))
-        }
-
-        this.pObject.body.debug = true;
-
-        this.drive.leftWheel = this.pObject.body.addShape (this.drive.leftWheel, -30, 20);
-        this.drive.middleWheel = this.pObject.body.addShape (this.drive.middleWheel, 0, 20);
-        this.drive.rightWheel = this.pObject.body.addShape (this.drive.rightWheel, 30, 20);
-
         this.pObject.animations.add('rover', 
             [
                 '01.png',
@@ -58,20 +66,75 @@ export class Rover extends DynamicSprite {
             10,
             true,
             false);
-        this.facingRight = true;
+        this.facingLeft = true;
         this.pObject.body.mass = 5;
+        this.wheels = this.game.game.add.group();
+        this.wheelMaterial = this.game.game.physics.p2.createMaterial("wheelMaterial");
+        this.worldMaterial = this.game.game.physics.p2.createMaterial("worldMaterial");
+        this.backWheel = this.initWheel (this.pObject, [-30, 20]);
+        this.frontWheel = this.initWheel (this.pObject, [30, 20]);
+        this.game.game.physics.p2.setWorldMaterial(this.worldMaterial, true, true, true, true);
+        var contactMaterial = this.game.game.physics.p2.createContactMaterial(this.wheelMaterial,this.worldMaterial);
+        contactMaterial.friction = 1e3;
+        contactMaterial.restitution = .3;
+        this.pObject.animations.play('rover')
     }
 
-    facingRight: boolean;
+    stopAnim = () => {
+        this.pObject.animations.paused = false;
+        this.frontWheel.body.rotateLeft(0);
+        this.backWheel.body.rotateLeft(0);
+    }
+
+    initWheel = (target, offsetFromTruck) => {
+        var truckX = target.position.x;
+        var truckY = target.position.y;
+        //position wheel relative to the truck
+        var wheel = this.game.game.add.sprite(truckX + offsetFromTruck[0],
+                                    truckY + offsetFromTruck[1]);
+
+        this.game.game.physics.p2.enable(wheel);
+        wheel.body.clearShapes();
+        
+        wheel.body.addCircle(9);
+
+        /*
+        * Constrain the wheel to the truck so that it can rotate freely on its pivot
+        * createRevoluteConstraint(bodyA, pivotA, bodyB, pivotB, maxForce)
+        * change maxForce to see how it affects chassis bounciness
+        */
+        var maxForce = 100;
+        var rev = this.game.game.physics.p2.createRevoluteConstraint(target.body, offsetFromTruck,
+            wheel.body, [0,0], maxForce);
+
+        //add wheel to wheels group
+        this.wheels.add(wheel);
+
+        /*
+        * set the material to be the wheel material so that it can have
+        * high friction with the ground
+        */
+        wheel.body.setMaterial(this.wheelMaterial);
+
+        return wheel;
+    }
+
+    facingLeft: boolean;
 
     driveForward = () => {
-        this.pObject.animations.play('rover');
-
+        this.frontWheel.body.rotateRight(200);
+        this.backWheel.body.rotateRight(200);
     }
+
+    driveBackward = () => {
+        this.frontWheel.body.rotateLeft(200);
+        this.backWheel.body.rotateLeft(200);
+    }
+
+    currentFrame;
 
     preframe = () => {
         this.gravityAction ();
-        this.pObject.animations.stop();
     }
 
     gravityAction = () => {

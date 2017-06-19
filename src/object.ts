@@ -35,7 +35,7 @@ export class GameSprite {
         
     }
 
-    resetPosition = () => {
+    reset = () => {
         this.pObject.x = this.pos.x ();
         this.pObject.y = this.pos.y ();
     }
@@ -49,6 +49,9 @@ export class GameSprite {
     }
 
     loadBody = (key: string) => {
+        if (!this.level.inited) {
+            return;
+        }
         this.enablePhysics ();
         this.pObject.body.clearShapes();
         this.pObject.body.loadPolygon('physicsData', key);

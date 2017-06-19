@@ -16,7 +16,7 @@ var GameSprite = (function () {
     function GameSprite(game, level, name, pos, asset, extra, repeat) {
         if (repeat === void 0) { repeat = false; }
         var _this = this;
-        this.resetPosition = function () {
+        this.reset = function () {
             _this.pObject.x = _this.pos.x();
             _this.pObject.y = _this.pos.y();
         };
@@ -27,6 +27,9 @@ var GameSprite = (function () {
             _this.level.game.game.physics.p2.enable(_this.pObject);
         };
         this.loadBody = function (key) {
+            if (!_this.level.inited) {
+                return;
+            }
             _this.enablePhysics();
             _this.pObject.body.clearShapes();
             _this.pObject.body.loadPolygon('physicsData', key);

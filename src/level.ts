@@ -89,6 +89,7 @@ export function createLevel (_const: LevelConstructor): Level {
     var out = new Level (_const.game, _const.name, _const.done, _const.frame, _const.init);
     if (typeof _const.objects !== "undefined") {
         for (var iter of _const.objects){
+            console.log (iter)
             var OBJ: GameSprite;
             if (iter.assets instanceof Array) {
                 // Dynamic Objects
@@ -135,6 +136,9 @@ export class Level {
 
     init = (l :Level) => {
         this.binit (l);
+        for (var i of this.objects) {
+            i.reset ();
+        }
         this.inited = true;
     };
 
@@ -202,7 +206,7 @@ export class Level {
 
     resetPositions = () => {
         this.objects.forEach(element => {
-            element.resetPosition ();
+            element.reset ();
         });
     }
 }

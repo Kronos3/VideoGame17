@@ -55,6 +55,7 @@ function createLevel(_const) {
     if (typeof _const.objects !== "undefined") {
         for (var _i = 0, _a = _const.objects; _i < _a.length; _i++) {
             var iter = _a[_i];
+            console.log(iter);
             var OBJ;
             if (iter.assets instanceof Array) {
                 // Dynamic Objects
@@ -91,6 +92,10 @@ var Level = (function () {
         this.inited = false;
         this.init = function (l) {
             _this.binit(l);
+            for (var _i = 0, _a = _this.objects; _i < _a.length; _i++) {
+                var i = _a[_i];
+                i.reset();
+            }
             _this.inited = true;
         };
         this.addFrame = function (a) {
@@ -151,7 +156,7 @@ var Level = (function () {
         };
         this.resetPositions = function () {
             _this.objects.forEach(function (element) {
-                element.resetPosition();
+                element.reset();
             });
         };
         this.game = game;

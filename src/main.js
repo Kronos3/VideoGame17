@@ -9,7 +9,6 @@ var ship_4 = require("./ship");
 var wrapper_1 = require("./wrapper");
 var astroid_1 = require("./astroid");
 var rover_1 = require("./rover");
-var rover_2 = require("./rover");
 function getlength(number) {
     return number.toString().length;
 }
@@ -252,13 +251,13 @@ function DoGame(game) {
                 window.GAME.setGravity(0, 0.1);
                 ___this.game.game.world.setBounds(0, 0, 12000, 2500);
                 ___this.getObject('ship').pos = {
-                    x: function () { return 70; },
+                    x: function () { return 120; },
                     y: function () { return window.GAME.game.world.centerY; }
                 };
                 ___this.getObject('ship').reset(false);
                 window.GAME.uicontroller.setPlanet('ceres');
                 // Initialize the Astroid belt;
-                ___this.astroidbelt = new astroid_1.AstroidBelt(window.GAME, ___this, 5);
+                ___this.astroidbelt = new astroid_1.AstroidBelt(window.GAME, ___this, 0);
                 ___this.addFrame(___this.astroidbelt.frame);
             }
         },
@@ -268,28 +267,13 @@ function DoGame(game) {
             objects: [
                 {
                     name: "iobackdrop",
-                    assets: "Back",
+                    assets: "IOGround",
+                    physics: "IO Ground",
                     position: {
                         x: function () { return 0; },
-                        y: function () { return 0; },
-                        width: 18000,
-                        height: 2500
+                        y: function () { return window.GAME.game.world.height - 220; }
                     },
-                    repeat: true
                 },
-                {
-                    name: "reference",
-                    assets: "Meteor",
-                    position: {
-                        x: function () { return -500; },
-                        y: function () { return window.GAME.game.world.height / 2 + 300; }
-                    },
-                    static: true,
-                    init: function (obj) {
-                        obj.enablePhysics();
-                        obj.pObject.body.addCircle(130);
-                    }
-                }
             ],
             frame: function () {
             },
@@ -297,17 +281,20 @@ function DoGame(game) {
                 return false; //(<any>window).GAME.getLevel ('intro').getObject('Artemis').getAltitude() > 4000;
             },
             init: function (___this) {
-                window.GAME.setGravity(0, 0.1);
+                window.GAME.setGravity(100, 0.1);
                 ___this.game.game.world.setBounds(0, 0, 12000, 2500);
                 ___this.getObject('ship').pos = {
                     x: function () { return 70; },
-                    y: function () { return window.GAME.game.world.centerY; }
+                    y: function () { return window.GAME.game.world.height - 220; }
                 };
+                var roverbuff = new rover_1.Rover(window.GAME, ___this, 'rover', 'Rover', {
+                    x: function () { return window.GAME.game.world.width / 2 - 90; },
+                    y: function () { return window.GAME.game.world.height - 110; }
+                }, [
+                    'rover1'
+                ]);
                 ___this.getObject('ship').reset(false);
-                window.GAME.uicontroller.setPlanet('ceres');
-                // Initialize the Astroid belt;
-                ___this.astroidbelt = new astroid_1.AstroidBelt(window.GAME, ___this, 15);
-                ___this.addFrame(___this.astroidbelt.frame);
+                window.GAME.uicontroller.setPlanet('io');
             }
         },
     ];
@@ -419,12 +406,6 @@ function difDone() {
 }
 function initShip(___this) {
     var buf = new shipClass(window.GAME, ___this);
-    var roverbuff = new rover_1.Rover(window.GAME, ___this, 'rover', 'Rover', {
-        x: function () { return window.GAME.game.world.width / 2 - 90; },
-        y: function () { return window.GAME.game.world.height - 110; }
-    }, [
-        'rover1'
-    ]);
     ___this.addObject(buf);
     window.GAME.addControlScheme([
         ship_1.ShipBinding(window.GAME, buf),
@@ -435,7 +416,6 @@ function initShip(___this) {
             },
             press: true
         },
-        rover_2.RoverBinding(window.GAME, roverbuff)
     ]);
     window.GAME.game.camera.follow(buf.pObject);
     ___this.init(___this);

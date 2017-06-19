@@ -18,6 +18,15 @@ exports.RoverBinding = function (game, rover) {
         key: -1,
         callback: function () {
             rover.preframe();
+            if (game.game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
+                rover.driveForward();
+            }
+            else if (game.game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
+                rover.driveBackward();
+            }
+            else {
+                rover.stopAnim();
+            }
         }
     };
 };
@@ -25,12 +34,45 @@ var Rover = (function (_super) {
     __extends(Rover, _super);
     function Rover(game, level, name, bodyName, pos, assets) {
         var _this = _super.call(this, game, level, name, pos, assets) || this;
+        _this.stopAnim = function () {
+            _this.pObject.animations.paused = false;
+            _this.frontWheel.body.rotateLeft(0);
+            _this.backWheel.body.rotateLeft(0);
+        };
+        _this.initWheel = function (target, offsetFromTruck) {
+            var truckX = target.position.x;
+            var truckY = target.position.y;
+            //position wheel relative to the truck
+            var wheel = _this.game.game.add.sprite(truckX + offsetFromTruck[0], truckY + offsetFromTruck[1]);
+            _this.game.game.physics.p2.enable(wheel);
+            wheel.body.clearShapes();
+            wheel.body.addCircle(9);
+            /*
+            * Constrain the wheel to the truck so that it can rotate freely on its pivot
+            * createRevoluteConstraint(bodyA, pivotA, bodyB, pivotB, maxForce)
+            * change maxForce to see how it affects chassis bounciness
+            */
+            var maxForce = 100;
+            var rev = _this.game.game.physics.p2.createRevoluteConstraint(target.body, offsetFromTruck, wheel.body, [0, 0], maxForce);
+            //add wheel to wheels group
+            _this.wheels.add(wheel);
+            /*
+            * set the material to be the wheel material so that it can have
+            * high friction with the ground
+            */
+            wheel.body.setMaterial(_this.wheelMaterial);
+            return wheel;
+        };
         _this.driveForward = function () {
-            _this.pObject.animations.play('rover');
+            _this.frontWheel.body.rotateRight(200);
+            _this.backWheel.body.rotateRight(200);
+        };
+        _this.driveBackward = function () {
+            _this.frontWheel.body.rotateLeft(200);
+            _this.backWheel.body.rotateLeft(200);
         };
         _this.preframe = function () {
             _this.gravityAction();
-            _this.pObject.animations.stop();
         };
         _this.gravityAction = function () {
             if (_this.game.gravity == 0) {
@@ -47,23 +89,24 @@ var Rover = (function (_super) {
         _this.pObject = _this.game.game.add.sprite(300, _this.game.game.world.height - 200, 'rover', '01.png');
         _this.bodyName = bodyName;
         _this.loadBody(bodyName);
-        _this.drive = {
-            leftWheel: new p2.Circle(({ radius: 0.4 })),
-            middleWheel: new p2.Circle(({ radius: 0.4 })),
-            rightWheel: new p2.Circle(({ radius: 0.4 }))
-        };
-        _this.pObject.body.debug = true;
-        _this.drive.leftWheel = _this.pObject.body.addShape(_this.drive.leftWheel, -30, 20);
-        _this.drive.middleWheel = _this.pObject.body.addShape(_this.drive.middleWheel, 0, 20);
-        _this.drive.rightWheel = _this.pObject.body.addShape(_this.drive.rightWheel, 30, 20);
         _this.pObject.animations.add('rover', [
             '01.png',
             '02.png',
             '03.png',
             '04.png'
         ], 10, true, false);
-        _this.facingRight = true;
+        _this.facingLeft = true;
         _this.pObject.body.mass = 5;
+        _this.wheels = _this.game.game.add.group();
+        _this.wheelMaterial = _this.game.game.physics.p2.createMaterial("wheelMaterial");
+        _this.worldMaterial = _this.game.game.physics.p2.createMaterial("worldMaterial");
+        _this.backWheel = _this.initWheel(_this.pObject, [-30, 20]);
+        _this.frontWheel = _this.initWheel(_this.pObject, [30, 20]);
+        _this.game.game.physics.p2.setWorldMaterial(_this.worldMaterial, true, true, true, true);
+        var contactMaterial = _this.game.game.physics.p2.createContactMaterial(_this.wheelMaterial, _this.worldMaterial);
+        contactMaterial.friction = 1e3;
+        contactMaterial.restitution = .3;
+        _this.pObject.animations.play('rover');
         return _this;
     }
     return Rover;

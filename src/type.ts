@@ -52,11 +52,9 @@ export class TextDisplay {
             document.querySelector(".scene.scene1").addEventListener("click", this.handleClick);
         }
         if (typeof this.text[i] == 'undefined'){
-            if (!this.done) {
-                this.done = true;
-                document.querySelector(".scene.scene1").removeEventListener("click", this.handleClick);
-                this.onDone ();
-            }
+            this.done = true;
+            document.querySelector(".scene.scene1").removeEventListener("click", this.handleClick);
+            this.onDone ();
             return
         }
         if (i < this.text[i].length) {
@@ -66,6 +64,11 @@ export class TextDisplay {
                 this.skip = false;
                 this.start(i + 1);
             });
+        }
+        else {
+            this.done = true;
+            document.querySelector(".scene.scene1").removeEventListener("click", this.handleClick);
+            this.onDone ();
         }
     }
 

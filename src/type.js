@@ -40,11 +40,9 @@ var TextDisplay = (function () {
                 document.querySelector(".scene.scene1").addEventListener("click", _this.handleClick);
             }
             if (typeof _this.text[i] == 'undefined') {
-                if (!_this.done) {
-                    _this.done = true;
-                    document.querySelector(".scene.scene1").removeEventListener("click", _this.handleClick);
-                    _this.onDone();
-                }
+                _this.done = true;
+                document.querySelector(".scene.scene1").removeEventListener("click", _this.handleClick);
+                _this.onDone();
                 return;
             }
             if (i < _this.text[i].length) {
@@ -54,6 +52,11 @@ var TextDisplay = (function () {
                     _this.skip = false;
                     _this.start(i + 1);
                 });
+            }
+            else {
+                _this.done = true;
+                document.querySelector(".scene.scene1").removeEventListener("click", _this.handleClick);
+                _this.onDone();
             }
         };
         this.text = text;

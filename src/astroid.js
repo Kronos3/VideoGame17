@@ -32,7 +32,7 @@ var AstroidBelt = (function () {
         this.total = total;
     }
     AstroidBelt.prototype.loop = function () {
-        if (this.astroids.length > this.total) {
+        if (this.astroids.length >= this.total) {
             return;
         }
         this.spawn();
@@ -62,6 +62,7 @@ var AstroidBelt = (function () {
             var buffer = new Astroid(this, this.game, this.level, 'ice-astroid{0}'.format(this.astroids.length), pos, 'Meteor-Ice');
         }
         this.astroids.push(buffer);
+        this.level.objects.push(buffer);
     };
     return AstroidBelt;
 }());
@@ -73,14 +74,10 @@ var Astroid = (function (_super) {
         _this.collide = function (target, this_target, shapeA, shapeB, contactEquation) {
             if (contactEquation[0] != null) {
                 if (shapeB.id == 14 && _this.pos.y() != 0) {
-                    _this.dead = true;
-                    _this.pObject.destroy();
-                    _this.parent.spawn();
+                    _this.resetPosition();
                 }
                 else if (shapeB.id == 15 && _this.pos.y() == 0) {
-                    _this.dead = true;
-                    _this.pObject.destroy();
-                    _this.parent.spawn();
+                    _this.resetPosition();
                 }
             }
         };

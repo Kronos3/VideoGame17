@@ -273,14 +273,14 @@ function DoGame (game: MainGame): void {
                 (<any>window).GAME.setGravity (0, 0.1);
                 ___this.game.game.world.setBounds(0, 0, 12000, 2500);
                 ___this.getObject ('ship').pos = {
-                    x: ():number => {return 70},
+                    x: ():number => {return 120},
                     y: ():number => {return (<any>window).GAME.game.world.centerY}
                 };
                 (<Ship>___this.getObject ('ship')).reset (false);
                 (<any>window).GAME.uicontroller.setPlanet ('ceres');
 
                 // Initialize the Astroid belt;
-                (<any>___this).astroidbelt = new AstroidBelt ((<any>window).GAME, ___this, 5);
+                (<any>___this).astroidbelt = new AstroidBelt ((<any>window).GAME, ___this, 0);
                 ___this.addFrame ((<any>___this).astroidbelt.frame)
             }
         },
@@ -290,28 +290,13 @@ function DoGame (game: MainGame): void {
             objects: [
                 {
                     name: "iobackdrop",
-                    assets: "Back",
+                    assets: "IOGround",
+                    physics: "IO Ground",
                     position: {
                         x: ():number => {return 0},
-                        y: ():number => {return 0},
-                        width: 18000,
-                        height: 2500
+                        y: ():number => {return (<any>window).GAME.game.world.height - 220}
                     },
-                    repeat: true
                 },
-                {
-                    name: "reference",
-                    assets: "Meteor",
-                    position: {
-                        x: ():number => {return -500},
-                        y: (): number => {return (<any>window).GAME.game.world.height / 2 + 300}
-                    },
-                    static: true,
-                    init: (obj: GameSprite) => {
-                        obj.enablePhysics ();
-                        obj.pObject.body.addCircle (130);
-                    }
-                }
             ],
             frame: () => {
             },
@@ -319,18 +304,23 @@ function DoGame (game: MainGame): void {
                 return false; //(<any>window).GAME.getLevel ('intro').getObject('Artemis').getAltitude() > 4000;
             },
             init: (___this: Level) => {
-                (<any>window).GAME.setGravity (0, 0.1);
+                (<any>window).GAME.setGravity (100, 0.1);
                 ___this.game.game.world.setBounds(0, 0, 12000, 2500);
                 ___this.getObject ('ship').pos = {
                     x: ():number => {return 70},
-                    y: ():number => {return (<any>window).GAME.game.world.centerY}
+                    y: ():number => {return (<any>window).GAME.game.world.height - 220}
                 };
-                (<Ship>___this.getObject ('ship')).reset (false);
-                (<any>window).GAME.uicontroller.setPlanet ('ceres');
 
-                // Initialize the Astroid belt;
-                (<any>___this).astroidbelt = new AstroidBelt ((<any>window).GAME, ___this, 15);
-                ___this.addFrame ((<any>___this).astroidbelt.frame)
+                var roverbuff = new Rover ((<any>window).GAME,
+                    ___this, 'rover', 'Rover',
+                    {
+                        x: ():number => {return (<any>window).GAME.game.world.width / 2 - 90},
+                        y: ():number => {return (<any>window).GAME.game.world.height - 110}
+                    }, [
+                        'rover1'
+                    ]);
+                (<Ship>___this.getObject ('ship')).reset (false);
+                (<any>window).GAME.uicontroller.setPlanet ('io');
             }
         },
 
@@ -453,15 +443,6 @@ export function initShip (___this: Level) {
         ___this
     );
 
-    var roverbuff = new Rover ((<any>window).GAME,
-        ___this, 'rover', 'Rover',
-        {
-            x: ():number => {return (<any>window).GAME.game.world.width / 2 - 90},
-            y: ():number => {return (<any>window).GAME.game.world.height - 110}
-        }, [
-            'rover1'
-        ])
-
     ___this.addObject (buf);
     (<any>window).GAME.addControlScheme ([
         ShipBinding((<any>window).GAME, <Ship>buf),
@@ -472,7 +453,7 @@ export function initShip (___this: Level) {
             },
             press: true
         },
-        RoverBinding ((<any>window).GAME, roverbuff)
+        //RoverBinding ((<any>window).GAME, roverbuff)
     ]);
     (<any>window).GAME.game.camera.follow(buf.pObject);
     ___this.init (___this);

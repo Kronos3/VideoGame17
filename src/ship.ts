@@ -286,8 +286,8 @@ export class Ship extends DynamicSprite {
 export class Artemis extends Ship {
     constructor (game: MainGame, level: Level) {
         var pos = {
-            x: ():number => {return (<any>window).GAME.game.world.width / 2 - 70},
-            y: ():number => {return (<any>window).GAME.game.world.height - 48}
+            x: ():number => {return (<any>window).GAME.game.world.width / 2 - 220},
+            y: ():number => {return (<any>window).GAME.game.world.height - 450}
         }
         
         super (game, 'ship', 'Artemis', pos, [

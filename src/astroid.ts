@@ -26,7 +26,7 @@ export class AstroidBelt {
     }
 
     loop () {
-        if (this.astroids.length > this.total) {
+        if (this.astroids.length >= this.total) {
             return;
         }
         this.spawn ();
@@ -76,6 +76,7 @@ export class AstroidBelt {
                 'Meteor-Ice');
         }
         this.astroids.push (buffer);
+        this.level.objects.push (buffer)
     }
 
     frame = () => {
@@ -123,14 +124,10 @@ export class Astroid extends DynamicSprite {
         if(contactEquation[0]!=null) {
 
             if (shapeB.id == 14 && this.pos.y() != 0) {
-                this.dead = true;
-                this.pObject.destroy ();
-                this.parent.spawn ();
+                this.resetPosition ();
             }
             else if (shapeB.id == 15 && this.pos.y() == 0) {
-                this.dead = true;
-                this.pObject.destroy ();
-                this.parent.spawn ();
+                this.resetPosition ();
             }
         }
     }

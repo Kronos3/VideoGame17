@@ -257,8 +257,8 @@ var Artemis = (function (_super) {
     function Artemis(game, level) {
         var _this = this;
         var pos = {
-            x: function () { return window.GAME.game.world.width / 2 - 70; },
-            y: function () { return window.GAME.game.world.height - 48; }
+            x: function () { return window.GAME.game.world.width / 2 - 220; },
+            y: function () { return window.GAME.game.world.height - 450; }
         };
         _this = _super.call(this, game, 'ship', 'Artemis', pos, [
             'Artemis',
