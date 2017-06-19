@@ -11659,28 +11659,28 @@ var Ship = (function (_super) {
                 var v2m;
                 var is_x;
                 switch (shapeB.id) {
-                    case 12:
+                    case 12:// Left wall
                         v2m = {
                             x: 0,
                             y: 1
                         };
                         is_x = false;
                         break;
-                    case 13:
+                    case 13:// Right wall
                         v2m = {
                             x: 0,
                             y: 1
                         };
                         is_x = false;
                         break;
-                    case 14:
+                    case 14:// Top wall
                         v2m = {
                             x: 1,
                             y: 0
                         };
                         is_x = true;
                         break;
-                    case 15:
+                    case 15:// Bottom wall
                         v2m = {
                             x: 1,
                             y: 0

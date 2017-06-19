@@ -101,6 +101,7 @@ export function createLevel (_const: LevelConstructor): Level {
                 // Add the object
                 OBJ = new GameSprite (out.game, out, iter.name, iter.position, iter.assets, iter.extra, iter.repeat);
             }
+            
             if (typeof iter.init !== "undefined") {
                 iter.init (OBJ);
             }
