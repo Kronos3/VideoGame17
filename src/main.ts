@@ -165,7 +165,7 @@ function initGame () {
         ['2061', 'The International Space Exploration Administration (ISEA) is coming off their recent success of their manned mission to Mars.', 'Now, they have set their sights on the next stepping stone in the solar system: Jupiter\'s moons.', 'The ISEA believes that landing a spacecraft near Jupiter will reveal new information about the gas giants and the remainder of the solar system.', 'However, this journey will encounter new challenges that will threaten the lives of the astronauts and the reputation of the ISEA.'],
         ['The journey to Jupiter was a success.',
         'Your ship is now in high orbit around Jupiter',
-        'A maneuver was executed and you are now in orbit around Jupiter\'s vulcanic planet',
+        'A maneuver was executed and you are now in orbit around Jupiter\'s vulcanic moon',
         'IO'
         ]
     ];
@@ -282,7 +282,7 @@ function DoGame (game: MainGame): void {
                 (<any>window).GAME.uicontroller.setPlanet ('ceres');
 
                 // Initialize the Astroid belt;
-                (<any>___this).astroidbelt = new AstroidBelt ((<any>window).GAME, ___this, 25);
+                (<any>___this).astroidbelt = new AstroidBelt ((<any>window).GAME, ___this, 0);
                 ___this.addFrame ((<any>___this).astroidbelt.frame)
             }
         },
@@ -370,8 +370,8 @@ function DoGame (game: MainGame): void {
             objects: [
                 {
                     name: "EuropaBackDrop",
-                    assets: "IOGround",
-                    physics: "IO Ground",
+                    assets: "europa",
+                    physics: "Europa",
                     position: {
                         x: ():number => {return 0},
                         y: ():number => {return (<any>window).GAME.game.world.height - 220}
@@ -459,6 +459,27 @@ function DoGame (game: MainGame): void {
                 <div>\
                 <p>Collect surface samples</p>\
                 <p class=\"alt\">Collect surface samples on IO to analyze composition of ground.</p>\
+                </div>',
+            condition: () => {
+                if ((<any>window).GAME.levelsequence.getCurrent().getObject('rover') == null) {
+                    return false;
+                }
+                return (<any>window).GAME.levelsequence.getCurrent().getObject('rover').pObject.x > 1000;
+            },
+            onDone: () => {
+                ;
+            },
+            update: () => {
+                ;
+            }
+        },
+        {
+            title: 'Survey moon to generate map',
+            description: '',
+            html: '\
+                <div>\
+                <p>Survey moon to generate map</p>\
+                <p class=\"alt\">Map will be used to create dropzones for colonization.</p>\
                 </div>',
             condition: () => {
                 return false;

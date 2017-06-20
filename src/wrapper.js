@@ -16,6 +16,8 @@ var Wrapper = (function () {
             0,
             1,
             2,
+            0,
+            2,
             0
         ];
         this.currentTotal = 0;
