@@ -271,7 +271,7 @@ function DoGame(game) {
                     physics: "IO Ground",
                     static: true,
                     position: {
-                        x: function () { return 0; },
+                        x: function () { return 2300; },
                         y: function () { return window.GAME.game.world.height - 110; }
                     },
                 },
@@ -286,7 +286,7 @@ function DoGame(game) {
                 ___this.game.game.world.setBounds(0, 0, 12000, 2500);
                 ___this.getObject('ship').pos = {
                     x: function () { return 225; },
-                    y: function () { return window.GAME.game.world.height - 213; }
+                    y: function () { return window.GAME.game.world.height - 214; }
                 };
                 var roverbuff = new rover_1.Rover(window.GAME, ___this, 'rover', 'Rover', {
                     x: function () { return 292; },
@@ -311,6 +311,7 @@ function DoGame(game) {
                 ___this.getObject('iobackdrop').pObject.body.setMaterial(roverbuff.worldMaterial);
                 ___this.getObject('iobackdrop').reset();
                 roverbuff.reset();
+                ___this.getObject('iobackdrop').pObject.body.debug = true;
                 ___this.game.game.camera.follow(roverbuff.pObject);
             }
         },

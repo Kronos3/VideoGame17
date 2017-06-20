@@ -23,8 +23,6 @@ var GameSprite = (function () {
             if (typeof _this.construct.physics !== "undefined") {
                 _this.loadBody(_this.construct.physics);
             }
-            console.log(_this.construct);
-            console.log(_this.construct.static);
             if (typeof _this.construct.static !== "undefined") {
                 _this.pObject.body.static = _this.construct.static;
                 _this.isStatic = _this.pObject.body.static;

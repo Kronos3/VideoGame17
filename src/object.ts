@@ -43,8 +43,6 @@ export class GameSprite {
         if (typeof this.construct.physics !== "undefined") {
             this.loadBody (this.construct.physics);
         }
-        console.log (this.construct)
-        console.log (this.construct.static)
         if (typeof this.construct.static !== "undefined") {
             this.pObject.body.static = this.construct.static;
             this.isStatic = this.pObject.body.static;

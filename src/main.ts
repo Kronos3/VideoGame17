@@ -294,7 +294,7 @@ function DoGame (game: MainGame): void {
                     physics: "IO Ground",
                     static: true,
                     position: {
-                        x: ():number => {return 0},
+                        x: ():number => {return 2300},
                         y: ():number => {return (<any>window).GAME.game.world.height - 110}
                     },
                 },
@@ -309,7 +309,7 @@ function DoGame (game: MainGame): void {
                 ___this.game.game.world.setBounds(0, 0, 12000, 2500);
                 ___this.getObject ('ship').pos = {
                     x: ():number => {return 225},
-                    y: ():number => {return (<any>window).GAME.game.world.height - 213}
+                    y: ():number => {return (<any>window).GAME.game.world.height - 214}
                 };
 
                 var roverbuff = new Rover ((<any>window).GAME,
@@ -337,6 +337,7 @@ function DoGame (game: MainGame): void {
                 ___this.getObject('iobackdrop').pObject.body.setMaterial(roverbuff.worldMaterial);
                 ___this.getObject('iobackdrop').reset();
                 roverbuff.reset();
+                ___this.getObject('iobackdrop').pObject.body.debug = true;
                 ___this.game.game.camera.follow(roverbuff.pObject);
             }
         },

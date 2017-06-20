@@ -11142,7 +11142,7 @@ function DoGame(game) {
                     physics: "IO Ground",
                     static: true,
                     position: {
-                        x: function () { return 0; },
+                        x: function () { return 2300; },
                         y: function () { return window.GAME.game.world.height - 110; }
                     },
                 },
@@ -11157,7 +11157,7 @@ function DoGame(game) {
                 ___this.game.game.world.setBounds(0, 0, 12000, 2500);
                 ___this.getObject('ship').pos = {
                     x: function () { return 225; },
-                    y: function () { return window.GAME.game.world.height - 213; }
+                    y: function () { return window.GAME.game.world.height - 214; }
                 };
                 var roverbuff = new rover_1.Rover(window.GAME, ___this, 'rover', 'Rover', {
                     x: function () { return 292; },
@@ -11182,6 +11182,7 @@ function DoGame(game) {
                 ___this.getObject('iobackdrop').pObject.body.setMaterial(roverbuff.worldMaterial);
                 ___this.getObject('iobackdrop').reset();
                 roverbuff.reset();
+                ___this.getObject('iobackdrop').pObject.body.debug = true;
                 ___this.game.game.camera.follow(roverbuff.pObject);
             }
         },
@@ -11412,8 +11413,6 @@ var GameSprite = (function () {
             if (typeof _this.construct.physics !== "undefined") {
                 _this.loadBody(_this.construct.physics);
             }
-            console.log(_this.construct);
-            console.log(_this.construct.static);
             if (typeof _this.construct.static !== "undefined") {
                 _this.pObject.body.static = _this.construct.static;
                 _this.isStatic = _this.pObject.body.static;
@@ -11571,6 +11570,7 @@ var Rover = (function (_super) {
             _this.backWheel.body.y = _this.pObject.body.y + 20;
             _this.frontWheel.body.x = _this.pObject.body.x + 30;
             _this.frontWheel.body.y = _this.pObject.body.y + 20;
+            _this.game.game.camera.follow(_this.pObject);
         };
         _this.initWheel = function (target, offsetFromTruck) {
             var truckX = target.position.x;
@@ -11586,8 +11586,8 @@ var Rover = (function (_super) {
             * createRevoluteConstraint(bodyA, pivotA, bodyB, pivotB, maxForce)
             * change maxForce to see how it affects chassis bounciness
             */
-            var maxForce = 100;
-            var rev = _this.game.game.physics.p2.createRevoluteConstraint(target.body, offsetFromTruck, wheel.body, [0, 0], maxForce);
+            var maxForce = 70;
+            var rev = _this.game.game.physics.p2.createRevoluteConstraint(target.body, offsetFromTruck, wheel.body, [0, 0]);
             //add wheel to wheels group
             _this.wheels.add(wheel);
             /*
@@ -11598,21 +11598,22 @@ var Rover = (function (_super) {
             return wheel;
         };
         _this.facingLeft = true;
+        _this.speed = 150;
         _this.driveForward = function () {
             if (_this.facingLeft) {
                 _this.pObject.scale.x *= -1;
                 _this.facingLeft = false;
             }
-            _this.frontWheel.body.rotateRight(200);
-            _this.backWheel.body.rotateRight(200);
+            _this.frontWheel.body.rotateRight(_this.speed);
+            _this.backWheel.body.rotateRight(_this.speed);
         };
         _this.driveBackward = function () {
             if (!_this.facingLeft) {
                 _this.pObject.scale.x *= -1;
                 _this.facingLeft = true;
             }
-            _this.frontWheel.body.rotateLeft(200);
-            _this.backWheel.body.rotateLeft(200);
+            _this.frontWheel.body.rotateLeft(_this.speed);
+            _this.backWheel.body.rotateLeft(_this.speed);
         };
         _this.preframe = function () {
             _this.gravityAction();
@@ -11648,8 +11649,9 @@ var Rover = (function (_super) {
         _this.game.game.physics.p2.setWorldMaterial(_this.worldMaterial, true, true, true, true);
         var contactMaterial = _this.game.game.physics.p2.createContactMaterial(_this.wheelMaterial, _this.worldMaterial);
         contactMaterial.friction = 1e3;
-        contactMaterial.restitution = .3;
+        contactMaterial.restitution = 0;
         _this.pObject.animations.play('rover');
+        _this.pObject.body.debug = true;
         return _this;
     }
     return Rover;

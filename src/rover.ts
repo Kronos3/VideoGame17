@@ -76,8 +76,9 @@ export class Rover extends DynamicSprite {
         this.game.game.physics.p2.setWorldMaterial(this.worldMaterial, true, true, true, true);
         var contactMaterial = this.game.game.physics.p2.createContactMaterial(this.wheelMaterial,this.worldMaterial);
         contactMaterial.friction = 1e3;
-        contactMaterial.restitution = .3;
+        contactMaterial.restitution = 0;
         this.pObject.animations.play('rover')
+        this.pObject.body.debug = true;
     }
 
     stopAnim = () => {
@@ -103,6 +104,7 @@ export class Rover extends DynamicSprite {
         this.backWheel.body.y = this.pObject.body.y + 20;
         this.frontWheel.body.x = this.pObject.body.x + 30;
         this.frontWheel.body.y = this.pObject.body.y + 20;
+        this.game.game.camera.follow(this.pObject);
     }
 
     initWheel = (target, offsetFromTruck) => {
@@ -122,9 +124,9 @@ export class Rover extends DynamicSprite {
         * createRevoluteConstraint(bodyA, pivotA, bodyB, pivotB, maxForce)
         * change maxForce to see how it affects chassis bounciness
         */
-        var maxForce = 100;
+        var maxForce = 70;
         var rev = this.game.game.physics.p2.createRevoluteConstraint(target.body, offsetFromTruck,
-            wheel.body, [0,0], maxForce);
+            wheel.body, [0,0]);
 
         //add wheel to wheels group
         this.wheels.add(wheel);
@@ -138,14 +140,15 @@ export class Rover extends DynamicSprite {
     }
 
     facingLeft: boolean = true;
+    speed: number = 150;
 
     driveForward = () => {
         if (this.facingLeft) {
             this.pObject.scale.x *= -1;
             this.facingLeft = false;
         }
-        this.frontWheel.body.rotateRight(200);
-        this.backWheel.body.rotateRight(200);
+        this.frontWheel.body.rotateRight(this.speed);
+        this.backWheel.body.rotateRight(this.speed);
     }
 
     driveBackward = () => {
@@ -153,8 +156,8 @@ export class Rover extends DynamicSprite {
             this.pObject.scale.x *= -1;
             this.facingLeft = true;
         }
-        this.frontWheel.body.rotateLeft(200);
-        this.backWheel.body.rotateLeft(200);
+        this.frontWheel.body.rotateLeft(this.speed);
+        this.backWheel.body.rotateLeft(this.speed);
     }
 
     currentFrame;
