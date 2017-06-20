@@ -10363,10 +10363,10 @@ var Astroid = (function (_super) {
         _this.collide = function (target, this_target, shapeA, shapeB, contactEquation) {
             if (contactEquation[0] != null) {
                 if (shapeB.id == 14 && _this.pos.y() != 0) {
-                    _this.resetPosition();
+                    _this.reset();
                 }
                 else if (shapeB.id == 15 && _this.pos.y() == 0) {
-                    _this.resetPosition();
+                    _this.reset();
                 }
             }
         };
@@ -10409,7 +10409,7 @@ var Astroid = (function (_super) {
 }(object_1.DynamicSprite));
 exports.Astroid = Astroid;
 
-},{"./object":10,"./util":15}],4:[function(require,module,exports){
+},{"./object":10,"./util":16}],4:[function(require,module,exports){
 /*export class Task {
     fn: () => void;
     repeat: boolean;
@@ -10579,6 +10579,8 @@ var MainGame = (function () {
             _this.game.load.image('ex5', '../resources/animated/explosion/Explosion_05.png');
             _this.game.load.image('rover1', '../resources/textures/rover/01.png');
             _this.game.load.image('IOGround', '../resources/textures/Level3/IOGround.png');
+            _this.game.load.image('rock1', '../resources/textures/Level3/IORock.png');
+            _this.game.load.image('rock2', '../resources/textures/Level3/IO Rock_02.png');
             _this.game.load.physics('physicsData', '../resources/physics/mappings.json');
             _this.game.load.atlasJSONHash('rover', '../resources/animated/rover/rover.png', '../resources/animated/rover/rover.json');
         };
@@ -10623,6 +10625,9 @@ var MainGame = (function () {
             _this.levelsequence.initGame();
             _this.playerCollisionGroup = _this.game.physics.p2.createCollisionGroup();
         };
+        this.addGravity = function (t) {
+            _this.gravityObjects.push(t);
+        };
         this.isLoaded = false;
         this.getGravity = function () {
             return 1;
@@ -10643,15 +10648,16 @@ var MainGame = (function () {
             _this.missionControl.frame();
             // Per-Level
             _this.levelsequence.getCurrent().frame();
+            // Gravity
+            _this.gravityObjects.forEach(function (element) {
+                element.gravityAction();
+            });
         };
         this.get_ratio = function () {
             return 60 / _this.game.time.fps;
         };
         this.get_fps = function () {
             return _this.game.time.fps;
-        };
-        this.render = function () {
-            _this.game.debug.text('render FPS: ' + (_this.game.time.fps || '--'), 2, 14, "#00ff00");
         };
         this.resize = function () {
             //var height = $(window).height();
@@ -10688,7 +10694,7 @@ var MainGame = (function () {
             /*console.log (name + ':' + path)
             this.game.load.image (name, path);*/
         };
-        this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'T17', { preload: this.preload, create: this.create, update: this.update, render: this.render }, true);
+        this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'T17', { preload: this.preload, create: this.create, update: this.update }, true);
         this.onReady = onReady;
         setTimeout(function () {
             _this.isLoaded = true;
@@ -10696,12 +10702,13 @@ var MainGame = (function () {
         }, 1000);
         this.uicontroller = new ui_1.UIController();
         this.missionControl = new mission_2.MissionControl(this);
+        this.gravityObjects = [];
     }
     return MainGame;
 }());
 exports.MainGame = MainGame;
 
-},{"./control":5,"./level":7,"./mission":9,"./ui":14,"jquery":1}],7:[function(require,module,exports){
+},{"./control":5,"./level":7,"./mission":9,"./ui":15,"jquery":1}],7:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var object_1 = require("./object");
@@ -10759,7 +10766,6 @@ function createLevel(_const) {
     if (typeof _const.objects !== "undefined") {
         for (var _i = 0, _a = _const.objects; _i < _a.length; _i++) {
             var iter = _a[_i];
-            console.log(iter);
             var OBJ;
             if (iter.assets instanceof Array) {
                 // Dynamic Objects
@@ -10771,15 +10777,7 @@ function createLevel(_const) {
                 // Add the object
                 OBJ = new object_1.GameSprite(out.game, out, iter.name, iter.position, iter.assets, iter.extra, iter.repeat);
             }
-            if (typeof iter.init !== "undefined") {
-                iter.init(OBJ);
-            }
-            if (typeof iter.physics !== "undefined") {
-                OBJ.loadBody(iter.physics);
-            }
-            if (typeof iter.static !== "undefined") {
-                OBJ.pObject.body.static = iter.static;
-            }
+            OBJ.construct = iter;
             out.addObject(OBJ);
         }
     }
@@ -10795,12 +10793,15 @@ var Level = (function () {
         this.setframe = function () { return; };
         this.inited = false;
         this.init = function (l) {
-            _this.binit(l);
+            _this.inited = true;
             for (var _i = 0, _a = _this.objects; _i < _a.length; _i++) {
                 var i = _a[_i];
+                if (typeof i.init != "undefined") {
+                    i.init();
+                }
                 i.reset();
             }
-            _this.inited = true;
+            _this.binit(l);
         };
         this.addFrame = function (a) {
             _this.frameFunctions.push(a);
@@ -10874,9 +10875,10 @@ var Level = (function () {
 }());
 exports.Level = Level;
 
-},{"./object":10,"./util":15}],8:[function(require,module,exports){
+},{"./object":10,"./util":16}],8:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+/// <reference path="../imports/phaser.d.ts" />
 var $ = require("jquery");
 var game_1 = require("./game");
 var ship_1 = require("./ship");
@@ -10886,6 +10888,9 @@ var ship_4 = require("./ship");
 var wrapper_1 = require("./wrapper");
 var astroid_1 = require("./astroid");
 var rover_1 = require("./rover");
+var rover_2 = require("./rover");
+var rock_1 = require("./rock");
+var UTIL = require("./util");
 function getlength(number) {
     return number.toString().length;
 }
@@ -11014,8 +11019,6 @@ window.GAME = null;
 function initGame() {
     game = new game_1.MainGame(DoGame);
     window.GAME = game;
-    var testControlBindings = [];
-    game.addControlScheme(testControlBindings);
     var story = [
         ['2061', 'The International Space Exploration Administration (ISEA) is coming off their recent success of their manned mission to Mars.', 'Now, they have set their sights on the next stepping stone in the solar system: Jupiter\'s moons.', 'The ISEA believes that landing a spacecraft near Jupiter will reveal new information about the gas giants and the remainder of the solar system.', 'However, this journey will encounter new challenges that will threaten the lives of the astronauts and the reputation of the ISEA.'],
         ['The journey to Jupiter was a success.',
@@ -11134,7 +11137,7 @@ function DoGame(game) {
                 ___this.getObject('ship').reset(false);
                 window.GAME.uicontroller.setPlanet('ceres');
                 // Initialize the Astroid belt;
-                ___this.astroidbelt = new astroid_1.AstroidBelt(window.GAME, ___this, 0);
+                ___this.astroidbelt = new astroid_1.AstroidBelt(window.GAME, ___this, 25);
                 ___this.addFrame(___this.astroidbelt.frame);
             }
         },
@@ -11146,9 +11149,10 @@ function DoGame(game) {
                     name: "iobackdrop",
                     assets: "IOGround",
                     physics: "IO Ground",
+                    static: true,
                     position: {
-                        x: function () { return 0; },
-                        y: function () { return window.GAME.game.world.height - 220; }
+                        x: function () { return 2300; },
+                        y: function () { return window.GAME.game.world.height - 110; }
                     },
                 },
             ],
@@ -11161,17 +11165,49 @@ function DoGame(game) {
                 window.GAME.setGravity(100, 0.1);
                 ___this.game.game.world.setBounds(0, 0, 12000, 2500);
                 ___this.getObject('ship').pos = {
-                    x: function () { return 70; },
-                    y: function () { return window.GAME.game.world.height - 220; }
+                    x: function () { return 325; },
+                    y: function () { return window.GAME.game.world.height - 189; }
                 };
                 var roverbuff = new rover_1.Rover(window.GAME, ___this, 'rover', 'Rover', {
-                    x: function () { return window.GAME.game.world.width / 2 - 90; },
-                    y: function () { return window.GAME.game.world.height - 110; }
+                    x: function () { return 458; },
+                    y: function () { return 2313; }
                 }, [
                     'rover1'
                 ]);
+                ___this.addObject(roverbuff);
                 ___this.getObject('ship').reset(false);
                 window.GAME.uicontroller.setPlanet('io');
+                window.GAME.addControlScheme([
+                    rover_2.RoverBinding(window.GAME, roverbuff),
+                    {
+                        key: Phaser.KeyCode.R,
+                        callback: function () {
+                            roverbuff.reset();
+                        },
+                        press: true
+                    }
+                ]);
+                window.GAME.controls[0].disable();
+                ___this.getObject('iobackdrop').pObject.body.setMaterial(roverbuff.worldMaterial);
+                ___this.getObject('iobackdrop').reset();
+                roverbuff.reset();
+                ___this.game.game.camera.follow(roverbuff.pObject);
+                for (var i = 0; i != 7; i++) {
+                    var type = UTIL.getRandomInt(0, 1);
+                    var buf;
+                    if (type) {
+                        buf = new rock_1.Rock(___this.game, ___this, "rock{0}".format(i), "rock1", {
+                            x: function () { return UTIL.getRandomInt(1200, 4000); },
+                            y: function () { return window.GAME.game.world.height - 250; }
+                        });
+                    }
+                    else {
+                        buf = new rock_1.Rock(___this.game, ___this, "rock{0}".format(i), "rock2", {
+                            x: function () { return UTIL.getRandomInt(1200, 4000); },
+                            y: function () { return window.GAME.game.world.height - 250; }
+                        });
+                    }
+                }
             }
         },
     ];
@@ -11273,7 +11309,7 @@ function difDone() {
         else if ($('.dif-choice.active').attr('id') == 'hard') {
             shipClass = ship_4.Vulcan;
         }
-        initShip(window.GAME.getLevel('intro'));
+        initShip(window.GAME.levelsequence.getCurrent());
         window.GAME.resume();
     });
     $('.mission-control-done').get(0).addEventListener('click', function () {
@@ -11292,14 +11328,14 @@ function initShip(___this) {
                 buf.reset();
             },
             press: true
-        },
+        }
     ]);
     window.GAME.game.camera.follow(buf.pObject);
     ___this.init(___this);
 }
 exports.initShip = initShip;
 
-},{"./astroid":3,"./game":6,"./rover":11,"./ship":12,"./wrapper":16,"jquery":1}],9:[function(require,module,exports){
+},{"./astroid":3,"./game":6,"./rock":11,"./rover":12,"./ship":13,"./util":16,"./wrapper":17,"jquery":1}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var $ = require("jquery");
@@ -11394,9 +11430,39 @@ var GameSprite = (function () {
     function GameSprite(game, level, name, pos, asset, extra, repeat) {
         if (repeat === void 0) { repeat = false; }
         var _this = this;
+        this.appendToLevel = function () {
+            _this.level.objects.push(_this);
+        };
+        this.gravityAction = function () {
+            if (_this.game.gravity == 0) {
+                return;
+            }
+            var BODY = _this.pObject.body;
+            var relative_thrust = -(_this.game.gravity * _this.pObject.body.mass);
+            BODY.velocity.y -= (relative_thrust / 100) * _this.game.get_ratio();
+        };
+        this.init = function () {
+            if (typeof _this.construct == "undefined") {
+                return;
+            }
+            if (typeof _this.construct.physics !== "undefined") {
+                _this.loadBody(_this.construct.physics);
+            }
+            if (typeof _this.construct.static !== "undefined") {
+                _this.pObject.body.static = _this.construct.static;
+                _this.isStatic = _this.pObject.body.static;
+                _this.isMoves = false;
+            }
+        };
         this.reset = function () {
-            _this.pObject.x = _this.pos.x();
-            _this.pObject.y = _this.pos.y();
+            if (_this.pObject.body != null) {
+                _this.pObject.body.x = _this.pos.x();
+                _this.pObject.body.y = _this.pos.y();
+            }
+            else {
+                _this.pObject.x = _this.pos.x();
+                _this.pObject.y = _this.pos.y();
+            }
         };
         this.addProperty = function (extra) {
             _this.extra = $.extend({}, _this.extra, external);
@@ -11405,9 +11471,6 @@ var GameSprite = (function () {
             _this.level.game.game.physics.p2.enable(_this.pObject);
         };
         this.loadBody = function (key) {
-            if (!_this.level.inited) {
-                return;
-            }
             _this.enablePhysics();
             _this.pObject.body.clearShapes();
             _this.pObject.body.loadPolygon('physicsData', key);
@@ -11416,6 +11479,7 @@ var GameSprite = (function () {
             if (destroy === void 0) { destroy = false; }
             if (_this.pObject.body != null) {
                 _this.isStatic = _this.pObject.body.static;
+                _this.isMoves = _this.pObject.body.moves;
                 _this.pObject.body.static = true;
                 _this.pObject.body.moves = false;
                 //this.pObject.body.collides ();
@@ -11429,7 +11493,7 @@ var GameSprite = (function () {
             _this.pObject.visible = true;
             if (_this.pObject.body != null) {
                 _this.pObject.body.static = _this.isStatic;
-                _this.pObject.body.moves = true;
+                _this.pObject.body.moves = _this.isMoves;
                 //this.pObject.body.collides (this.level.getAllBodies ());
             }
         };
@@ -11460,6 +11524,9 @@ var DynamicSprite = (function (_super) {
     function DynamicSprite(game, level, name, pos, assets, extra) {
         var _this = _super.call(this, game, level, name, pos, assets[0], extra) || this;
         _this.assets = [];
+        _this.follow = function () {
+            _this.game.game.camera.follow(_this.pObject);
+        };
         _this.switchToIndex = function (index) {
             _this.pObject.key = _this.assets[index];
             _this.pObject.loadTexture(_this.pObject.key, 0);
@@ -11480,7 +11547,58 @@ var DynamicSprite = (function (_super) {
 }(GameSprite));
 exports.DynamicSprite = DynamicSprite;
 
-},{"./util":15,"jquery":1}],11:[function(require,module,exports){
+},{"./util":16,"jquery":1}],11:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var object_1 = require("./object");
+var Rock = (function (_super) {
+    __extends(Rock, _super);
+    function Rock(game, l, name, asset, pos) {
+        var _this = _super.call(this, game, l, name, pos, asset) || this;
+        _this.collide = function (target, this_target, shapeA, shapeB, contactEquation) {
+            if (shapeB.body.id == 9) {
+                var b = _this.game.gravityObjects.indexOf(_this);
+                console.log(b);
+                if (b > -1) {
+                    _this.game.gravityObjects.splice(b, 1);
+                }
+                else {
+                    return;
+                }
+                _this.disable(true);
+                _this.level.getObject('rover').rockNumber++;
+            }
+        };
+        switch (asset) {
+            case 'rock1':
+                _this.bodyName = "IO Rock";
+                break;
+            case 'rock2':
+                _this.bodyName = "IO Rock_02";
+                break;
+        }
+        _this.loadBody(_this.bodyName);
+        _this.pObject.body.onBeginContact.add(_this.collide, _this);
+        _this.appendToLevel();
+        _this.game.addGravity(_this);
+        _this.pObject.body.mass = 3;
+        return _this;
+    }
+    return Rock;
+}(object_1.GameSprite));
+exports.Rock = Rock;
+
+},{"./object":10}],12:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -11517,10 +11635,29 @@ var Rover = (function (_super) {
     __extends(Rover, _super);
     function Rover(game, level, name, bodyName, pos, assets) {
         var _this = _super.call(this, game, level, name, pos, assets) || this;
+        _this.rockNumber = 0;
         _this.stopAnim = function () {
             _this.pObject.animations.paused = false;
             _this.frontWheel.body.rotateLeft(0);
             _this.backWheel.body.rotateLeft(0);
+        };
+        _this.reset = function () {
+            _this.pObject.body.setZeroForce();
+            _this.pObject.body.setZeroRotation();
+            _this.pObject.body.setZeroVelocity();
+            _this.pObject.body.x = _this.pos.x();
+            _this.pObject.body.y = _this.pos.y();
+            _this.pObject.body.rotation = 0;
+            [_this.backWheel, _this.frontWheel].forEach(function (element) {
+                element.body.setZeroRotation();
+                element.body.setZeroVelocity();
+                element.body.rotation = 0;
+            });
+            _this.backWheel.body.x = _this.pObject.body.x + -30;
+            _this.backWheel.body.y = _this.pObject.body.y + 20;
+            _this.frontWheel.body.x = _this.pObject.body.x + 30;
+            _this.frontWheel.body.y = _this.pObject.body.y + 20;
+            _this.game.game.camera.follow(_this.pObject);
         };
         _this.initWheel = function (target, offsetFromTruck) {
             var truckX = target.position.x;
@@ -11535,8 +11672,8 @@ var Rover = (function (_super) {
             * createRevoluteConstraint(bodyA, pivotA, bodyB, pivotB, maxForce)
             * change maxForce to see how it affects chassis bounciness
             */
-            var maxForce = 100;
-            var rev = _this.game.game.physics.p2.createRevoluteConstraint(target.body, offsetFromTruck, wheel.body, [0, 0], maxForce);
+            var maxForce = 70;
+            var rev = _this.game.game.physics.p2.createRevoluteConstraint(target.body, offsetFromTruck, wheel.body, [0, 0]);
             //add wheel to wheels group
             _this.wheels.add(wheel);
             /*
@@ -11546,24 +11683,26 @@ var Rover = (function (_super) {
             wheel.body.setMaterial(_this.wheelMaterial);
             return wheel;
         };
+        _this.facingLeft = true;
+        _this.speed = 200;
         _this.driveForward = function () {
-            _this.frontWheel.body.rotateRight(200);
-            _this.backWheel.body.rotateRight(200);
+            if (_this.facingLeft) {
+                _this.pObject.scale.x *= -1;
+                _this.facingLeft = false;
+            }
+            _this.frontWheel.body.rotateRight(_this.speed);
+            _this.backWheel.body.rotateRight(_this.speed);
         };
         _this.driveBackward = function () {
-            _this.frontWheel.body.rotateLeft(200);
-            _this.backWheel.body.rotateLeft(200);
+            if (!_this.facingLeft) {
+                _this.pObject.scale.x *= -1;
+                _this.facingLeft = true;
+            }
+            _this.frontWheel.body.rotateLeft(_this.speed);
+            _this.backWheel.body.rotateLeft(_this.speed);
         };
         _this.preframe = function () {
             _this.gravityAction();
-        };
-        _this.gravityAction = function () {
-            if (_this.game.gravity == 0) {
-                return;
-            }
-            var BODY = _this.pObject.body;
-            var relative_thrust = -(_this.game.gravity * _this.pObject.body.mass);
-            BODY.velocity.y -= (relative_thrust / 100) * _this.game.get_ratio();
         };
         _this.calculate_velocity = function (acceleration, initialVel) {
             return (acceleration * _this.game.get_ratio()) + initialVel();
@@ -11588,7 +11727,7 @@ var Rover = (function (_super) {
         _this.game.game.physics.p2.setWorldMaterial(_this.worldMaterial, true, true, true, true);
         var contactMaterial = _this.game.game.physics.p2.createContactMaterial(_this.wheelMaterial, _this.worldMaterial);
         contactMaterial.friction = 1e3;
-        contactMaterial.restitution = .3;
+        contactMaterial.restitution = 0;
         _this.pObject.animations.play('rover');
         return _this;
     }
@@ -11596,7 +11735,7 @@ var Rover = (function (_super) {
 }(object_1.DynamicSprite));
 exports.Rover = Rover;
 
-},{"./object":10}],12:[function(require,module,exports){
+},{"./object":10}],13:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -11659,28 +11798,28 @@ var Ship = (function (_super) {
                 var v2m;
                 var is_x;
                 switch (shapeB.id) {
-                    case 12:
+                    case 12:// Left wall
                         v2m = {
                             x: 0,
                             y: 1
                         };
                         is_x = false;
                         break;
-                    case 13:
+                    case 13:// Right wall
                         v2m = {
                             x: 0,
                             y: 1
                         };
                         is_x = false;
                         break;
-                    case 14:
+                    case 14:// Top wall
                         v2m = {
                             x: 1,
                             y: 0
                         };
                         is_x = true;
                         break;
-                    case 15:
+                    case 15:// Bottom wall
                         v2m = {
                             x: 1,
                             y: 0
@@ -11713,11 +11852,11 @@ var Ship = (function (_super) {
             return b;
         };
         _this.isDead = false;
-        _this.maxLFO = 1000;
+        _this.maxLFO = 400;
         _this.LFO = _this.maxLFO; // Liquid Fuel and Oxidizer (C10H16)
         _this.Isp = 250; // Ratio of thrust to fuel flow for every minute of burn
         // At max thrust, use 250 LFO after a minute of burn
-        _this.maxMono = 50;
+        _this.maxMono = 15;
         _this.monoProp = _this.maxMono;
         _this.monoIsp = 10;
         _this.getAltitude = function () {
@@ -11745,11 +11884,11 @@ var Ship = (function (_super) {
             _this.pObject.body.y = _this.pos.y();
             _this.pObject.body.rotation = 0;
             _this.isDead = false;
-            if (t) {
-                _this.LFO = _this.maxLFO;
-                _this.monoProp = _this.maxMono;
-            }
-            _this.game.game.camera.follow(_this.pObject);
+            /*if (t) {
+                this.LFO = this.maxLFO;
+                this.monoProp = this.maxMono;
+            }*/
+            _this.follow();
         };
         _this.explode = function () {
             _this.explosionAnimation.run();
@@ -11818,16 +11957,7 @@ var Ship = (function (_super) {
                 _this.SAS();
             }
             _this.extra.thrustOn = false;
-            _this.gravityAction();
             _this.setResources();
-        };
-        _this.gravityAction = function () {
-            if (_this.game.gravity == 0) {
-                return;
-            }
-            var BODY = _this.pObject.body;
-            var relative_thrust = -(_this.game.gravity * _this.pObject.body.mass);
-            BODY.velocity.y -= (relative_thrust / 100) * _this.game.get_ratio();
         };
         _this.calculate_velocity = function (acceleration, initialVel) {
             return (acceleration * _this.game.get_ratio()) + initialVel();
@@ -11846,6 +11976,7 @@ var Ship = (function (_super) {
         ], function () {
             _this.reset();
         }, 50);
+        _this.game.addGravity(_this);
         return _this;
     }
     return Ship;
@@ -11856,8 +11987,8 @@ var Artemis = (function (_super) {
     function Artemis(game, level) {
         var _this = this;
         var pos = {
-            x: function () { return window.GAME.game.world.width / 2 - 220; },
-            y: function () { return window.GAME.game.world.height - 450; }
+            x: function () { return window.GAME.game.world.width / 2 - 70; },
+            y: function () { return window.GAME.game.world.height - 50; }
         };
         _this = _super.call(this, game, 'ship', 'Artemis', pos, [
             'Artemis',
@@ -11936,7 +12067,7 @@ var Vulcan = (function (_super) {
 }(Ship));
 exports.Vulcan = Vulcan;
 
-},{"./animation":2,"./object":10}],13:[function(require,module,exports){
+},{"./animation":2,"./object":10}],14:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var TextDisplay = (function () {
@@ -12006,7 +12137,7 @@ var TextDisplay = (function () {
 }());
 exports.TextDisplay = TextDisplay;
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var $ = require("jquery");
@@ -12057,7 +12188,7 @@ var UIController = (function () {
 }());
 exports.UIController = UIController;
 
-},{"jquery":1}],15:[function(require,module,exports){
+},{"jquery":1}],16:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 function find(a, b) {
@@ -12125,7 +12256,7 @@ function getRandomInt(min, max) {
 }
 exports.getRandomInt = getRandomInt;
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var type_1 = require("./type");
@@ -12160,7 +12291,6 @@ var Wrapper = (function () {
     }
     Wrapper.prototype.handleNext = function (t) {
         if (t === void 0) { t = false; }
-        console.log(this.order[this.currentTotal]);
         if (this.order[this.currentTotal] == 2) {
             $('.scene-wrapper').removeClass('title');
             $('.scene-wrapper').removeClass('game');
@@ -12190,4 +12320,4 @@ var Wrapper = (function () {
 }());
 exports.Wrapper = Wrapper;
 
-},{"./type":13,"jquery":1}]},{},[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]);
+},{"./type":14,"jquery":1}]},{},[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]);

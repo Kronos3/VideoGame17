@@ -32,7 +32,6 @@ var Wrapper = (function () {
     }
     Wrapper.prototype.handleNext = function (t) {
         if (t === void 0) { t = false; }
-        console.log(this.order[this.currentTotal]);
         if (this.order[this.currentTotal] == 2) {
             $('.scene-wrapper').removeClass('title');
             $('.scene-wrapper').removeClass('game');

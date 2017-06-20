@@ -55,7 +55,6 @@ function createLevel(_const) {
     if (typeof _const.objects !== "undefined") {
         for (var _i = 0, _a = _const.objects; _i < _a.length; _i++) {
             var iter = _a[_i];
-            console.log(iter);
             var OBJ;
             if (iter.assets instanceof Array) {
                 // Dynamic Objects
@@ -67,15 +66,7 @@ function createLevel(_const) {
                 // Add the object
                 OBJ = new object_1.GameSprite(out.game, out, iter.name, iter.position, iter.assets, iter.extra, iter.repeat);
             }
-            if (typeof iter.init !== "undefined") {
-                iter.init(OBJ);
-            }
-            if (typeof iter.physics !== "undefined") {
-                OBJ.loadBody(iter.physics);
-            }
-            if (typeof iter.static !== "undefined") {
-                OBJ.pObject.body.static = iter.static;
-            }
+            OBJ.construct = iter;
             out.addObject(OBJ);
         }
     }
@@ -91,12 +82,15 @@ var Level = (function () {
         this.setframe = function () { return; };
         this.inited = false;
         this.init = function (l) {
-            _this.binit(l);
+            _this.inited = true;
             for (var _i = 0, _a = _this.objects; _i < _a.length; _i++) {
                 var i = _a[_i];
+                if (typeof i.init != "undefined") {
+                    i.init();
+                }
                 i.reset();
             }
-            _this.inited = true;
+            _this.binit(l);
         };
         this.addFrame = function (a) {
             _this.frameFunctions.push(a);

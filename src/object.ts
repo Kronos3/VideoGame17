@@ -19,6 +19,7 @@ export class GameSprite {
     extra: Object;
     name: string;
     pos: _position;
+    construct: any;
     constructor (game: MainGame, level: LEVEL.Level, name:string, pos: _position, asset: string, extra?: any, repeat = false) {
         this.level = level;
         this.name = name;
@@ -32,12 +33,45 @@ export class GameSprite {
         else {
             this.pObject = this.game.game.add.sprite (this.pos.x(), this.pos.y(), this.asset);
         }
-        
+    }
+
+    appendToLevel = () => {
+        this.level.objects.push (this);
+    }
+
+    gravityAction = () => {
+        if (this.game.gravity == 0) {
+            return;
+        }
+        var BODY = this.pObject.body;
+        var relative_thrust = -( this.game.gravity * this.pObject.body.mass);
+        BODY.velocity.y -= (relative_thrust / 100) * this.game.get_ratio();
+    }
+
+    init = () => {
+        if (typeof this.construct == "undefined") {
+            return;
+        }
+        if (typeof this.construct.physics !== "undefined") {
+            this.loadBody (this.construct.physics);
+        }
+        if (typeof this.construct.static !== "undefined") {
+            this.pObject.body.static = this.construct.static;
+            this.isStatic = this.pObject.body.static;
+            this.isMoves = false;
+        }
     }
 
     reset = () => {
-        this.pObject.x = this.pos.x ();
-        this.pObject.y = this.pos.y ();
+        if (this.pObject.body != null) {
+            this.pObject.body.x = this.pos.x();
+            this.pObject.body.y = this.pos.y();
+        }
+        else{
+            this.pObject.x = this.pos.x ();
+            this.pObject.y = this.pos.y ();
+        }
+        
     }
 
     addProperty = (extra: any) => {
@@ -49,19 +83,18 @@ export class GameSprite {
     }
 
     loadBody = (key: string) => {
-        if (!this.level.inited) {
-            return;
-        }
         this.enablePhysics ();
         this.pObject.body.clearShapes();
         this.pObject.body.loadPolygon('physicsData', key);
     }
 
     isStatic: boolean;
+    isMoves: boolean;
     
     disable = (destroy=false) => {
         if (this.pObject.body != null) {
             this.isStatic = this.pObject.body.static;
+            this.isMoves = this.pObject.body.moves;
             this.pObject.body.static = true;
             this.pObject.body.moves = false;
             //this.pObject.body.collides ();
@@ -76,7 +109,7 @@ export class GameSprite {
         this.pObject.visible = true;
         if (this.pObject.body != null) {
             this.pObject.body.static = this.isStatic;
-            this.pObject.body.moves = true;
+            this.pObject.body.moves = this.isMoves;
             //this.pObject.body.collides (this.level.getAllBodies ());
         }
     }
@@ -95,6 +128,10 @@ export class DynamicSprite extends GameSprite {
     constructor (game: MainGame, level: LEVEL.Level, name:string, pos: _position, assets: string[], extra?: any) {
         super (game, level, name, pos, assets[0], extra);
         this.assets = assets;
+    }
+
+    follow = () => {
+        this.game.game.camera.follow (this.pObject);
     }
 
     switchToIndex = (index: number) => {

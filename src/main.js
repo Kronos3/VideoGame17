@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+/// <reference path="../imports/phaser.d.ts" />
 var $ = require("jquery");
 var game_1 = require("./game");
 var ship_1 = require("./ship");
@@ -9,6 +10,9 @@ var ship_4 = require("./ship");
 var wrapper_1 = require("./wrapper");
 var astroid_1 = require("./astroid");
 var rover_1 = require("./rover");
+var rover_2 = require("./rover");
+var rock_1 = require("./rock");
+var UTIL = require("./util");
 function getlength(number) {
     return number.toString().length;
 }
@@ -137,8 +141,6 @@ window.GAME = null;
 function initGame() {
     game = new game_1.MainGame(DoGame);
     window.GAME = game;
-    var testControlBindings = [];
-    game.addControlScheme(testControlBindings);
     var story = [
         ['2061', 'The International Space Exploration Administration (ISEA) is coming off their recent success of their manned mission to Mars.', 'Now, they have set their sights on the next stepping stone in the solar system: Jupiter\'s moons.', 'The ISEA believes that landing a spacecraft near Jupiter will reveal new information about the gas giants and the remainder of the solar system.', 'However, this journey will encounter new challenges that will threaten the lives of the astronauts and the reputation of the ISEA.'],
         ['The journey to Jupiter was a success.',
@@ -257,7 +259,7 @@ function DoGame(game) {
                 ___this.getObject('ship').reset(false);
                 window.GAME.uicontroller.setPlanet('ceres');
                 // Initialize the Astroid belt;
-                ___this.astroidbelt = new astroid_1.AstroidBelt(window.GAME, ___this, 0);
+                ___this.astroidbelt = new astroid_1.AstroidBelt(window.GAME, ___this, 25);
                 ___this.addFrame(___this.astroidbelt.frame);
             }
         },
@@ -269,9 +271,10 @@ function DoGame(game) {
                     name: "iobackdrop",
                     assets: "IOGround",
                     physics: "IO Ground",
+                    static: true,
                     position: {
-                        x: function () { return 0; },
-                        y: function () { return window.GAME.game.world.height - 220; }
+                        x: function () { return 2300; },
+                        y: function () { return window.GAME.game.world.height - 110; }
                     },
                 },
             ],
@@ -284,17 +287,49 @@ function DoGame(game) {
                 window.GAME.setGravity(100, 0.1);
                 ___this.game.game.world.setBounds(0, 0, 12000, 2500);
                 ___this.getObject('ship').pos = {
-                    x: function () { return 70; },
-                    y: function () { return window.GAME.game.world.height - 220; }
+                    x: function () { return 325; },
+                    y: function () { return window.GAME.game.world.height - 189; }
                 };
                 var roverbuff = new rover_1.Rover(window.GAME, ___this, 'rover', 'Rover', {
-                    x: function () { return window.GAME.game.world.width / 2 - 90; },
-                    y: function () { return window.GAME.game.world.height - 110; }
+                    x: function () { return 458; },
+                    y: function () { return 2313; }
                 }, [
                     'rover1'
                 ]);
+                ___this.addObject(roverbuff);
                 ___this.getObject('ship').reset(false);
                 window.GAME.uicontroller.setPlanet('io');
+                window.GAME.addControlScheme([
+                    rover_2.RoverBinding(window.GAME, roverbuff),
+                    {
+                        key: Phaser.KeyCode.R,
+                        callback: function () {
+                            roverbuff.reset();
+                        },
+                        press: true
+                    }
+                ]);
+                window.GAME.controls[0].disable();
+                ___this.getObject('iobackdrop').pObject.body.setMaterial(roverbuff.worldMaterial);
+                ___this.getObject('iobackdrop').reset();
+                roverbuff.reset();
+                ___this.game.game.camera.follow(roverbuff.pObject);
+                for (var i = 0; i != 7; i++) {
+                    var type = UTIL.getRandomInt(0, 1);
+                    var buf;
+                    if (type) {
+                        buf = new rock_1.Rock(___this.game, ___this, "rock{0}".format(i), "rock1", {
+                            x: function () { return UTIL.getRandomInt(1200, 4000); },
+                            y: function () { return window.GAME.game.world.height - 250; }
+                        });
+                    }
+                    else {
+                        buf = new rock_1.Rock(___this.game, ___this, "rock{0}".format(i), "rock2", {
+                            x: function () { return UTIL.getRandomInt(1200, 4000); },
+                            y: function () { return window.GAME.game.world.height - 250; }
+                        });
+                    }
+                }
             }
         },
     ];
@@ -396,7 +431,7 @@ function difDone() {
         else if ($('.dif-choice.active').attr('id') == 'hard') {
             shipClass = ship_4.Vulcan;
         }
-        initShip(window.GAME.getLevel('intro'));
+        initShip(window.GAME.levelsequence.getCurrent());
         window.GAME.resume();
     });
     $('.mission-control-done').get(0).addEventListener('click', function () {
@@ -415,7 +450,7 @@ function initShip(___this) {
                 buf.reset();
             },
             press: true
-        },
+        }
     ]);
     window.GAME.game.camera.follow(buf.pObject);
     ___this.init(___this);

@@ -122,12 +122,11 @@ export class Astroid extends DynamicSprite {
 
     collide = (target: Phaser.Physics.P2.Body, this_target: Phaser.Physics.P2.Body, shapeA, shapeB, contactEquation) => {
         if(contactEquation[0]!=null) {
-
             if (shapeB.id == 14 && this.pos.y() != 0) {
-                this.resetPosition ();
+                this.reset ();
             }
             else if (shapeB.id == 15 && this.pos.y() == 0) {
-                this.resetPosition ();
+                this.reset ();
             }
         }
     }

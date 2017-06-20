@@ -50,7 +50,7 @@ Object.defineProperty(Object.prototype, 'watch', {
 export class MainGame {
     onReady: (game: MainGame) => void;
     constructor(onReady: (game: MainGame) => void) {
-        this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'T17', {preload: this.preload, create: this.create, update: this.update, render: this.render}, true);
+        this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'T17', {preload: this.preload, create: this.create, update: this.update}, true);
         this.onReady = onReady;
         setTimeout (() => {
             this.isLoaded = true;
@@ -58,6 +58,7 @@ export class MainGame {
         }, 1000);
         this.uicontroller = new UIController ();
         this.missionControl = new MissionControl (this);
+        this.gravityObjects = [];
     }
 
     game: Phaser.Game;
@@ -114,6 +115,8 @@ export class MainGame {
         this.game.load.image('ex5', '../resources/animated/explosion/Explosion_05.png');
         this.game.load.image('rover1', '../resources/textures/rover/01.png');
         this.game.load.image('IOGround', '../resources/textures/Level3/IOGround.png');
+        this.game.load.image('rock1', '../resources/textures/Level3/IORock.png');
+        this.game.load.image('rock2', '../resources/textures/Level3/IO Rock_02.png');
         this.game.load.physics('physicsData', '../resources/physics/mappings.json');
         this.game.load.atlasJSONHash ('rover', '../resources/animated/rover/rover.png', '../resources/animated/rover/rover.json')
     }
@@ -164,9 +167,14 @@ export class MainGame {
         this.game.physics.p2.boundsCollidesWith = [];
         this.levelsequence.initGame ();
         this.playerCollisionGroup = this.game.physics.p2.createCollisionGroup();
-
     }
 
+    gravityObjects: GameSprite[];
+    addGravity = (t: GameSprite) => {
+        this.gravityObjects.push (t);
+    }
+
+    player: GameSprite;
     isLoaded:boolean = false;
     wrapper: Wrapper;
 
@@ -192,6 +200,11 @@ export class MainGame {
 
         // Per-Level
         this.levelsequence.getCurrent ().frame ();
+
+        // Gravity
+        this.gravityObjects.forEach(element => {
+            element.gravityAction();
+        });
     }
 
     get_ratio = () => {
@@ -200,10 +213,6 @@ export class MainGame {
 
     get_fps = () => {
         return this.game.time.fps;
-    }
-
-    render = () => {
-        this.game.debug.text('render FPS: ' + (this.game.time.fps || '--') , 2, 14, "#00ff00");
     }
 
     resize = () => {

@@ -33,7 +33,6 @@ export class Wrapper {
     }
 
     handleNext (t = false) {
-        console.log (this.order[this.currentTotal])
         if (this.order[this.currentTotal] == 2) {
             $('.scene-wrapper').removeClass ('title');
             $('.scene-wrapper').removeClass ('game');

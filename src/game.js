@@ -99,6 +99,8 @@ var MainGame = (function () {
             _this.game.load.image('ex5', '../resources/animated/explosion/Explosion_05.png');
             _this.game.load.image('rover1', '../resources/textures/rover/01.png');
             _this.game.load.image('IOGround', '../resources/textures/Level3/IOGround.png');
+            _this.game.load.image('rock1', '../resources/textures/Level3/IORock.png');
+            _this.game.load.image('rock2', '../resources/textures/Level3/IO Rock_02.png');
             _this.game.load.physics('physicsData', '../resources/physics/mappings.json');
             _this.game.load.atlasJSONHash('rover', '../resources/animated/rover/rover.png', '../resources/animated/rover/rover.json');
         };
@@ -143,6 +145,9 @@ var MainGame = (function () {
             _this.levelsequence.initGame();
             _this.playerCollisionGroup = _this.game.physics.p2.createCollisionGroup();
         };
+        this.addGravity = function (t) {
+            _this.gravityObjects.push(t);
+        };
         this.isLoaded = false;
         this.getGravity = function () {
             return 1;
@@ -163,15 +168,16 @@ var MainGame = (function () {
             _this.missionControl.frame();
             // Per-Level
             _this.levelsequence.getCurrent().frame();
+            // Gravity
+            _this.gravityObjects.forEach(function (element) {
+                element.gravityAction();
+            });
         };
         this.get_ratio = function () {
             return 60 / _this.game.time.fps;
         };
         this.get_fps = function () {
             return _this.game.time.fps;
-        };
-        this.render = function () {
-            _this.game.debug.text('render FPS: ' + (_this.game.time.fps || '--'), 2, 14, "#00ff00");
         };
         this.resize = function () {
             //var height = $(window).height();
@@ -208,7 +214,7 @@ var MainGame = (function () {
             /*console.log (name + ':' + path)
             this.game.load.image (name, path);*/
         };
-        this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'T17', { preload: this.preload, create: this.create, update: this.update, render: this.render }, true);
+        this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'T17', { preload: this.preload, create: this.create, update: this.update }, true);
         this.onReady = onReady;
         setTimeout(function () {
             _this.isLoaded = true;
@@ -216,6 +222,7 @@ var MainGame = (function () {
         }, 1000);
         this.uicontroller = new ui_1.UIController();
         this.missionControl = new mission_2.MissionControl(this);
+        this.gravityObjects = [];
     }
     return MainGame;
 }());

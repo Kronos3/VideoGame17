@@ -74,10 +74,10 @@ var Astroid = (function (_super) {
         _this.collide = function (target, this_target, shapeA, shapeB, contactEquation) {
             if (contactEquation[0] != null) {
                 if (shapeB.id == 14 && _this.pos.y() != 0) {
-                    _this.resetPosition();
+                    _this.reset();
                 }
                 else if (shapeB.id == 15 && _this.pos.y() == 0) {
-                    _this.resetPosition();
+                    _this.reset();
                 }
             }
         };

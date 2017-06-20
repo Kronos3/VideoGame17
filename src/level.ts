@@ -89,7 +89,6 @@ export function createLevel (_const: LevelConstructor): Level {
     var out = new Level (_const.game, _const.name, _const.done, _const.frame, _const.init);
     if (typeof _const.objects !== "undefined") {
         for (var iter of _const.objects){
-            console.log (iter)
             var OBJ: GameSprite;
             if (iter.assets instanceof Array) {
                 // Dynamic Objects
@@ -101,15 +100,9 @@ export function createLevel (_const: LevelConstructor): Level {
                 // Add the object
                 OBJ = new GameSprite (out.game, out, iter.name, iter.position, iter.assets, iter.extra, iter.repeat);
             }
-            if (typeof iter.init !== "undefined") {
-                iter.init (OBJ);
-            }
-            if (typeof iter.physics !== "undefined") {
-                OBJ.loadBody (iter.physics);
-            }
-            if (typeof iter.static !== "undefined") {
-                OBJ.pObject.body.static = iter.static;
-            }
+            
+            OBJ.construct = iter;
+
             out.addObject (OBJ);
         }
     }
@@ -135,11 +128,14 @@ export class Level {
     }
 
     init = (l :Level) => {
-        this.binit (l);
+        this.inited = true;
         for (var i of this.objects) {
+            if (typeof i.init != "undefined") {
+                i.init ();
+            } 
             i.reset ();
         }
-        this.inited = true;
+        this.binit (l);
     };
 
     frameFunctions: (() => void)[];
