@@ -81,11 +81,20 @@ var Rover = (function (_super) {
             wheel.body.setMaterial(_this.wheelMaterial);
             return wheel;
         };
+        _this.facingLeft = true;
         _this.driveForward = function () {
+            if (_this.facingLeft) {
+                _this.pObject.scale.x *= -1;
+                _this.facingLeft = false;
+            }
             _this.frontWheel.body.rotateRight(200);
             _this.backWheel.body.rotateRight(200);
         };
         _this.driveBackward = function () {
+            if (!_this.facingLeft) {
+                _this.pObject.scale.x *= -1;
+                _this.facingLeft = true;
+            }
             _this.frontWheel.body.rotateLeft(200);
             _this.backWheel.body.rotateLeft(200);
         };

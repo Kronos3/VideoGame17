@@ -137,14 +137,22 @@ export class Rover extends DynamicSprite {
         return wheel;
     }
 
-    facingLeft: boolean;
+    facingLeft: boolean = true;
 
     driveForward = () => {
+        if (this.facingLeft) {
+            this.pObject.scale.x *= -1;
+            this.facingLeft = false;
+        }
         this.frontWheel.body.rotateRight(200);
         this.backWheel.body.rotateRight(200);
     }
 
     driveBackward = () => {
+        if (!this.facingLeft) {
+            this.pObject.scale.x *= -1;
+            this.facingLeft = true;
+        }
         this.frontWheel.body.rotateLeft(200);
         this.backWheel.body.rotateLeft(200);
     }
