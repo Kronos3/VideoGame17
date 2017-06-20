@@ -16,6 +16,17 @@ var GameSprite = (function () {
     function GameSprite(game, level, name, pos, asset, extra, repeat) {
         if (repeat === void 0) { repeat = false; }
         var _this = this;
+        this.appendToLevel = function () {
+            _this.level.objects.push(_this);
+        };
+        this.gravityAction = function () {
+            if (_this.game.gravity == 0) {
+                return;
+            }
+            var BODY = _this.pObject.body;
+            var relative_thrust = -(_this.game.gravity * _this.pObject.body.mass);
+            BODY.velocity.y -= (relative_thrust / 100) * _this.game.get_ratio();
+        };
         this.init = function () {
             if (typeof _this.construct == "undefined") {
                 return;

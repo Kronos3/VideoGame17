@@ -10409,7 +10409,7 @@ var Astroid = (function (_super) {
 }(object_1.DynamicSprite));
 exports.Astroid = Astroid;
 
-},{"./object":10,"./util":15}],4:[function(require,module,exports){
+},{"./object":10,"./util":16}],4:[function(require,module,exports){
 /*export class Task {
     fn: () => void;
     repeat: boolean;
@@ -10579,6 +10579,8 @@ var MainGame = (function () {
             _this.game.load.image('ex5', '../resources/animated/explosion/Explosion_05.png');
             _this.game.load.image('rover1', '../resources/textures/rover/01.png');
             _this.game.load.image('IOGround', '../resources/textures/Level3/IOGround.png');
+            _this.game.load.image('rock1', '../resources/textures/Level3/IORock.png');
+            _this.game.load.image('rock2', '../resources/textures/Level3/IO Rock_02.png');
             _this.game.load.physics('physicsData', '../resources/physics/mappings.json');
             _this.game.load.atlasJSONHash('rover', '../resources/animated/rover/rover.png', '../resources/animated/rover/rover.json');
         };
@@ -10623,6 +10625,9 @@ var MainGame = (function () {
             _this.levelsequence.initGame();
             _this.playerCollisionGroup = _this.game.physics.p2.createCollisionGroup();
         };
+        this.addGravity = function (t) {
+            _this.gravityObjects.push(t);
+        };
         this.isLoaded = false;
         this.getGravity = function () {
             return 1;
@@ -10643,6 +10648,10 @@ var MainGame = (function () {
             _this.missionControl.frame();
             // Per-Level
             _this.levelsequence.getCurrent().frame();
+            // Gravity
+            _this.gravityObjects.forEach(function (element) {
+                element.gravityAction();
+            });
         };
         this.get_ratio = function () {
             return 60 / _this.game.time.fps;
@@ -10696,12 +10705,13 @@ var MainGame = (function () {
         }, 1000);
         this.uicontroller = new ui_1.UIController();
         this.missionControl = new mission_2.MissionControl(this);
+        this.gravityObjects = [];
     }
     return MainGame;
 }());
 exports.MainGame = MainGame;
 
-},{"./control":5,"./level":7,"./mission":9,"./ui":14,"jquery":1}],7:[function(require,module,exports){
+},{"./control":5,"./level":7,"./mission":9,"./ui":15,"jquery":1}],7:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var object_1 = require("./object");
@@ -10868,7 +10878,7 @@ var Level = (function () {
 }());
 exports.Level = Level;
 
-},{"./object":10,"./util":15}],8:[function(require,module,exports){
+},{"./object":10,"./util":16}],8:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /// <reference path="../imports/phaser.d.ts" />
@@ -10881,6 +10891,8 @@ var ship_4 = require("./ship");
 var wrapper_1 = require("./wrapper");
 var rover_1 = require("./rover");
 var rover_2 = require("./rover");
+var rock_1 = require("./rock");
+var UTIL = require("./util");
 function getlength(number) {
     return number.toString().length;
 }
@@ -11184,6 +11196,22 @@ function DoGame(game) {
                 roverbuff.reset();
                 ___this.getObject('iobackdrop').pObject.body.debug = true;
                 ___this.game.game.camera.follow(roverbuff.pObject);
+                for (var i = 0; i != 7; i++) {
+                    var type = UTIL.getRandomInt(0, 1);
+                    var buf;
+                    if (type) {
+                        buf = new rock_1.Rock(___this.game, ___this, "rock{0}".format(i), "rock1", {
+                            x: function () { return UTIL.getRandomInt(1200, 4000); },
+                            y: function () { return window.GAME.game.world.height - 250; }
+                        });
+                    }
+                    else {
+                        buf = new rock_1.Rock(___this.game, ___this, "rock{0}".format(i), "rock2", {
+                            x: function () { return UTIL.getRandomInt(1200, 4000); },
+                            y: function () { return window.GAME.game.world.height - 250; }
+                        });
+                    }
+                }
             }
         },
     ];
@@ -11311,7 +11339,7 @@ function initShip(___this) {
 }
 exports.initShip = initShip;
 
-},{"./game":6,"./rover":11,"./ship":12,"./wrapper":16,"jquery":1}],9:[function(require,module,exports){
+},{"./game":6,"./rock":11,"./rover":12,"./ship":13,"./util":16,"./wrapper":17,"jquery":1}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var $ = require("jquery");
@@ -11406,6 +11434,17 @@ var GameSprite = (function () {
     function GameSprite(game, level, name, pos, asset, extra, repeat) {
         if (repeat === void 0) { repeat = false; }
         var _this = this;
+        this.appendToLevel = function () {
+            _this.level.objects.push(_this);
+        };
+        this.gravityAction = function () {
+            if (_this.game.gravity == 0) {
+                return;
+            }
+            var BODY = _this.pObject.body;
+            var relative_thrust = -(_this.game.gravity * _this.pObject.body.mass);
+            BODY.velocity.y -= (relative_thrust / 100) * _this.game.get_ratio();
+        };
         this.init = function () {
             if (typeof _this.construct == "undefined") {
                 return;
@@ -11512,7 +11551,48 @@ var DynamicSprite = (function (_super) {
 }(GameSprite));
 exports.DynamicSprite = DynamicSprite;
 
-},{"./util":15,"jquery":1}],11:[function(require,module,exports){
+},{"./util":16,"jquery":1}],11:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var object_1 = require("./object");
+var Rock = (function (_super) {
+    __extends(Rock, _super);
+    function Rock(game, l, name, asset, pos) {
+        var _this = _super.call(this, game, l, name, pos, asset) || this;
+        _this.collide = function (target, this_target, shapeA, shapeB, contactEquation) {
+            if (shapeB.body.id == 9) {
+            }
+        };
+        switch (asset) {
+            case 'rock1':
+                _this.bodyName = "IO Rock";
+                break;
+            case 'rock2':
+                _this.bodyName = "IO Rock_02";
+                break;
+        }
+        _this.loadBody(_this.bodyName);
+        _this.pObject.body.onBeginContact.add(_this.collide, _this);
+        _this.appendToLevel();
+        _this.game.addGravity(_this);
+        _this.pObject.body.mass = 3;
+        return _this;
+    }
+    return Rock;
+}(object_1.GameSprite));
+exports.Rock = Rock;
+
+},{"./object":10}],12:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -11618,14 +11698,6 @@ var Rover = (function (_super) {
         _this.preframe = function () {
             _this.gravityAction();
         };
-        _this.gravityAction = function () {
-            if (_this.game.gravity == 0) {
-                return;
-            }
-            var BODY = _this.pObject.body;
-            var relative_thrust = -(_this.game.gravity * _this.pObject.body.mass);
-            BODY.velocity.y -= (relative_thrust / 100) * _this.game.get_ratio();
-        };
         _this.calculate_velocity = function (acceleration, initialVel) {
             return (acceleration * _this.game.get_ratio()) + initialVel();
         };
@@ -11658,7 +11730,7 @@ var Rover = (function (_super) {
 }(object_1.DynamicSprite));
 exports.Rover = Rover;
 
-},{"./object":10}],12:[function(require,module,exports){
+},{"./object":10}],13:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -11998,7 +12070,7 @@ var Vulcan = (function (_super) {
 }(Ship));
 exports.Vulcan = Vulcan;
 
-},{"./animation":2,"./object":10}],13:[function(require,module,exports){
+},{"./animation":2,"./object":10}],14:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var TextDisplay = (function () {
@@ -12068,7 +12140,7 @@ var TextDisplay = (function () {
 }());
 exports.TextDisplay = TextDisplay;
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var $ = require("jquery");
@@ -12119,7 +12191,7 @@ var UIController = (function () {
 }());
 exports.UIController = UIController;
 
-},{"jquery":1}],15:[function(require,module,exports){
+},{"jquery":1}],16:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 function find(a, b) {
@@ -12187,7 +12259,7 @@ function getRandomInt(min, max) {
 }
 exports.getRandomInt = getRandomInt;
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var type_1 = require("./type");
@@ -12251,4 +12323,4 @@ var Wrapper = (function () {
 }());
 exports.Wrapper = Wrapper;
 
-},{"./type":13,"jquery":1}]},{},[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]);
+},{"./type":14,"jquery":1}]},{},[2,3,4,5,6,7,8,9,10,12,13,14,15,16,17]);

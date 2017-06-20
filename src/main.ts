@@ -17,6 +17,8 @@ import {GameSprite} from "./object"
 import {DynamicSprite} from "./object"
 import {Rover} from "./rover"
 import {RoverBinding} from "./rover"
+import {Rock} from "./rock"
+import * as UTIL from './util'
 
 function getlength(number) {
     return number.toString().length;
@@ -339,6 +341,28 @@ function DoGame (game: MainGame): void {
                 roverbuff.reset();
                 ___this.getObject('iobackdrop').pObject.body.debug = true;
                 ___this.game.game.camera.follow(roverbuff.pObject);
+                for (var i=0; i != 7; i++) {
+                    var type = UTIL.getRandomInt (0,1);
+                    var buf;
+                    if (type) {
+                        buf = new Rock (___this.game,
+                         ___this, "rock{0}".format (i), 
+                         "rock1",
+                         {
+                             x: () => {return UTIL.getRandomInt(1200, 4000)},
+                             y: () => {return (<any>window).GAME.game.world.height - 250}
+                         } )
+                    }
+                    else {
+                        buf = new Rock (___this.game,
+                         ___this, "rock{0}".format (i), 
+                         "rock2",
+                         {
+                             x: () => {return UTIL.getRandomInt(1200, 4000)},
+                             y: () => {return (<any>window).GAME.game.world.height - 250}
+                         } )
+                    }
+                }
             }
         },
 

@@ -10,6 +10,8 @@ var ship_4 = require("./ship");
 var wrapper_1 = require("./wrapper");
 var rover_1 = require("./rover");
 var rover_2 = require("./rover");
+var rock_1 = require("./rock");
+var UTIL = require("./util");
 function getlength(number) {
     return number.toString().length;
 }
@@ -313,6 +315,22 @@ function DoGame(game) {
                 roverbuff.reset();
                 ___this.getObject('iobackdrop').pObject.body.debug = true;
                 ___this.game.game.camera.follow(roverbuff.pObject);
+                for (var i = 0; i != 7; i++) {
+                    var type = UTIL.getRandomInt(0, 1);
+                    var buf;
+                    if (type) {
+                        buf = new rock_1.Rock(___this.game, ___this, "rock{0}".format(i), "rock1", {
+                            x: function () { return UTIL.getRandomInt(1200, 4000); },
+                            y: function () { return window.GAME.game.world.height - 250; }
+                        });
+                    }
+                    else {
+                        buf = new rock_1.Rock(___this.game, ___this, "rock{0}".format(i), "rock2", {
+                            x: function () { return UTIL.getRandomInt(1200, 4000); },
+                            y: function () { return window.GAME.game.world.height - 250; }
+                        });
+                    }
+                }
             }
         },
     ];

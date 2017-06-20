@@ -103,14 +103,6 @@ var Rover = (function (_super) {
         _this.preframe = function () {
             _this.gravityAction();
         };
-        _this.gravityAction = function () {
-            if (_this.game.gravity == 0) {
-                return;
-            }
-            var BODY = _this.pObject.body;
-            var relative_thrust = -(_this.game.gravity * _this.pObject.body.mass);
-            BODY.velocity.y -= (relative_thrust / 100) * _this.game.get_ratio();
-        };
         _this.calculate_velocity = function (acceleration, initialVel) {
             return (acceleration * _this.game.get_ratio()) + initialVel();
         };

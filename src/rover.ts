@@ -165,15 +165,6 @@ export class Rover extends DynamicSprite {
     preframe = () => {
         this.gravityAction ();
     }
-
-    gravityAction = () => {
-        if (this.game.gravity == 0) {
-            return;
-        }
-        var BODY = this.pObject.body;
-        var relative_thrust = -( this.game.gravity * this.pObject.body.mass);
-        BODY.velocity.y -= (relative_thrust / 100) * this.game.get_ratio();
-    }
     
     calculate_velocity = (acceleration, initialVel) => {
         return (acceleration * this.game.get_ratio()) + initialVel();

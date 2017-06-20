@@ -33,7 +33,19 @@ export class GameSprite {
         else {
             this.pObject = this.game.game.add.sprite (this.pos.x(), this.pos.y(), this.asset);
         }
-        
+    }
+
+    appendToLevel = () => {
+        this.level.objects.push (this);
+    }
+
+    gravityAction = () => {
+        if (this.game.gravity == 0) {
+            return;
+        }
+        var BODY = this.pObject.body;
+        var relative_thrust = -( this.game.gravity * this.pObject.body.mass);
+        BODY.velocity.y -= (relative_thrust / 100) * this.game.get_ratio();
     }
 
     init = () => {
