@@ -323,6 +323,38 @@ function DoGame (game: MainGame): void {
                 (<any>window).GAME.uicontroller.setPlanet ('io');
             }
         },
+        {
+            name: "Europa",
+            game: (<any>window).GAME,
+            objects: [
+                {
+                    name: "EuropaBackDrop",
+                    assets: "IOGround",
+                    physics: "IO Ground",
+                    position: {
+                        x: ():number => {return 0},
+                        y: ():number => {return (<any>window).GAME.game.world.height - 220}
+                    },
+                },
+            ],
+            frame: () => {
+            },
+            done: () => {
+                return false; //(<any>window).GAME.getLevel ('intro').getObject('Artemis').getAltitude() > 4000;
+            },
+            init: (___this: Level) => {
+                (<any>window).GAME.setGravity (100, 0.1);
+                ___this.game.game.world.setBounds(0, 0, 12000, 2500);
+                ___this.getObject ('ship').pos = {
+                    x: ():number => {return 70},
+                    y: ():number => {return (<any>window).GAME.game.world.height - 220}
+                };
+
+                
+                (<Ship>___this.getObject ('ship')).reset (false);
+                (<any>window).GAME.uicontroller.setPlanet ('europa');
+            }
+        },
 
     ]
 
