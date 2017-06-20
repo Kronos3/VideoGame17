@@ -43,6 +43,7 @@ export class Rover extends DynamicSprite {
     wheels: Phaser.Group;
     wheelMaterial: Phaser.Physics.P2.Material;
     worldMaterial: Phaser.Physics.P2.Material;
+    rockNumber: number = 0;
 
     constructor (game: MainGame,
                  level: Level,
@@ -78,7 +79,6 @@ export class Rover extends DynamicSprite {
         contactMaterial.friction = 1e3;
         contactMaterial.restitution = 0;
         this.pObject.animations.play('rover')
-        this.pObject.body.debug = true;
     }
 
     stopAnim = () => {
@@ -116,7 +116,6 @@ export class Rover extends DynamicSprite {
 
         this.game.game.physics.p2.enable(wheel);
         wheel.body.clearShapes();
-        wheel.body.debug = true;
         wheel.body.addCircle(9);
 
         /*
@@ -140,7 +139,7 @@ export class Rover extends DynamicSprite {
     }
 
     facingLeft: boolean = true;
-    speed: number = 150;
+    speed: number = 200;
 
     driveForward = () => {
         if (this.facingLeft) {

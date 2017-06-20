@@ -114,11 +114,11 @@ var Ship = (function (_super) {
             return b;
         };
         _this.isDead = false;
-        _this.maxLFO = 1000;
+        _this.maxLFO = 400;
         _this.LFO = _this.maxLFO; // Liquid Fuel and Oxidizer (C10H16)
         _this.Isp = 250; // Ratio of thrust to fuel flow for every minute of burn
         // At max thrust, use 250 LFO after a minute of burn
-        _this.maxMono = 50;
+        _this.maxMono = 15;
         _this.monoProp = _this.maxMono;
         _this.monoIsp = 10;
         _this.getAltitude = function () {
@@ -146,10 +146,10 @@ var Ship = (function (_super) {
             _this.pObject.body.y = _this.pos.y();
             _this.pObject.body.rotation = 0;
             _this.isDead = false;
-            if (t) {
-                _this.LFO = _this.maxLFO;
-                _this.monoProp = _this.maxMono;
-            }
+            /*if (t) {
+                this.LFO = this.maxLFO;
+                this.monoProp = this.maxMono;
+            }*/
             _this.follow();
         };
         _this.explode = function () {
@@ -219,16 +219,7 @@ var Ship = (function (_super) {
                 _this.SAS();
             }
             _this.extra.thrustOn = false;
-            _this.gravityAction();
             _this.setResources();
-        };
-        _this.gravityAction = function () {
-            if (_this.game.gravity == 0) {
-                return;
-            }
-            var BODY = _this.pObject.body;
-            var relative_thrust = -(_this.game.gravity * _this.pObject.body.mass);
-            BODY.velocity.y -= (relative_thrust / 100) * _this.game.get_ratio();
         };
         _this.calculate_velocity = function (acceleration, initialVel) {
             return (acceleration * _this.game.get_ratio()) + initialVel();
@@ -247,6 +238,7 @@ var Ship = (function (_super) {
         ], function () {
             _this.reset();
         }, 50);
+        _this.game.addGravity(_this);
         return _this;
     }
     return Ship;

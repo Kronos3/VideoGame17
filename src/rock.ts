@@ -2,6 +2,7 @@ import {MainGame} from "./game"
 import {_position} from "./object"
 import {GameSprite} from "./object"
 import {Level} from "./level"
+import {Rover} from "./rover"
 
 export class Rock extends GameSprite {
     bodyName: string;
@@ -24,7 +25,16 @@ export class Rock extends GameSprite {
 
     collide = (target: Phaser.Physics.P2.Body, this_target: Phaser.Physics.P2.Body, shapeA, shapeB, contactEquation) => {
         if(shapeB.body.id == 9) {
-            
+            var b = this.game.gravityObjects.indexOf(this);
+            console.log (b);
+            if (b > -1) {
+                this.game.gravityObjects.splice(b, 1);
+            }
+            else {
+                return;
+            }
+            this.disable(true);
+            (<Rover>this.level.getObject ('rover')).rockNumber++; 
         }
     }
 }

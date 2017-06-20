@@ -10363,10 +10363,10 @@ var Astroid = (function (_super) {
         _this.collide = function (target, this_target, shapeA, shapeB, contactEquation) {
             if (contactEquation[0] != null) {
                 if (shapeB.id == 14 && _this.pos.y() != 0) {
-                    _this.resetPosition();
+                    _this.reset();
                 }
                 else if (shapeB.id == 15 && _this.pos.y() == 0) {
-                    _this.resetPosition();
+                    _this.reset();
                 }
             }
         };
@@ -10659,9 +10659,6 @@ var MainGame = (function () {
         this.get_fps = function () {
             return _this.game.time.fps;
         };
-        this.render = function () {
-            _this.game.debug.text('render FPS: ' + (_this.game.time.fps || '--'), 2, 14, "#00ff00");
-        };
         this.resize = function () {
             //var height = $(window).height();
             //var width = $(window).width();
@@ -10697,7 +10694,7 @@ var MainGame = (function () {
             /*console.log (name + ':' + path)
             this.game.load.image (name, path);*/
         };
-        this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'T17', { preload: this.preload, create: this.create, update: this.update, render: this.render }, true);
+        this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'T17', { preload: this.preload, create: this.create, update: this.update }, true);
         this.onReady = onReady;
         setTimeout(function () {
             _this.isLoaded = true;
@@ -10889,6 +10886,7 @@ var ship_2 = require("./ship");
 var ship_3 = require("./ship");
 var ship_4 = require("./ship");
 var wrapper_1 = require("./wrapper");
+var astroid_1 = require("./astroid");
 var rover_1 = require("./rover");
 var rover_2 = require("./rover");
 var rock_1 = require("./rock");
@@ -11044,48 +11042,48 @@ function setup_pos(e, x_scale, y_scale) {
 }
 function DoGame(game) {
     var levels = [
-        /*{
+        {
             name: "intro",
-            game: (<any>window).GAME,
+            game: window.GAME,
             objects: [
                 {
                     name: "stars",
                     assets: "Stars",
                     position: {
-                        x: ():number => {return 0},
-                        y: ():number => {return 0}
+                        x: function () { return 0; },
+                        y: function () { return 0; }
                     }
                 },
                 {
                     name: "stars2",
                     assets: "Stars",
                     position: {
-                        x: ():number => {return 0},
-                        y: ():number => {return 1600}
+                        x: function () { return 0; },
+                        y: function () { return 1600; }
                     }
                 },
                 {
                     name: "sky",
                     assets: "Sky",
                     position: {
-                        x: ():number => {return 0},
-                        y: ():number => {return (<any>window).GAME.game.world.height - 820}
+                        x: function () { return 0; },
+                        y: function () { return window.GAME.game.world.height - 820; }
                     }
                 },
                 {
                     name: "mountains",
                     assets: "Mountain-E",
                     position: {
-                        x: ():number => {return 0},
-                        y: ():number => {return (<any>window).GAME.game.world.height - 520}
+                        x: function () { return 0; },
+                        y: function () { return window.GAME.game.world.height - 520; }
                     }
                 },
                 {
                     name: 'backdrop',
                     assets: "Fore",
                     position: {
-                        x: ():number => {return 0},
-                        y: ():number => {return (<any>window).GAME.game.world.height - 120}
+                        x: function () { return 0; },
+                        y: function () { return window.GAME.game.world.height - 120; }
                     }
                 },
                 {
@@ -11094,56 +11092,55 @@ function DoGame(game) {
                     physics: "Launch-L",
                     static: true,
                     position: {
-                        x: ():number => {return (<any>window).GAME.game.world.width / 2},
-                        y: ():number => {return (<any>window).GAME.game.world.height - 96}
+                        x: function () { return window.GAME.game.world.width / 2; },
+                        y: function () { return window.GAME.game.world.height - 96; }
                     }
                 },
             ],
-            frame: () => {
+            frame: function () {
             },
-            done: () => {
+            done: function () {
                 return false; //(<any>window).GAME.getLevel ('intro').getObject('Artemis').getAltitude() > 4000;
             },
-            init: (___this: Level) => {
-                (<any>window).GAME.setGravity (100, 0.1);
+            init: function (___this) {
+                window.GAME.setGravity(100, 0.1);
             }
         },
         {
             name: "belt1",
-            game: (<any>window).GAME,
+            game: window.GAME,
             objects: [
                 {
                     name: "stars",
                     assets: "Stars",
                     position: {
-                        x: ():number => {return 0},
-                        y: ():number => {return 0},
+                        x: function () { return 0; },
+                        y: function () { return 0; },
                         width: 18000,
                         height: 2500
                     },
                     repeat: true
                 }
             ],
-            frame: () => {
+            frame: function () {
             },
-            done: () => {
+            done: function () {
                 return false; //(<any>window).GAME.getLevel ('intro').getObject('Artemis').getAltitude() > 4000;
             },
-            init: (___this: Level) => {
-                (<any>window).GAME.setGravity (0, 0.1);
+            init: function (___this) {
+                window.GAME.setGravity(0, 0.1);
                 ___this.game.game.world.setBounds(0, 0, 12000, 2500);
-                ___this.getObject ('ship').pos = {
-                    x: ():number => {return 120},
-                    y: ():number => {return (<any>window).GAME.game.world.centerY}
+                ___this.getObject('ship').pos = {
+                    x: function () { return 120; },
+                    y: function () { return window.GAME.game.world.centerY; }
                 };
-                (<Ship>___this.getObject ('ship')).reset (false);
-                (<any>window).GAME.uicontroller.setPlanet ('ceres');
-
+                ___this.getObject('ship').reset(false);
+                window.GAME.uicontroller.setPlanet('ceres');
                 // Initialize the Astroid belt;
-                (<any>___this).astroidbelt = new AstroidBelt ((<any>window).GAME, ___this, 0);
-                ___this.addFrame ((<any>___this).astroidbelt.frame)
+                ___this.astroidbelt = new astroid_1.AstroidBelt(window.GAME, ___this, 25);
+                ___this.addFrame(___this.astroidbelt.frame);
             }
-        },*/
+        },
         {
             name: "IO",
             game: window.GAME,
@@ -11168,12 +11165,12 @@ function DoGame(game) {
                 window.GAME.setGravity(100, 0.1);
                 ___this.game.game.world.setBounds(0, 0, 12000, 2500);
                 ___this.getObject('ship').pos = {
-                    x: function () { return 225; },
-                    y: function () { return window.GAME.game.world.height - 214; }
+                    x: function () { return 325; },
+                    y: function () { return window.GAME.game.world.height - 189; }
                 };
                 var roverbuff = new rover_1.Rover(window.GAME, ___this, 'rover', 'Rover', {
-                    x: function () { return 292; },
-                    y: function () { return 2306; }
+                    x: function () { return 458; },
+                    y: function () { return 2313; }
                 }, [
                     'rover1'
                 ]);
@@ -11194,7 +11191,6 @@ function DoGame(game) {
                 ___this.getObject('iobackdrop').pObject.body.setMaterial(roverbuff.worldMaterial);
                 ___this.getObject('iobackdrop').reset();
                 roverbuff.reset();
-                ___this.getObject('iobackdrop').pObject.body.debug = true;
                 ___this.game.game.camera.follow(roverbuff.pObject);
                 for (var i = 0; i != 7; i++) {
                     var type = UTIL.getRandomInt(0, 1);
@@ -11216,7 +11212,7 @@ function DoGame(game) {
         },
     ];
     var missions = [
-        /*{
+        {
             title: 'Reach 4000m',
             description: 'Exit Earth\'s atmosphere',
             html: "\
@@ -11225,30 +11221,30 @@ function DoGame(game) {
                     <span class=\"alt\">0m</span>\
                     <span class=\"alt-line\"></span>\
                 </div>",
-            condition: () => {
-                if ((<any>window).GAME.getLevel('intro').getObject('ship') == null){
+            condition: function () {
+                if (window.GAME.getLevel('intro').getObject('ship') == null) {
                     return false;
                 }
-                return (<any>window).GAME.getLevel('intro').getObject('ship').getAltitude () > 4000;
+                return window.GAME.getLevel('intro').getObject('ship').getAltitude() > 4000;
             },
-            onDone: () => {
+            onDone: function () {
             },
-            update: () => {
-                if ((<any>window).GAME.getLevel('intro').getObject('ship') == null){
-                    (<any>window).GAME.pause ();
+            update: function () {
+                if (window.GAME.getLevel('intro').getObject('ship') == null) {
+                    window.GAME.pause();
                     return;
                 }
-                var a = parseInt((<any>window).GAME.levelsequence.getCurrent().getObject('ship').getAltitude ());
-                if (a < 0){
+                var a = parseInt(window.GAME.levelsequence.getCurrent().getObject('ship').getAltitude());
+                if (a < 0) {
                     a = 0;
                 }
-                $('.alt').text (a + 'M');
-                var x = (.95 * (a/40));
+                $('.alt').text(a + 'M');
+                var x = (.95 * (a / 40));
                 if (x > 95) {
-                    $('.alt').css ('bottom', '95%')
+                    $('.alt').css('bottom', '95%');
                 }
                 else {
-                    $('.alt').css ('bottom', x + '%')
+                    $('.alt').css('bottom', x + '%');
                 }
             }
         },
@@ -11259,16 +11255,16 @@ function DoGame(game) {
                 <div>\
                 <p>Survive the asteroid belt</p>\
                 </div>',
-            condition: () => {
-                return (<any>window).GAME.levelsequence.getCurrent().getObject('ship').pObject.x > 9500;
+            condition: function () {
+                return window.GAME.levelsequence.getCurrent().getObject('ship').pObject.x > 9500;
             },
-            onDone: () => {
+            onDone: function () {
                 ;
             },
-            update: () => {
+            update: function () {
                 ;
             }
-        },*/
+        },
         {
             title: 'Collect surface samples',
             description: 'Collect surface samples on IO to analyze composition of ground.',
@@ -11339,7 +11335,7 @@ function initShip(___this) {
 }
 exports.initShip = initShip;
 
-},{"./game":6,"./rock":11,"./rover":12,"./ship":13,"./util":16,"./wrapper":17,"jquery":1}],9:[function(require,module,exports){
+},{"./astroid":3,"./game":6,"./rock":11,"./rover":12,"./ship":13,"./util":16,"./wrapper":17,"jquery":1}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var $ = require("jquery");
@@ -11571,6 +11567,16 @@ var Rock = (function (_super) {
         var _this = _super.call(this, game, l, name, pos, asset) || this;
         _this.collide = function (target, this_target, shapeA, shapeB, contactEquation) {
             if (shapeB.body.id == 9) {
+                var b = _this.game.gravityObjects.indexOf(_this);
+                console.log(b);
+                if (b > -1) {
+                    _this.game.gravityObjects.splice(b, 1);
+                }
+                else {
+                    return;
+                }
+                _this.disable(true);
+                _this.level.getObject('rover').rockNumber++;
             }
         };
         switch (asset) {
@@ -11629,6 +11635,7 @@ var Rover = (function (_super) {
     __extends(Rover, _super);
     function Rover(game, level, name, bodyName, pos, assets) {
         var _this = _super.call(this, game, level, name, pos, assets) || this;
+        _this.rockNumber = 0;
         _this.stopAnim = function () {
             _this.pObject.animations.paused = false;
             _this.frontWheel.body.rotateLeft(0);
@@ -11659,7 +11666,6 @@ var Rover = (function (_super) {
             var wheel = _this.game.game.add.sprite(truckX + offsetFromTruck[0], truckY + offsetFromTruck[1]);
             _this.game.game.physics.p2.enable(wheel);
             wheel.body.clearShapes();
-            wheel.body.debug = true;
             wheel.body.addCircle(9);
             /*
             * Constrain the wheel to the truck so that it can rotate freely on its pivot
@@ -11678,7 +11684,7 @@ var Rover = (function (_super) {
             return wheel;
         };
         _this.facingLeft = true;
-        _this.speed = 150;
+        _this.speed = 200;
         _this.driveForward = function () {
             if (_this.facingLeft) {
                 _this.pObject.scale.x *= -1;
@@ -11723,7 +11729,6 @@ var Rover = (function (_super) {
         contactMaterial.friction = 1e3;
         contactMaterial.restitution = 0;
         _this.pObject.animations.play('rover');
-        _this.pObject.body.debug = true;
         return _this;
     }
     return Rover;
@@ -11847,11 +11852,11 @@ var Ship = (function (_super) {
             return b;
         };
         _this.isDead = false;
-        _this.maxLFO = 1000;
+        _this.maxLFO = 400;
         _this.LFO = _this.maxLFO; // Liquid Fuel and Oxidizer (C10H16)
         _this.Isp = 250; // Ratio of thrust to fuel flow for every minute of burn
         // At max thrust, use 250 LFO after a minute of burn
-        _this.maxMono = 50;
+        _this.maxMono = 15;
         _this.monoProp = _this.maxMono;
         _this.monoIsp = 10;
         _this.getAltitude = function () {
@@ -11879,10 +11884,10 @@ var Ship = (function (_super) {
             _this.pObject.body.y = _this.pos.y();
             _this.pObject.body.rotation = 0;
             _this.isDead = false;
-            if (t) {
-                _this.LFO = _this.maxLFO;
-                _this.monoProp = _this.maxMono;
-            }
+            /*if (t) {
+                this.LFO = this.maxLFO;
+                this.monoProp = this.maxMono;
+            }*/
             _this.follow();
         };
         _this.explode = function () {
@@ -11952,16 +11957,7 @@ var Ship = (function (_super) {
                 _this.SAS();
             }
             _this.extra.thrustOn = false;
-            _this.gravityAction();
             _this.setResources();
-        };
-        _this.gravityAction = function () {
-            if (_this.game.gravity == 0) {
-                return;
-            }
-            var BODY = _this.pObject.body;
-            var relative_thrust = -(_this.game.gravity * _this.pObject.body.mass);
-            BODY.velocity.y -= (relative_thrust / 100) * _this.game.get_ratio();
         };
         _this.calculate_velocity = function (acceleration, initialVel) {
             return (acceleration * _this.game.get_ratio()) + initialVel();
@@ -11980,6 +11976,7 @@ var Ship = (function (_super) {
         ], function () {
             _this.reset();
         }, 50);
+        _this.game.addGravity(_this);
         return _this;
     }
     return Ship;
@@ -12272,7 +12269,7 @@ var Wrapper = (function () {
             // 0: level
             // 1: TextScene
             // 2: Open Mission Control
-            //1,
+            1,
             0,
             2,
             0,
@@ -12323,4 +12320,4 @@ var Wrapper = (function () {
 }());
 exports.Wrapper = Wrapper;
 
-},{"./type":14,"jquery":1}]},{},[2,3,4,5,6,7,8,9,10,12,13,14,15,16,17]);
+},{"./type":14,"jquery":1}]},{},[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]);

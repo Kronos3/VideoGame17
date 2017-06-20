@@ -50,7 +50,7 @@ Object.defineProperty(Object.prototype, 'watch', {
 export class MainGame {
     onReady: (game: MainGame) => void;
     constructor(onReady: (game: MainGame) => void) {
-        this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'T17', {preload: this.preload, create: this.create, update: this.update, render: this.render}, true);
+        this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'T17', {preload: this.preload, create: this.create, update: this.update}, true);
         this.onReady = onReady;
         setTimeout (() => {
             this.isLoaded = true;
@@ -213,10 +213,6 @@ export class MainGame {
 
     get_fps = () => {
         return this.game.time.fps;
-    }
-
-    render = () => {
-        this.game.debug.text('render FPS: ' + (this.game.time.fps || '--') , 2, 14, "#00ff00");
     }
 
     resize = () => {

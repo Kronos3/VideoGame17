@@ -10,7 +10,7 @@ var Wrapper = (function () {
             // 0: level
             // 1: TextScene
             // 2: Open Mission Control
-            //1,
+            1,
             0,
             2,
             0,

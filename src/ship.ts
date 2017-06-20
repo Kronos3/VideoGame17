@@ -57,6 +57,7 @@ export class Ship extends DynamicSprite {
         () => {
             this.reset ();
         }, 50);
+        this.game.addGravity (this);
     }
 
     collide = (target: Phaser.Physics.P2.Body, this_target: Phaser.Physics.P2.Body, shapeA, shapeB, contactEquation) => {
@@ -140,12 +141,12 @@ export class Ship extends DynamicSprite {
 
     startAlt: number;
     isDead: boolean = false;
-    maxLFO: number = 1000;
+    maxLFO: number = 400;
     LFO: number = this.maxLFO; // Liquid Fuel and Oxidizer (C10H16)
     Isp: number = 250; // Ratio of thrust to fuel flow for every minute of burn
                        // At max thrust, use 250 LFO after a minute of burn
     
-    maxMono:number = 50;
+    maxMono:number = 15;
     monoProp:number = this.maxMono;
     monoIsp: number = 10;
 
@@ -179,10 +180,10 @@ export class Ship extends DynamicSprite {
         this.pObject.body.rotation = 0;
         this.isDead = false;
         
-        if (t) {
+        /*if (t) {
             this.LFO = this.maxLFO;
             this.monoProp = this.maxMono;
-        }
+        }*/
         this.follow();
     }
 
@@ -265,17 +266,7 @@ export class Ship extends DynamicSprite {
             this.SAS ();
         }
         (<any>this.extra).thrustOn = false;
-        this.gravityAction ();
         this.setResources ();
-    }
-
-    gravityAction = () => {
-        if (this.game.gravity == 0) {
-            return;
-        }
-        var BODY = this.pObject.body;
-        var relative_thrust = -( this.game.gravity * this.pObject.body.mass);
-        BODY.velocity.y -= (relative_thrust / 100) * this.game.get_ratio();
     }
     
     calculate_velocity = (acceleration, initialVel) => {

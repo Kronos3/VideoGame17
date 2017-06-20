@@ -17,6 +17,16 @@ var Rock = (function (_super) {
         var _this = _super.call(this, game, l, name, pos, asset) || this;
         _this.collide = function (target, this_target, shapeA, shapeB, contactEquation) {
             if (shapeB.body.id == 9) {
+                var b = _this.game.gravityObjects.indexOf(_this);
+                console.log(b);
+                if (b > -1) {
+                    _this.game.gravityObjects.splice(b, 1);
+                }
+                else {
+                    return;
+                }
+                _this.disable(true);
+                _this.level.getObject('rover').rockNumber++;
             }
         };
         switch (asset) {

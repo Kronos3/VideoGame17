@@ -34,6 +34,7 @@ var Rover = (function (_super) {
     __extends(Rover, _super);
     function Rover(game, level, name, bodyName, pos, assets) {
         var _this = _super.call(this, game, level, name, pos, assets) || this;
+        _this.rockNumber = 0;
         _this.stopAnim = function () {
             _this.pObject.animations.paused = false;
             _this.frontWheel.body.rotateLeft(0);
@@ -64,7 +65,6 @@ var Rover = (function (_super) {
             var wheel = _this.game.game.add.sprite(truckX + offsetFromTruck[0], truckY + offsetFromTruck[1]);
             _this.game.game.physics.p2.enable(wheel);
             wheel.body.clearShapes();
-            wheel.body.debug = true;
             wheel.body.addCircle(9);
             /*
             * Constrain the wheel to the truck so that it can rotate freely on its pivot
@@ -83,7 +83,7 @@ var Rover = (function (_super) {
             return wheel;
         };
         _this.facingLeft = true;
-        _this.speed = 150;
+        _this.speed = 200;
         _this.driveForward = function () {
             if (_this.facingLeft) {
                 _this.pObject.scale.x *= -1;
@@ -128,7 +128,6 @@ var Rover = (function (_super) {
         contactMaterial.friction = 1e3;
         contactMaterial.restitution = 0;
         _this.pObject.animations.play('rover');
-        _this.pObject.body.debug = true;
         return _this;
     }
     return Rover;

@@ -186,7 +186,7 @@ function setup_pos (e, x_scale, y_scale) {
 
 function DoGame (game: MainGame): void {
     var levels: LevelConstructor[] = [
-        /*{
+        {
             name: "intro",
             game: (<any>window).GAME,
             objects: [
@@ -282,10 +282,10 @@ function DoGame (game: MainGame): void {
                 (<any>window).GAME.uicontroller.setPlanet ('ceres');
 
                 // Initialize the Astroid belt;
-                (<any>___this).astroidbelt = new AstroidBelt ((<any>window).GAME, ___this, 0);
+                (<any>___this).astroidbelt = new AstroidBelt ((<any>window).GAME, ___this, 25);
                 ___this.addFrame ((<any>___this).astroidbelt.frame)
             }
-        },*/
+        },
         {
             name: "IO",
             game: (<any>window).GAME,
@@ -310,15 +310,15 @@ function DoGame (game: MainGame): void {
                 (<any>window).GAME.setGravity (100, 0.1);
                 ___this.game.game.world.setBounds(0, 0, 12000, 2500);
                 ___this.getObject ('ship').pos = {
-                    x: ():number => {return 225},
-                    y: ():number => {return (<any>window).GAME.game.world.height - 214}
+                    x: ():number => {return 325},
+                    y: ():number => {return (<any>window).GAME.game.world.height - 189}
                 };
 
                 var roverbuff = new Rover ((<any>window).GAME,
                     ___this, 'rover', 'Rover',
                     {
-                        x: ():number => {return 292},
-                        y: ():number => {return 2306}
+                        x: ():number => {return 458},
+                        y: ():number => {return 2313}
                     }, [
                         'rover1'
                     ]);
@@ -339,7 +339,6 @@ function DoGame (game: MainGame): void {
                 ___this.getObject('iobackdrop').pObject.body.setMaterial(roverbuff.worldMaterial);
                 ___this.getObject('iobackdrop').reset();
                 roverbuff.reset();
-                ___this.getObject('iobackdrop').pObject.body.debug = true;
                 ___this.game.game.camera.follow(roverbuff.pObject);
                 for (var i=0; i != 7; i++) {
                     var type = UTIL.getRandomInt (0,1);
@@ -368,7 +367,7 @@ function DoGame (game: MainGame): void {
 
     ]
     var missions: MissionConstructor [] = [
-        /*{
+        {
             title: 'Reach 4000m',
             description: 'Exit Earth\'s atmosphere',
             html: "\
@@ -420,7 +419,7 @@ function DoGame (game: MainGame): void {
             update: () => {
                 ;
             }
-        },*/
+        },
         {
             title: 'Collect surface samples',
             description: 'Collect surface samples on IO to analyze composition of ground.',

@@ -179,9 +179,6 @@ var MainGame = (function () {
         this.get_fps = function () {
             return _this.game.time.fps;
         };
-        this.render = function () {
-            _this.game.debug.text('render FPS: ' + (_this.game.time.fps || '--'), 2, 14, "#00ff00");
-        };
         this.resize = function () {
             //var height = $(window).height();
             //var width = $(window).width();
@@ -217,7 +214,7 @@ var MainGame = (function () {
             /*console.log (name + ':' + path)
             this.game.load.image (name, path);*/
         };
-        this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'T17', { preload: this.preload, create: this.create, update: this.update, render: this.render }, true);
+        this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'T17', { preload: this.preload, create: this.create, update: this.update }, true);
         this.onReady = onReady;
         setTimeout(function () {
             _this.isLoaded = true;
