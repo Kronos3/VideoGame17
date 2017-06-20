@@ -183,7 +183,7 @@ export class Ship extends DynamicSprite {
             this.LFO = this.maxLFO;
             this.monoProp = this.maxMono;
         }
-        this.game.game.camera.follow (this.pObject);
+        this.follow();
     }
 
     explode = () => {
@@ -286,8 +286,8 @@ export class Ship extends DynamicSprite {
 export class Artemis extends Ship {
     constructor (game: MainGame, level: Level) {
         var pos = {
-            x: ():number => {return (<any>window).GAME.game.world.width / 2 - 220},
-            y: ():number => {return (<any>window).GAME.game.world.height - 450}
+            x: ():number => {return (<any>window).GAME.game.world.width / 2 - 70},
+            y: ():number => {return (<any>window).GAME.game.world.height - 50}
         }
         
         super (game, 'ship', 'Artemis', pos, [

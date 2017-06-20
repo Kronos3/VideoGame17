@@ -16,9 +16,30 @@ var GameSprite = (function () {
     function GameSprite(game, level, name, pos, asset, extra, repeat) {
         if (repeat === void 0) { repeat = false; }
         var _this = this;
+        this.init = function () {
+            if (typeof _this.construct == "undefined") {
+                return;
+            }
+            if (typeof _this.construct.physics !== "undefined") {
+                _this.loadBody(_this.construct.physics);
+            }
+            console.log(_this.construct);
+            console.log(_this.construct.static);
+            if (typeof _this.construct.static !== "undefined") {
+                _this.pObject.body.static = _this.construct.static;
+                _this.isStatic = _this.pObject.body.static;
+                _this.isMoves = false;
+            }
+        };
         this.reset = function () {
-            _this.pObject.x = _this.pos.x();
-            _this.pObject.y = _this.pos.y();
+            if (_this.pObject.body != null) {
+                _this.pObject.body.x = _this.pos.x();
+                _this.pObject.body.y = _this.pos.y();
+            }
+            else {
+                _this.pObject.x = _this.pos.x();
+                _this.pObject.y = _this.pos.y();
+            }
         };
         this.addProperty = function (extra) {
             _this.extra = $.extend({}, _this.extra, external);
@@ -27,9 +48,6 @@ var GameSprite = (function () {
             _this.level.game.game.physics.p2.enable(_this.pObject);
         };
         this.loadBody = function (key) {
-            if (!_this.level.inited) {
-                return;
-            }
             _this.enablePhysics();
             _this.pObject.body.clearShapes();
             _this.pObject.body.loadPolygon('physicsData', key);
@@ -38,6 +56,7 @@ var GameSprite = (function () {
             if (destroy === void 0) { destroy = false; }
             if (_this.pObject.body != null) {
                 _this.isStatic = _this.pObject.body.static;
+                _this.isMoves = _this.pObject.body.moves;
                 _this.pObject.body.static = true;
                 _this.pObject.body.moves = false;
                 //this.pObject.body.collides ();
@@ -51,7 +70,7 @@ var GameSprite = (function () {
             _this.pObject.visible = true;
             if (_this.pObject.body != null) {
                 _this.pObject.body.static = _this.isStatic;
-                _this.pObject.body.moves = true;
+                _this.pObject.body.moves = _this.isMoves;
                 //this.pObject.body.collides (this.level.getAllBodies ());
             }
         };
@@ -82,6 +101,9 @@ var DynamicSprite = (function (_super) {
     function DynamicSprite(game, level, name, pos, assets, extra) {
         var _this = _super.call(this, game, level, name, pos, assets[0], extra) || this;
         _this.assets = [];
+        _this.follow = function () {
+            _this.game.game.camera.follow(_this.pObject);
+        };
         _this.switchToIndex = function (index) {
             _this.pObject.key = _this.assets[index];
             _this.pObject.loadTexture(_this.pObject.key, 0);

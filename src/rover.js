@@ -39,6 +39,23 @@ var Rover = (function (_super) {
             _this.frontWheel.body.rotateLeft(0);
             _this.backWheel.body.rotateLeft(0);
         };
+        _this.reset = function () {
+            _this.pObject.body.setZeroForce();
+            _this.pObject.body.setZeroRotation();
+            _this.pObject.body.setZeroVelocity();
+            _this.pObject.body.x = _this.pos.x();
+            _this.pObject.body.y = _this.pos.y();
+            _this.pObject.body.rotation = 0;
+            [_this.backWheel, _this.frontWheel].forEach(function (element) {
+                element.body.setZeroRotation();
+                element.body.setZeroVelocity();
+                element.body.rotation = 0;
+            });
+            _this.backWheel.body.x = _this.pObject.body.x + -30;
+            _this.backWheel.body.y = _this.pObject.body.y + 20;
+            _this.frontWheel.body.x = _this.pObject.body.x + 30;
+            _this.frontWheel.body.y = _this.pObject.body.y + 20;
+        };
         _this.initWheel = function (target, offsetFromTruck) {
             var truckX = target.position.x;
             var truckY = target.position.y;
@@ -46,6 +63,7 @@ var Rover = (function (_super) {
             var wheel = _this.game.game.add.sprite(truckX + offsetFromTruck[0], truckY + offsetFromTruck[1]);
             _this.game.game.physics.p2.enable(wheel);
             wheel.body.clearShapes();
+            wheel.body.debug = true;
             wheel.body.addCircle(9);
             /*
             * Constrain the wheel to the truck so that it can rotate freely on its pivot

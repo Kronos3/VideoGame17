@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+/// <reference path="../imports/phaser.d.ts" />
 var $ = require("jquery");
 var game_1 = require("./game");
 var ship_1 = require("./ship");
@@ -7,8 +8,8 @@ var ship_2 = require("./ship");
 var ship_3 = require("./ship");
 var ship_4 = require("./ship");
 var wrapper_1 = require("./wrapper");
-var astroid_1 = require("./astroid");
 var rover_1 = require("./rover");
+var rover_2 = require("./rover");
 function getlength(number) {
     return number.toString().length;
 }
@@ -137,8 +138,6 @@ window.GAME = null;
 function initGame() {
     game = new game_1.MainGame(DoGame);
     window.GAME = game;
-    var testControlBindings = [];
-    game.addControlScheme(testControlBindings);
     var story = [
         ['2061', 'The International Space Exploration Administration (ISEA) is coming off their recent success of their manned mission to Mars.', 'Now, they have set their sights on the next stepping stone in the solar system: Jupiter\'s moons.', 'The ISEA believes that landing a spacecraft near Jupiter will reveal new information about the gas giants and the remainder of the solar system.', 'However, this journey will encounter new challenges that will threaten the lives of the astronauts and the reputation of the ISEA.'],
         ['The journey to Jupiter was a success.',
@@ -162,48 +161,48 @@ function setup_pos(e, x_scale, y_scale) {
 }
 function DoGame(game) {
     var levels = [
-        {
+        /*{
             name: "intro",
-            game: window.GAME,
+            game: (<any>window).GAME,
             objects: [
                 {
                     name: "stars",
                     assets: "Stars",
                     position: {
-                        x: function () { return 0; },
-                        y: function () { return 0; }
+                        x: ():number => {return 0},
+                        y: ():number => {return 0}
                     }
                 },
                 {
                     name: "stars2",
                     assets: "Stars",
                     position: {
-                        x: function () { return 0; },
-                        y: function () { return 1600; }
+                        x: ():number => {return 0},
+                        y: ():number => {return 1600}
                     }
                 },
                 {
                     name: "sky",
                     assets: "Sky",
                     position: {
-                        x: function () { return 0; },
-                        y: function () { return window.GAME.game.world.height - 820; }
+                        x: ():number => {return 0},
+                        y: ():number => {return (<any>window).GAME.game.world.height - 820}
                     }
                 },
                 {
                     name: "mountains",
                     assets: "Mountain-E",
                     position: {
-                        x: function () { return 0; },
-                        y: function () { return window.GAME.game.world.height - 520; }
+                        x: ():number => {return 0},
+                        y: ():number => {return (<any>window).GAME.game.world.height - 520}
                     }
                 },
                 {
                     name: 'backdrop',
                     assets: "Fore",
                     position: {
-                        x: function () { return 0; },
-                        y: function () { return window.GAME.game.world.height - 120; }
+                        x: ():number => {return 0},
+                        y: ():number => {return (<any>window).GAME.game.world.height - 120}
                     }
                 },
                 {
@@ -212,55 +211,56 @@ function DoGame(game) {
                     physics: "Launch-L",
                     static: true,
                     position: {
-                        x: function () { return window.GAME.game.world.width / 2; },
-                        y: function () { return window.GAME.game.world.height - 96; }
+                        x: ():number => {return (<any>window).GAME.game.world.width / 2},
+                        y: ():number => {return (<any>window).GAME.game.world.height - 96}
                     }
                 },
             ],
-            frame: function () {
+            frame: () => {
             },
-            done: function () {
+            done: () => {
                 return false; //(<any>window).GAME.getLevel ('intro').getObject('Artemis').getAltitude() > 4000;
             },
-            init: function (___this) {
-                window.GAME.setGravity(100, 0.1);
+            init: (___this: Level) => {
+                (<any>window).GAME.setGravity (100, 0.1);
             }
         },
         {
             name: "belt1",
-            game: window.GAME,
+            game: (<any>window).GAME,
             objects: [
                 {
                     name: "stars",
                     assets: "Stars",
                     position: {
-                        x: function () { return 0; },
-                        y: function () { return 0; },
+                        x: ():number => {return 0},
+                        y: ():number => {return 0},
                         width: 18000,
                         height: 2500
                     },
                     repeat: true
                 }
             ],
-            frame: function () {
+            frame: () => {
             },
-            done: function () {
+            done: () => {
                 return false; //(<any>window).GAME.getLevel ('intro').getObject('Artemis').getAltitude() > 4000;
             },
-            init: function (___this) {
-                window.GAME.setGravity(0, 0.1);
+            init: (___this: Level) => {
+                (<any>window).GAME.setGravity (0, 0.1);
                 ___this.game.game.world.setBounds(0, 0, 12000, 2500);
-                ___this.getObject('ship').pos = {
-                    x: function () { return 120; },
-                    y: function () { return window.GAME.game.world.centerY; }
+                ___this.getObject ('ship').pos = {
+                    x: ():number => {return 120},
+                    y: ():number => {return (<any>window).GAME.game.world.centerY}
                 };
-                ___this.getObject('ship').reset(false);
-                window.GAME.uicontroller.setPlanet('ceres');
+                (<Ship>___this.getObject ('ship')).reset (false);
+                (<any>window).GAME.uicontroller.setPlanet ('ceres');
+
                 // Initialize the Astroid belt;
-                ___this.astroidbelt = new astroid_1.AstroidBelt(window.GAME, ___this, 0);
-                ___this.addFrame(___this.astroidbelt.frame);
+                (<any>___this).astroidbelt = new AstroidBelt ((<any>window).GAME, ___this, 0);
+                ___this.addFrame ((<any>___this).astroidbelt.frame)
             }
-        },
+        },*/
         {
             name: "IO",
             game: window.GAME,
@@ -269,9 +269,10 @@ function DoGame(game) {
                     name: "iobackdrop",
                     assets: "IOGround",
                     physics: "IO Ground",
+                    static: true,
                     position: {
                         x: function () { return 0; },
-                        y: function () { return window.GAME.game.world.height - 220; }
+                        y: function () { return window.GAME.game.world.height - 110; }
                     },
                 },
             ],
@@ -284,22 +285,38 @@ function DoGame(game) {
                 window.GAME.setGravity(100, 0.1);
                 ___this.game.game.world.setBounds(0, 0, 12000, 2500);
                 ___this.getObject('ship').pos = {
-                    x: function () { return 70; },
-                    y: function () { return window.GAME.game.world.height - 220; }
+                    x: function () { return 225; },
+                    y: function () { return window.GAME.game.world.height - 213; }
                 };
                 var roverbuff = new rover_1.Rover(window.GAME, ___this, 'rover', 'Rover', {
-                    x: function () { return window.GAME.game.world.width / 2 - 90; },
-                    y: function () { return window.GAME.game.world.height - 110; }
+                    x: function () { return 292; },
+                    y: function () { return 2306; }
                 }, [
                     'rover1'
                 ]);
+                ___this.addObject(roverbuff);
                 ___this.getObject('ship').reset(false);
                 window.GAME.uicontroller.setPlanet('io');
+                window.GAME.addControlScheme([
+                    rover_2.RoverBinding(window.GAME, roverbuff),
+                    {
+                        key: Phaser.KeyCode.R,
+                        callback: function () {
+                            roverbuff.reset();
+                        },
+                        press: true
+                    }
+                ]);
+                window.GAME.controls[0].disable();
+                ___this.getObject('iobackdrop').pObject.body.setMaterial(roverbuff.worldMaterial);
+                ___this.getObject('iobackdrop').reset();
+                roverbuff.reset();
+                ___this.game.game.camera.follow(roverbuff.pObject);
             }
         },
     ];
     var missions = [
-        {
+        /*{
             title: 'Reach 4000m',
             description: 'Exit Earth\'s atmosphere',
             html: "\
@@ -308,30 +325,30 @@ function DoGame(game) {
                     <span class=\"alt\">0m</span>\
                     <span class=\"alt-line\"></span>\
                 </div>",
-            condition: function () {
-                if (window.GAME.getLevel('intro').getObject('ship') == null) {
+            condition: () => {
+                if ((<any>window).GAME.getLevel('intro').getObject('ship') == null){
                     return false;
                 }
-                return window.GAME.getLevel('intro').getObject('ship').getAltitude() > 4000;
+                return (<any>window).GAME.getLevel('intro').getObject('ship').getAltitude () > 4000;
             },
-            onDone: function () {
+            onDone: () => {
             },
-            update: function () {
-                if (window.GAME.getLevel('intro').getObject('ship') == null) {
-                    window.GAME.pause();
+            update: () => {
+                if ((<any>window).GAME.getLevel('intro').getObject('ship') == null){
+                    (<any>window).GAME.pause ();
                     return;
                 }
-                var a = parseInt(window.GAME.levelsequence.getCurrent().getObject('ship').getAltitude());
-                if (a < 0) {
+                var a = parseInt((<any>window).GAME.levelsequence.getCurrent().getObject('ship').getAltitude ());
+                if (a < 0){
                     a = 0;
                 }
-                $('.alt').text(a + 'M');
-                var x = (.95 * (a / 40));
+                $('.alt').text (a + 'M');
+                var x = (.95 * (a/40));
                 if (x > 95) {
-                    $('.alt').css('bottom', '95%');
+                    $('.alt').css ('bottom', '95%')
                 }
                 else {
-                    $('.alt').css('bottom', x + '%');
+                    $('.alt').css ('bottom', x + '%')
                 }
             }
         },
@@ -342,16 +359,16 @@ function DoGame(game) {
                 <div>\
                 <p>Survive the asteroid belt</p>\
                 </div>',
-            condition: function () {
-                return window.GAME.levelsequence.getCurrent().getObject('ship').pObject.x > 9500;
+            condition: () => {
+                return (<any>window).GAME.levelsequence.getCurrent().getObject('ship').pObject.x > 9500;
             },
-            onDone: function () {
+            onDone: () => {
                 ;
             },
-            update: function () {
+            update: () => {
                 ;
             }
-        },
+        },*/
         {
             title: 'Collect surface samples',
             description: 'Collect surface samples on IO to analyze composition of ground.',
@@ -396,7 +413,7 @@ function difDone() {
         else if ($('.dif-choice.active').attr('id') == 'hard') {
             shipClass = ship_4.Vulcan;
         }
-        initShip(window.GAME.getLevel('intro'));
+        initShip(window.GAME.levelsequence.getCurrent());
         window.GAME.resume();
     });
     $('.mission-control-done').get(0).addEventListener('click', function () {
@@ -415,7 +432,7 @@ function initShip(___this) {
                 buf.reset();
             },
             press: true
-        },
+        }
     ]);
     window.GAME.game.camera.follow(buf.pObject);
     ___this.init(___this);

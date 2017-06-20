@@ -167,6 +167,7 @@ export class MainGame {
 
     }
 
+    player: GameSprite;
     isLoaded:boolean = false;
     wrapper: Wrapper;
 

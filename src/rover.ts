@@ -86,6 +86,25 @@ export class Rover extends DynamicSprite {
         this.backWheel.body.rotateLeft(0);
     }
 
+
+    reset = () => {
+        this.pObject.body.setZeroForce();
+        this.pObject.body.setZeroRotation();
+        this.pObject.body.setZeroVelocity();
+        this.pObject.body.x = this.pos.x();
+        this.pObject.body.y = this.pos.y();
+        this.pObject.body.rotation = 0;
+        [this.backWheel, this.frontWheel].forEach(element => {
+            element.body.setZeroRotation();
+            element.body.setZeroVelocity();
+            element.body.rotation = 0;
+        });
+        this.backWheel.body.x = this.pObject.body.x + -30;
+        this.backWheel.body.y = this.pObject.body.y + 20;
+        this.frontWheel.body.x = this.pObject.body.x + 30;
+        this.frontWheel.body.y = this.pObject.body.y + 20;
+    }
+
     initWheel = (target, offsetFromTruck) => {
         var truckX = target.position.x;
         var truckY = target.position.y;
@@ -95,7 +114,7 @@ export class Rover extends DynamicSprite {
 
         this.game.game.physics.p2.enable(wheel);
         wheel.body.clearShapes();
-        
+        wheel.body.debug = true;
         wheel.body.addCircle(9);
 
         /*
@@ -115,7 +134,6 @@ export class Rover extends DynamicSprite {
         * high friction with the ground
         */
         wheel.body.setMaterial(this.wheelMaterial);
-
         return wheel;
     }
 

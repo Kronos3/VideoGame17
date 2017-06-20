@@ -1,3 +1,4 @@
+/// <reference path="../imports/phaser.d.ts" />
 import * as $ from 'jquery';
 import {toggleControlScheme} from "./game"
 import {MainGame} from "./game"
@@ -13,6 +14,7 @@ import {Level} from "./level"
 import {MissionConstructor} from "./mission"
 import {AstroidBelt} from "./astroid"
 import {GameSprite} from "./object"
+import {DynamicSprite} from "./object"
 import {Rover} from "./rover"
 import {RoverBinding} from "./rover"
 
@@ -157,8 +159,6 @@ var game;
 function initGame () {
     game = new MainGame(DoGame);
     (<any>window).GAME = game;
-    var testControlBindings = [];
-    game.addControlScheme(testControlBindings);
     var story = [
         ['2061', 'The International Space Exploration Administration (ISEA) is coming off their recent success of their manned mission to Mars.', 'Now, they have set their sights on the next stepping stone in the solar system: Jupiter\'s moons.', 'The ISEA believes that landing a spacecraft near Jupiter will reveal new information about the gas giants and the remainder of the solar system.', 'However, this journey will encounter new challenges that will threaten the lives of the astronauts and the reputation of the ISEA.'],
         ['The journey to Jupiter was a success.',
@@ -184,7 +184,7 @@ function setup_pos (e, x_scale, y_scale) {
 
 function DoGame (game: MainGame): void {
     var levels: LevelConstructor[] = [
-        {
+        /*{
             name: "intro",
             game: (<any>window).GAME,
             objects: [
@@ -283,7 +283,7 @@ function DoGame (game: MainGame): void {
                 (<any>___this).astroidbelt = new AstroidBelt ((<any>window).GAME, ___this, 0);
                 ___this.addFrame ((<any>___this).astroidbelt.frame)
             }
-        },
+        },*/
         {
             name: "IO",
             game: (<any>window).GAME,
@@ -292,9 +292,10 @@ function DoGame (game: MainGame): void {
                     name: "iobackdrop",
                     assets: "IOGround",
                     physics: "IO Ground",
+                    static: true,
                     position: {
                         x: ():number => {return 0},
-                        y: ():number => {return (<any>window).GAME.game.world.height - 220}
+                        y: ():number => {return (<any>window).GAME.game.world.height - 110}
                     },
                 },
             ],
@@ -307,27 +308,42 @@ function DoGame (game: MainGame): void {
                 (<any>window).GAME.setGravity (100, 0.1);
                 ___this.game.game.world.setBounds(0, 0, 12000, 2500);
                 ___this.getObject ('ship').pos = {
-                    x: ():number => {return 70},
-                    y: ():number => {return (<any>window).GAME.game.world.height - 220}
+                    x: ():number => {return 225},
+                    y: ():number => {return (<any>window).GAME.game.world.height - 213}
                 };
 
                 var roverbuff = new Rover ((<any>window).GAME,
                     ___this, 'rover', 'Rover',
                     {
-                        x: ():number => {return (<any>window).GAME.game.world.width / 2 - 90},
-                        y: ():number => {return (<any>window).GAME.game.world.height - 110}
+                        x: ():number => {return 292},
+                        y: ():number => {return 2306}
                     }, [
                         'rover1'
                     ]);
+                ___this.addObject (roverbuff);
                 (<Ship>___this.getObject ('ship')).reset (false);
                 (<any>window).GAME.uicontroller.setPlanet ('io');
+                (<any>window).GAME.addControlScheme([
+                    RoverBinding ((<any>window).GAME, roverbuff),
+                    {
+                        key: Phaser.KeyCode.R,
+                        callback: () => {
+                            roverbuff.reset();
+                        },
+                        press: true
+                    }
+                ]);
+                (<any>window).GAME.controls[0].disable();
+                ___this.getObject('iobackdrop').pObject.body.setMaterial(roverbuff.worldMaterial);
+                ___this.getObject('iobackdrop').reset();
+                roverbuff.reset();
+                ___this.game.game.camera.follow(roverbuff.pObject);
             }
         },
 
     ]
-
     var missions: MissionConstructor [] = [
-        {
+        /*{
             title: 'Reach 4000m',
             description: 'Exit Earth\'s atmosphere',
             html: "\
@@ -379,7 +395,7 @@ function DoGame (game: MainGame): void {
             update: () => {
                 ;
             }
-        },
+        },*/
         {
             title: 'Collect surface samples',
             description: 'Collect surface samples on IO to analyze composition of ground.',
@@ -428,7 +444,7 @@ function difDone () {
         else if ($('.dif-choice.active').attr('id') == 'hard') {
             shipClass = Vulcan;
         }
-        initShip ((<any>window).GAME.getLevel ('intro'));
+        initShip ((<any>window).GAME.levelsequence.getCurrent ());
         (<any>window).GAME.resume ();
     });
     $('.mission-control-done').get (0).addEventListener ('click', () => {
@@ -449,11 +465,10 @@ export function initShip (___this: Level) {
         {
             key: Phaser.KeyCode.R,
             callback: () => {
-                (<Ship>buf).reset();
+                buf.reset();
             },
             press: true
-        },
-        //RoverBinding ((<any>window).GAME, roverbuff)
+        }
     ]);
     (<any>window).GAME.game.camera.follow(buf.pObject);
     ___this.init (___this);

@@ -9,7 +9,7 @@ export class Wrapper {
         // 0: level
         // 1: TextScene
         // 2: Open Mission Control
-        1,
+        //1,
         0,
         2,
         0,
@@ -33,7 +33,6 @@ export class Wrapper {
     }
 
     handleNext (t = false) {
-        console.log (this.order[this.currentTotal])
         if (this.order[this.currentTotal] == 2) {
             $('.scene-wrapper').removeClass ('title');
             $('.scene-wrapper').removeClass ('game');
