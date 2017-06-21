@@ -35,6 +35,16 @@ var Rover = (function (_super) {
     function Rover(game, level, name, bodyName, pos, assets) {
         var _this = _super.call(this, game, level, name, pos, assets) || this;
         _this.rockNumber = 0;
+        _this.return = false;
+        _this.collide = function (target, this_target, shapeA, shapeB, contactEquation) {
+            var id = _this.game.levelsequence.getCurrent().getObject('ship').pObject.body.id;
+            if (shapeB.body == null) {
+                return;
+            }
+            if (shapeB.body.id == id) {
+                _this.return = true;
+            }
+        };
         _this.stopAnim = function () {
             _this.pObject.animations.paused = false;
             _this.frontWheel.body.rotateLeft(0);
@@ -91,6 +101,8 @@ var Rover = (function (_super) {
             }
             _this.frontWheel.body.rotateRight(_this.speed);
             _this.backWheel.body.rotateRight(_this.speed);
+            _this.game.levelsequence.getCurrent().getObject('ship').fuelFlow();
+            _this.game.levelsequence.getCurrent().getObject('ship').setResources();
         };
         _this.driveBackward = function () {
             if (!_this.facingLeft) {
@@ -99,6 +111,8 @@ var Rover = (function (_super) {
             }
             _this.frontWheel.body.rotateLeft(_this.speed);
             _this.backWheel.body.rotateLeft(_this.speed);
+            _this.game.levelsequence.getCurrent().getObject('ship').fuelFlow();
+            _this.game.levelsequence.getCurrent().getObject('ship').setResources();
         };
         _this.preframe = function () {
             _this.gravityAction();
@@ -128,8 +142,14 @@ var Rover = (function (_super) {
         contactMaterial.friction = 1e3;
         contactMaterial.restitution = 0;
         _this.pObject.animations.play('rover');
+        _this.frontWheel.body.onBeginContact.add(_this.collide, _this);
+        _this.backWheel.body.onBeginContact.add(_this.collide, _this);
         return _this;
     }
+    Rover.prototype.disable = function (t) {
+        window.GAME.controls[1].disable();
+        //super.disable (t);
+    };
     return Rover;
 }(object_1.DynamicSprite));
 exports.Rover = Rover;

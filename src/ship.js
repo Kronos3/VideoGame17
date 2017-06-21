@@ -323,6 +323,7 @@ var Vulcan = (function (_super) {
         _this.angularAcceleration = 0.8;
         _this.throttle = 640;
         _this.pObject.body.mass = 12;
+        _this.Isp = 250 * 1.5;
         return _this;
     }
     return Vulcan;

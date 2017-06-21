@@ -90,8 +90,12 @@ export class GameSprite {
 
     isStatic: boolean;
     isMoves: boolean;
+    isDead: boolean = false;
     
-    disable = (destroy=false) => {
+    disable (destroy=false) {
+        if (this.isDead) {
+            return;
+        }
         if (this.pObject.body != null) {
             this.isStatic = this.pObject.body.static;
             this.isMoves = this.pObject.body.moves;
@@ -101,7 +105,12 @@ export class GameSprite {
         }
         this.pObject.visible = false;
         if (destroy) {
-            this.pObject.destroy()
+            this.pObject.destroy();
+            this.isDead = true;
+            var v;
+            if ((v = this.game.gravityObjects.indexOf (this)) > -1) {
+                this.game.gravityObjects.splice (v, 1); // Remove from gravity
+            }
         }
     }
 

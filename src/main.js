@@ -251,7 +251,7 @@ function DoGame(game) {
             },
             init: function (___this) {
                 window.GAME.setGravity(0, 0.1);
-                ___this.game.game.world.setBounds(0, 0, 12000, 2500);
+                ___this.game.game.world.setBounds(0, 0, 24000, 2500);
                 ___this.getObject('ship').pos = {
                     x: function () { return 120; },
                     y: function () { return window.GAME.game.world.centerY; }
@@ -277,6 +277,27 @@ function DoGame(game) {
                         y: function () { return window.GAME.game.world.height - 110; }
                     },
                 },
+                {
+                    name: "iobackdrop2",
+                    assets: "IOGround",
+                    physics: "IO Ground",
+                    static: true,
+                    position: {
+                        x: function () { return 2300 + 4700; },
+                        y: function () { return window.GAME.game.world.height - 110; }
+                    },
+                },
+                {
+                    name: "iogradient",
+                    assets: "iogradient",
+                    repeat: true,
+                    position: {
+                        x: function () { return 0; },
+                        y: function () { return window.GAME.game.world.height - 110; },
+                        width: 9400,
+                        height: 600
+                    },
+                },
             ],
             frame: function () {
             },
@@ -284,15 +305,15 @@ function DoGame(game) {
                 return false; //(<any>window).GAME.getLevel ('intro').getObject('Artemis').getAltitude() > 4000;
             },
             init: function (___this) {
-                window.GAME.setGravity(100, 0.1);
-                ___this.game.game.world.setBounds(0, 0, 12000, 2500);
+                window.GAME.setGravity(600, 0.1);
+                ___this.game.game.world.setBounds(0, 0, 9400, 1500);
                 ___this.getObject('ship').pos = {
                     x: function () { return 325; },
-                    y: function () { return window.GAME.game.world.height - 189; }
+                    y: function () { return window.GAME.game.world.height - 200; }
                 };
                 var roverbuff = new rover_1.Rover(window.GAME, ___this, 'rover', 'Rover', {
                     x: function () { return 458; },
-                    y: function () { return 2313; }
+                    y: function () { return 1313; }
                 }, [
                     'rover1'
                 ]);
@@ -310,8 +331,12 @@ function DoGame(game) {
                     }
                 ]);
                 window.GAME.controls[0].disable();
+                ___this.getObject('ship').disable();
                 ___this.getObject('iobackdrop').pObject.body.setMaterial(roverbuff.worldMaterial);
                 ___this.getObject('iobackdrop').reset();
+                ___this.getObject('iobackdrop2').pObject.body.setMaterial(roverbuff.worldMaterial);
+                ___this.getObject('iobackdrop2').reset();
+                ___this.getObject('iogradient').reset();
                 roverbuff.reset();
                 ___this.game.game.camera.follow(roverbuff.pObject);
                 for (var i = 0; i != 7; i++) {
@@ -340,9 +365,20 @@ function DoGame(game) {
                     name: "EuropaBackDrop",
                     assets: "europa",
                     physics: "Europa",
+                    static: true,
                     position: {
-                        x: function () { return 0; },
-                        y: function () { return window.GAME.game.world.height - 220; }
+                        x: function () { return 2300; },
+                        y: function () { return window.GAME.game.world.height - 110; }
+                    },
+                },
+                {
+                    name: "EuropaBackDrop1",
+                    assets: "europa",
+                    physics: "Europa",
+                    static: true,
+                    position: {
+                        x: function () { return 2300 + 4700; },
+                        y: function () { return window.GAME.game.world.height - 110; }
                     },
                 },
             ],
@@ -352,14 +388,17 @@ function DoGame(game) {
                 return false; //(<any>window).GAME.getLevel ('intro').getObject('Artemis').getAltitude() > 4000;
             },
             init: function (___this) {
-                window.GAME.setGravity(100, 0.1);
-                ___this.game.game.world.setBounds(0, 0, 12000, 2500);
+                window.GAME.setGravity(600, 0.1);
+                ___this.game.game.world.setBounds(0, 0, 9400, 2500);
                 ___this.getObject('ship').pos = {
                     x: function () { return 70; },
                     y: function () { return window.GAME.game.world.height - 220; }
                 };
+                window.GAME.controls[1].disable();
+                window.GAME.controls[0].enable();
                 ___this.getObject('ship').reset(false);
                 window.GAME.uicontroller.setPlanet('europa');
+                ___this.getObject('EuropaBackDrop').reset();
             }
         },
     ];
@@ -423,13 +462,13 @@ function DoGame(game) {
             html: '\
                 <div>\
                 <p>Collect surface samples</p>\
-                <p class=\"alt\">Collect surface samples on IO to analyze composition of ground.</p>\
+                <p class=\"alt\">Return to ship before fuel runs out.</p>\
                 </div>',
             condition: function () {
                 if (window.GAME.levelsequence.getCurrent().getObject('rover') == null) {
                     return false;
                 }
-                return window.GAME.levelsequence.getCurrent().getObject('rover').pObject.x > 1000;
+                return window.GAME.levelsequence.getCurrent().getObject('rover').return;
             },
             onDone: function () {
                 ;

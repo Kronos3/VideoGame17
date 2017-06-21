@@ -24,7 +24,8 @@ export class Rock extends GameSprite {
     }
 
     collide = (target: Phaser.Physics.P2.Body, this_target: Phaser.Physics.P2.Body, shapeA, shapeB, contactEquation) => {
-        if(shapeB.body.id == 9) {
+        var target_id = (<Rover>this.level.getObject ('rover')).frontWheel.body.id
+        if(shapeB.body.id == target_id) {
             var b = this.game.gravityObjects.indexOf(this);
             console.log (b);
             if (b > -1) {
@@ -33,7 +34,8 @@ export class Rock extends GameSprite {
             else {
                 return;
             }
-            this.disable(true);
+            this.pObject.body.clearCollision();
+            this.pObject.visible = false;
             (<Rover>this.level.getObject ('rover')).rockNumber++; 
         }
     }

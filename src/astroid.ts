@@ -36,11 +36,11 @@ export class AstroidBelt {
         var type = UTIL.getRandomInt (0, 3);
         var _type = UTIL.getRandomInt (0, 1);
         var xrange = {
-            min: this.game.levelsequence.getCurrent().getObject ('ship').pObject.x + 600,
-            max: this.game.levelsequence.getCurrent().getObject ('ship').pObject.x + 4500,
+            min: () => {return this.game.levelsequence.getCurrent().getObject ('ship').pObject.x + 600},
+            max: () => {return this.game.levelsequence.getCurrent().getObject ('ship').pObject.x + 4500},
         }
         var pos = {
-            x: () => {return UTIL.getRandomInt (xrange.min, xrange.max)},
+            x: () => {return UTIL.getRandomInt (xrange.min(), xrange.max())},
             y: () => {return _type ? this.game.game.world.height : 0}
         }
         if (type == 0) {

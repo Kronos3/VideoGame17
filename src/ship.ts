@@ -344,5 +344,6 @@ export class Vulcan extends Ship {
         this.angularAcceleration = 0.8;
         this.throttle = 640;
         this.pObject.body.mass = 12;
+        this.Isp = 250 * 1.5;
     }
 }

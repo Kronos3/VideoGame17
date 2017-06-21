@@ -273,7 +273,7 @@ function DoGame (game: MainGame): void {
             },
             init: (___this: Level) => {
                 (<any>window).GAME.setGravity (0, 0.1);
-                ___this.game.game.world.setBounds(0, 0, 12000, 2500);
+                ___this.game.game.world.setBounds(0, 0, 24000, 2500);
                 ___this.getObject ('ship').pos = {
                     x: ():number => {return 120},
                     y: ():number => {return (<any>window).GAME.game.world.centerY}
@@ -300,6 +300,27 @@ function DoGame (game: MainGame): void {
                         y: ():number => {return (<any>window).GAME.game.world.height - 110}
                     },
                 },
+                {
+                    name: "iobackdrop2",
+                    assets: "IOGround",
+                    physics: "IO Ground",
+                    static: true,
+                    position: {
+                        x: ():number => {return 2300 + 4700},
+                        y: ():number => {return (<any>window).GAME.game.world.height - 110}
+                    },
+                },
+                {
+                    name: "iogradient",
+                    assets: "iogradient",
+                    repeat: true,
+                    position: {
+                        x: ():number => {return 0},
+                        y: ():number => {return (<any>window).GAME.game.world.height - 110},
+                        width: 9400,
+                        height: 600
+                    },
+                },
             ],
             frame: () => {
             },
@@ -307,18 +328,18 @@ function DoGame (game: MainGame): void {
                 return false; //(<any>window).GAME.getLevel ('intro').getObject('Artemis').getAltitude() > 4000;
             },
             init: (___this: Level) => {
-                (<any>window).GAME.setGravity (100, 0.1);
-                ___this.game.game.world.setBounds(0, 0, 12000, 2500);
+                (<any>window).GAME.setGravity (600, 0.1);
+                ___this.game.game.world.setBounds(0, 0, 9400, 1500);
                 ___this.getObject ('ship').pos = {
                     x: ():number => {return 325},
-                    y: ():number => {return (<any>window).GAME.game.world.height - 189}
+                    y: ():number => {return (<any>window).GAME.game.world.height - 200}
                 };
 
                 var roverbuff = new Rover ((<any>window).GAME,
                     ___this, 'rover', 'Rover',
                     {
                         x: ():number => {return 458},
-                        y: ():number => {return 2313}
+                        y: ():number => {return 1313}
                     }, [
                         'rover1'
                     ]);
@@ -336,8 +357,12 @@ function DoGame (game: MainGame): void {
                     }
                 ]);
                 (<any>window).GAME.controls[0].disable();
+                (<Ship>___this.getObject ('ship')).disable ();
                 ___this.getObject('iobackdrop').pObject.body.setMaterial(roverbuff.worldMaterial);
                 ___this.getObject('iobackdrop').reset();
+                ___this.getObject('iobackdrop2').pObject.body.setMaterial(roverbuff.worldMaterial);
+                ___this.getObject('iobackdrop2').reset();
+                ___this.getObject('iogradient').reset();
                 roverbuff.reset();
                 ___this.game.game.camera.follow(roverbuff.pObject);
                 for (var i=0; i != 7; i++) {
@@ -372,9 +397,20 @@ function DoGame (game: MainGame): void {
                     name: "EuropaBackDrop",
                     assets: "europa",
                     physics: "Europa",
+                    static: true,
                     position: {
-                        x: ():number => {return 0},
-                        y: ():number => {return (<any>window).GAME.game.world.height - 220}
+                        x: ():number => {return 2300},
+                        y: ():number => {return (<any>window).GAME.game.world.height - 110}
+                    },
+                },
+                {
+                    name: "EuropaBackDrop1",
+                    assets: "europa",
+                    physics: "Europa",
+                    static: true,
+                    position: {
+                        x: ():number => {return 2300 + 4700},
+                        y: ():number => {return (<any>window).GAME.game.world.height - 110}
                     },
                 },
             ],
@@ -384,16 +420,19 @@ function DoGame (game: MainGame): void {
                 return false; //(<any>window).GAME.getLevel ('intro').getObject('Artemis').getAltitude() > 4000;
             },
             init: (___this: Level) => {
-                (<any>window).GAME.setGravity (100, 0.1);
-                ___this.game.game.world.setBounds(0, 0, 12000, 2500);
+                (<any>window).GAME.setGravity (600, 0.1);
+                ___this.game.game.world.setBounds(0, 0, 9400, 2500);
                 ___this.getObject ('ship').pos = {
                     x: ():number => {return 70},
                     y: ():number => {return (<any>window).GAME.game.world.height - 220}
                 };
+                (<any>window).GAME.controls[1].disable ();
+                (<any>window).GAME.controls[0].enable();
 
                 
                 (<Ship>___this.getObject ('ship')).reset (false);
                 (<any>window).GAME.uicontroller.setPlanet ('europa');
+                ___this.getObject('EuropaBackDrop').reset();
             }
         },
 
@@ -458,13 +497,13 @@ function DoGame (game: MainGame): void {
             html: '\
                 <div>\
                 <p>Collect surface samples</p>\
-                <p class=\"alt\">Collect surface samples on IO to analyze composition of ground.</p>\
+                <p class=\"alt\">Return to ship before fuel runs out.</p>\
                 </div>',
             condition: () => {
                 if ((<any>window).GAME.levelsequence.getCurrent().getObject('rover') == null) {
                     return false;
                 }
-                return (<any>window).GAME.levelsequence.getCurrent().getObject('rover').pObject.x > 1000;
+                return (<any>window).GAME.levelsequence.getCurrent().getObject('rover').return;
             },
             onDone: () => {
                 ;

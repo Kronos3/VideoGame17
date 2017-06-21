@@ -6,6 +6,7 @@ import {MainGame} from "./game"
 import {Level} from "./level"
 import {_position} from "./object"
 import {Animation} from "./animation"
+import {Ship} from "./ship"
 
 export var RoverBinding = (game: MainGame, rover: Rover): KeyBinding => {return {
         key: -1, // Run every frame
@@ -78,7 +79,26 @@ export class Rover extends DynamicSprite {
         var contactMaterial = this.game.game.physics.p2.createContactMaterial(this.wheelMaterial,this.worldMaterial);
         contactMaterial.friction = 1e3;
         contactMaterial.restitution = 0;
-        this.pObject.animations.play('rover')
+        this.pObject.animations.play('rover');
+        this.frontWheel.body.onBeginContact.add(this.collide, this);
+        this.backWheel.body.onBeginContact.add(this.collide, this);
+    }
+
+    return: boolean = false;
+
+    collide = (target: Phaser.Physics.P2.Body, this_target: Phaser.Physics.P2.Body, shapeA, shapeB, contactEquation) => {
+        var id = this.game.levelsequence.getCurrent().getObject('ship').pObject.body.id;
+        if (shapeB.body == null) {
+            return;
+        }
+        if (shapeB.body.id == id) {
+            this.return = true;
+        }
+    }
+
+    disable (t?: boolean) {
+        (<any>window).GAME.controls[1].disable();
+        //super.disable (t);
     }
 
     stopAnim = () => {
@@ -148,6 +168,8 @@ export class Rover extends DynamicSprite {
         }
         this.frontWheel.body.rotateRight(this.speed);
         this.backWheel.body.rotateRight(this.speed);
+        (<Ship>this.game.levelsequence.getCurrent().getObject('ship')).fuelFlow ();
+        (<Ship>this.game.levelsequence.getCurrent().getObject('ship')).setResources ();
     }
 
     driveBackward = () => {
@@ -157,6 +179,8 @@ export class Rover extends DynamicSprite {
         }
         this.frontWheel.body.rotateLeft(this.speed);
         this.backWheel.body.rotateLeft(this.speed);
+        (<Ship>this.game.levelsequence.getCurrent().getObject('ship')).fuelFlow ();
+        (<Ship>this.game.levelsequence.getCurrent().getObject('ship')).setResources ();
     }
 
     currentFrame;

@@ -16,7 +16,8 @@ var Rock = (function (_super) {
     function Rock(game, l, name, asset, pos) {
         var _this = _super.call(this, game, l, name, pos, asset) || this;
         _this.collide = function (target, this_target, shapeA, shapeB, contactEquation) {
-            if (shapeB.body.id == 9) {
+            var target_id = _this.level.getObject('rover').frontWheel.body.id;
+            if (shapeB.body.id == target_id) {
                 var b = _this.game.gravityObjects.indexOf(_this);
                 console.log(b);
                 if (b > -1) {
@@ -25,7 +26,8 @@ var Rock = (function (_super) {
                 else {
                     return;
                 }
-                _this.disable(true);
+                _this.pObject.body.clearCollision();
+                _this.pObject.visible = false;
                 _this.level.getObject('rover').rockNumber++;
             }
         };

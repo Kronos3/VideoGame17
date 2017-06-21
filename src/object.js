@@ -61,20 +61,7 @@ var GameSprite = (function () {
             _this.pObject.body.clearShapes();
             _this.pObject.body.loadPolygon('physicsData', key);
         };
-        this.disable = function (destroy) {
-            if (destroy === void 0) { destroy = false; }
-            if (_this.pObject.body != null) {
-                _this.isStatic = _this.pObject.body.static;
-                _this.isMoves = _this.pObject.body.moves;
-                _this.pObject.body.static = true;
-                _this.pObject.body.moves = false;
-                //this.pObject.body.collides ();
-            }
-            _this.pObject.visible = false;
-            if (destroy) {
-                _this.pObject.destroy();
-            }
-        };
+        this.isDead = false;
         this.enable = function () {
             _this.pObject.visible = true;
             if (_this.pObject.body != null) {
@@ -102,6 +89,28 @@ var GameSprite = (function () {
             this.pObject = this.game.game.add.sprite(this.pos.x(), this.pos.y(), this.asset);
         }
     }
+    GameSprite.prototype.disable = function (destroy) {
+        if (destroy === void 0) { destroy = false; }
+        if (this.isDead) {
+            return;
+        }
+        if (this.pObject.body != null) {
+            this.isStatic = this.pObject.body.static;
+            this.isMoves = this.pObject.body.moves;
+            this.pObject.body.static = true;
+            this.pObject.body.moves = false;
+            //this.pObject.body.collides ();
+        }
+        this.pObject.visible = false;
+        if (destroy) {
+            this.pObject.destroy();
+            this.isDead = true;
+            var v;
+            if ((v = this.game.gravityObjects.indexOf(this)) > -1) {
+                this.game.gravityObjects.splice(v, 1); // Remove from gravity
+            }
+        }
+    };
     return GameSprite;
 }());
 exports.GameSprite = GameSprite;

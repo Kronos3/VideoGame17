@@ -118,6 +118,7 @@ export class MainGame {
         this.game.load.image('rock1', '../resources/textures/Level3/IORock.png');
         this.game.load.image('rock2', '../resources/textures/Level3/IO Rock_02.png');
         this.game.load.image('europa', '../resources/textures/Level4/Europa.png');
+        this.game.load.image('iogradient', '../resources/textures/Level3/io_gradient.png');
         this.game.load.physics('physicsData', '../resources/physics/mappings.json');
         this.game.load.atlasJSONHash ('rover', '../resources/animated/rover/rover.png', '../resources/animated/rover/rover.json')
     }

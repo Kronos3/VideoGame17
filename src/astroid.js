@@ -42,11 +42,11 @@ var AstroidBelt = (function () {
         var type = UTIL.getRandomInt(0, 3);
         var _type = UTIL.getRandomInt(0, 1);
         var xrange = {
-            min: this.game.levelsequence.getCurrent().getObject('ship').pObject.x + 600,
-            max: this.game.levelsequence.getCurrent().getObject('ship').pObject.x + 4500,
+            min: function () { return _this.game.levelsequence.getCurrent().getObject('ship').pObject.x + 600; },
+            max: function () { return _this.game.levelsequence.getCurrent().getObject('ship').pObject.x + 4500; },
         };
         var pos = {
-            x: function () { return UTIL.getRandomInt(xrange.min, xrange.max); },
+            x: function () { return UTIL.getRandomInt(xrange.min(), xrange.max()); },
             y: function () { return _type ? _this.game.game.world.height : 0; }
         };
         if (type == 0) {
