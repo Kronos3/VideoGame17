@@ -20,6 +20,7 @@ export class Rock extends GameSprite {
         this.pObject.body.onBeginContact.add(this.collide, this);
         this.appendToLevel ();
         this.game.addGravity (this);
+        this.pObject.body.setMaterial((<Rover>this.level.getObject('rover')).wheelMaterial);
         this.pObject.body.mass = 3;
     }
 
@@ -27,7 +28,6 @@ export class Rock extends GameSprite {
         var target_id = (<Rover>this.level.getObject ('rover')).frontWheel.body.id
         if(shapeB.body.id == target_id) {
             var b = this.game.gravityObjects.indexOf(this);
-            console.log (b);
             if (b > -1) {
                 this.game.gravityObjects.splice(b, 1);
             }
@@ -36,7 +36,8 @@ export class Rock extends GameSprite {
             }
             this.pObject.body.clearCollision();
             this.pObject.visible = false;
-            (<Rover>this.level.getObject ('rover')).rockNumber++; 
+            (<Rover>this.level.getObject ('rover')).rockNumber++;
+            $('#rocknum > span').text ((<Rover>this.level.getObject ('rover')).rockNumber)
         }
     }
 }

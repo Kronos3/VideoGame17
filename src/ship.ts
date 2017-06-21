@@ -188,7 +188,7 @@ export class Ship extends DynamicSprite {
             this.LFO = this.maxLFO;
             this.monoProp = this.maxMono;
         }*/
-        this.follow();
+        this.follow ();
     }
 
     explode = () => {

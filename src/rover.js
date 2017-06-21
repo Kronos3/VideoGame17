@@ -66,8 +66,8 @@ var Rover = (function (_super) {
             _this.backWheel.body.y = _this.pObject.body.y + 20;
             _this.frontWheel.body.x = _this.pObject.body.x + 30;
             _this.frontWheel.body.y = _this.pObject.body.y + 20;
-            _this.game.game.camera.follow(_this.pObject);
         };
+        _this.revoluteContraints = [];
         _this.initWheel = function (target, offsetFromTruck) {
             var truckX = target.position.x;
             var truckY = target.position.y;
@@ -76,13 +76,7 @@ var Rover = (function (_super) {
             _this.game.game.physics.p2.enable(wheel);
             wheel.body.clearShapes();
             wheel.body.addCircle(9);
-            /*
-            * Constrain the wheel to the truck so that it can rotate freely on its pivot
-            * createRevoluteConstraint(bodyA, pivotA, bodyB, pivotB, maxForce)
-            * change maxForce to see how it affects chassis bounciness
-            */
-            var maxForce = 70;
-            var rev = _this.game.game.physics.p2.createRevoluteConstraint(target.body, offsetFromTruck, wheel.body, [0, 0]);
+            var rev = _this.game.game.physics.p2.createRevoluteConstraint(target.body, offsetFromTruck, wheel.body, [0, 0], 20000);
             //add wheel to wheels group
             _this.wheels.add(wheel);
             /*
@@ -90,10 +84,12 @@ var Rover = (function (_super) {
             * high friction with the ground
             */
             wheel.body.setMaterial(_this.wheelMaterial);
+            wheel.body.debug = true;
+            _this.revoluteContraints.push(rev);
             return wheel;
         };
         _this.facingLeft = true;
-        _this.speed = 200;
+        _this.speed = 400;
         _this.driveForward = function () {
             if (_this.facingLeft) {
                 _this.pObject.scale.x *= -1;
@@ -101,7 +97,7 @@ var Rover = (function (_super) {
             }
             _this.frontWheel.body.rotateRight(_this.speed);
             _this.backWheel.body.rotateRight(_this.speed);
-            _this.game.levelsequence.getCurrent().getObject('ship').fuelFlow(50);
+            _this.game.levelsequence.getCurrent().getObject('ship').fuelFlow(75);
             _this.game.levelsequence.getCurrent().getObject('ship').setResources();
         };
         _this.driveBackward = function () {
@@ -111,11 +107,12 @@ var Rover = (function (_super) {
             }
             _this.frontWheel.body.rotateLeft(_this.speed);
             _this.backWheel.body.rotateLeft(_this.speed);
-            _this.game.levelsequence.getCurrent().getObject('ship').fuelFlow(50);
+            _this.game.levelsequence.getCurrent().getObject('ship').fuelFlow(75);
             _this.game.levelsequence.getCurrent().getObject('ship').setResources();
         };
         _this.preframe = function () {
-            _this.gravityAction();
+            _this.revoluteContraints[0].disableMotor();
+            _this.revoluteContraints[1].disableMotor();
         };
         _this.calculate_velocity = function (acceleration, initialVel) {
             return (acceleration * _this.game.get_ratio()) + initialVel();
@@ -124,6 +121,7 @@ var Rover = (function (_super) {
         _this.pObject = _this.game.game.add.sprite(300, _this.game.game.world.height - 200, 'rover', '01.png');
         _this.bodyName = bodyName;
         _this.loadBody(bodyName);
+        _this.game.addGravity(_this);
         _this.pObject.animations.add('rover', [
             '01.png',
             '02.png',
@@ -139,7 +137,7 @@ var Rover = (function (_super) {
         _this.frontWheel = _this.initWheel(_this.pObject, [30, 20]);
         _this.game.game.physics.p2.setWorldMaterial(_this.worldMaterial, true, true, true, true);
         var contactMaterial = _this.game.game.physics.p2.createContactMaterial(_this.wheelMaterial, _this.worldMaterial);
-        contactMaterial.friction = 1e3;
+        contactMaterial.friction = 2e3;
         contactMaterial.restitution = 0;
         _this.pObject.animations.play('rover');
         _this.frontWheel.body.onBeginContact.add(_this.collide, _this);
@@ -148,6 +146,8 @@ var Rover = (function (_super) {
     }
     Rover.prototype.disable = function (t) {
         window.GAME.controls[1].disable();
+        this.pObject.visible = false;
+        this.pObject.body.clearCollision();
         //super.disable (t);
     };
     return Rover;

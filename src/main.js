@@ -268,6 +268,17 @@ function DoGame(game) {
             game: window.GAME,
             objects: [
                 {
+                    name: "iogradient",
+                    assets: "iogradient",
+                    repeat: true,
+                    position: {
+                        x: function () { return 0; },
+                        y: function () { return window.GAME.game.world.height - 600; },
+                        width: 9400,
+                        height: 600
+                    },
+                },
+                {
                     name: "iobackdrop",
                     assets: "IOGround",
                     physics: "IO Ground",
@@ -287,17 +298,6 @@ function DoGame(game) {
                         y: function () { return window.GAME.game.world.height - 110; }
                     },
                 },
-                {
-                    name: "iogradient",
-                    assets: "iogradient",
-                    repeat: true,
-                    position: {
-                        x: function () { return 0; },
-                        y: function () { return window.GAME.game.world.height - 110; },
-                        width: 9400,
-                        height: 600
-                    },
-                },
             ],
             frame: function () {
             },
@@ -306,7 +306,7 @@ function DoGame(game) {
             },
             init: function (___this) {
                 window.GAME.setGravity(600, 0.1);
-                ___this.game.game.world.setBounds(0, 0, 9400, 1500);
+                ___this.game.game.world.setBounds(0, 0, 9200, 1500);
                 ___this.getObject('ship').pos = {
                     x: function () { return 325; },
                     y: function () { return window.GAME.game.world.height - 200; }
@@ -362,6 +362,28 @@ function DoGame(game) {
             game: window.GAME,
             objects: [
                 {
+                    name: "stars",
+                    assets: "Stars",
+                    position: {
+                        x: function () { return 0; },
+                        y: function () { return 0; },
+                        width: 9200,
+                        height: 4000
+                    },
+                    repeat: true
+                },
+                {
+                    name: "eugradient",
+                    assets: "eugradient",
+                    repeat: true,
+                    position: {
+                        x: function () { return 0; },
+                        y: function () { return window.GAME.game.world.height - 600; },
+                        width: 9400,
+                        height: 600
+                    },
+                },
+                {
                     name: "EuropaBackDrop",
                     assets: "europa",
                     physics: "Europa",
@@ -380,7 +402,7 @@ function DoGame(game) {
                         x: function () { return 2300 + 4700; },
                         y: function () { return window.GAME.game.world.height - 110; }
                     },
-                },
+                }
             ],
             frame: function () {
             },
@@ -389,7 +411,7 @@ function DoGame(game) {
             },
             init: function (___this) {
                 window.GAME.setGravity(600, 0.1);
-                ___this.game.game.world.setBounds(0, 0, 9400, 2500);
+                ___this.game.game.world.setBounds(0, 0, 9200, 4500);
                 ___this.getObject('ship').pos = {
                     x: function () { return 70; },
                     y: function () { return window.GAME.game.world.height - 220; }
@@ -399,6 +421,9 @@ function DoGame(game) {
                 ___this.getObject('ship').reset(false);
                 window.GAME.uicontroller.setPlanet('europa');
                 ___this.getObject('EuropaBackDrop').reset();
+                ___this.getObject('EuropaBackDrop1').reset();
+                ___this.getObject('eugradient').reset();
+                ___this.getObject('ship').follow();
             }
         },
     ];
@@ -445,6 +470,7 @@ function DoGame(game) {
             html: '\
                 <div>\
                 <p>Survive the asteroid belt</p>\
+                <p>--><p>\
                 </div>',
             condition: function () {
                 return window.GAME.levelsequence.getCurrent().getObject('ship').pObject.x > 9500;
@@ -463,6 +489,7 @@ function DoGame(game) {
                 <div>\
                 <p>Collect surface samples</p>\
                 <p class=\"alt\">Return to ship before fuel runs out.</p>\
+                <p id="rocknum">Rocks: <span>0</span></p>\
                 </div>',
             condition: function () {
                 if (window.GAME.levelsequence.getCurrent().getObject('rover') == null) {
@@ -479,20 +506,32 @@ function DoGame(game) {
         },
         {
             title: 'Survey moon to generate map',
-            description: '',
+            description: 'Map will be used to create dropzones for colonization.',
             html: '\
                 <div>\
                 <p>Survey moon to generate map</p>\
-                <p class=\"alt\">Map will be used to create dropzones for colonization.</p>\
+                <p class=\"alt\">Then fly out of atmosphere before fuel runs out</p>\
+                <p id="areas">Area surveyed: <span>0%</span></p>\
                 </div>',
             condition: function () {
-                return false;
+                if (window.GAME.levelsequence.getCurrent().getObject('ship') == null) {
+                    return false;
+                }
+                return window.GAME.levelsequence.getCurrent().getObject('ship').getAltitude() > 4000;
             },
             onDone: function () {
                 ;
             },
             update: function () {
-                ;
+                var v = $('#areas > span').text();
+                var level = window.GAME.levelsequence.getCurrent();
+                var p = level.getObject('ship').pObject.x / (level.game.game.world.width - 1200);
+                if (p * 100 > 100) {
+                    p = 1;
+                }
+                if (p * 100 > parseInt(v.substring(0, v.length - 1))) {
+                    $('#areas > span').text('{0}%'.format((p * 100).toFixed(0)));
+                }
             }
         }
     ];
@@ -537,7 +576,7 @@ function initShip(___this) {
         {
             key: Phaser.KeyCode.R,
             callback: function () {
-                buf.reset();
+                window.GAME.levelsequence.getCurrent().getObject('ship').reset();
             },
             press: true
         }

@@ -18,7 +18,8 @@ var Wrapper = (function () {
             2,
             0,
             2,
-            0
+            0,
+            2
         ];
         this.currentTotal = 0;
         this.currentText = 0;

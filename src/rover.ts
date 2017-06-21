@@ -57,6 +57,7 @@ export class Rover extends DynamicSprite {
         this.pObject = this.game.game.add.sprite(300, this.game.game.world.height - 200, 'rover', '01.png');
         this.bodyName = bodyName;
         this.loadBody (bodyName);
+        this.game.addGravity (this);
         
         this.pObject.animations.add('rover', 
             [
@@ -77,7 +78,7 @@ export class Rover extends DynamicSprite {
         this.frontWheel = this.initWheel (this.pObject, [30, 20]);
         this.game.game.physics.p2.setWorldMaterial(this.worldMaterial, true, true, true, true);
         var contactMaterial = this.game.game.physics.p2.createContactMaterial(this.wheelMaterial,this.worldMaterial);
-        contactMaterial.friction = 1e3;
+        contactMaterial.friction = 2e3;
         contactMaterial.restitution = 0;
         this.pObject.animations.play('rover');
         this.frontWheel.body.onBeginContact.add(this.collide, this);
@@ -98,6 +99,8 @@ export class Rover extends DynamicSprite {
 
     disable (t?: boolean) {
         (<any>window).GAME.controls[1].disable();
+        this.pObject.visible = false;
+        this.pObject.body.clearCollision();
         //super.disable (t);
     }
 
@@ -124,8 +127,9 @@ export class Rover extends DynamicSprite {
         this.backWheel.body.y = this.pObject.body.y + 20;
         this.frontWheel.body.x = this.pObject.body.x + 30;
         this.frontWheel.body.y = this.pObject.body.y + 20;
-        this.game.game.camera.follow(this.pObject);
     }
+
+    revoluteContraints: Phaser.Physics.P2.RevoluteConstraint [] = [];
 
     initWheel = (target, offsetFromTruck) => {
         var truckX = target.position.x;
@@ -138,14 +142,8 @@ export class Rover extends DynamicSprite {
         wheel.body.clearShapes();
         wheel.body.addCircle(9);
 
-        /*
-        * Constrain the wheel to the truck so that it can rotate freely on its pivot
-        * createRevoluteConstraint(bodyA, pivotA, bodyB, pivotB, maxForce)
-        * change maxForce to see how it affects chassis bounciness
-        */
-        var maxForce = 70;
         var rev = this.game.game.physics.p2.createRevoluteConstraint(target.body, offsetFromTruck,
-            wheel.body, [0,0]);
+            wheel.body, [0,0], 20000);
 
         //add wheel to wheels group
         this.wheels.add(wheel);
@@ -155,11 +153,13 @@ export class Rover extends DynamicSprite {
         * high friction with the ground
         */
         wheel.body.setMaterial(this.wheelMaterial);
+        wheel.body.debug = true;
+        this.revoluteContraints.push (rev);
         return wheel;
     }
 
     facingLeft: boolean = true;
-    speed: number = 200;
+    speed: number = 400;
 
     driveForward = () => {
         if (this.facingLeft) {
@@ -168,7 +168,7 @@ export class Rover extends DynamicSprite {
         }
         this.frontWheel.body.rotateRight(this.speed);
         this.backWheel.body.rotateRight(this.speed);
-        (<Ship>this.game.levelsequence.getCurrent().getObject('ship')).fuelFlow (50);
+        (<Ship>this.game.levelsequence.getCurrent().getObject('ship')).fuelFlow (75);
         (<Ship>this.game.levelsequence.getCurrent().getObject('ship')).setResources ();
     }
 
@@ -179,14 +179,15 @@ export class Rover extends DynamicSprite {
         }
         this.frontWheel.body.rotateLeft(this.speed);
         this.backWheel.body.rotateLeft(this.speed);
-        (<Ship>this.game.levelsequence.getCurrent().getObject('ship')).fuelFlow (50);
+        (<Ship>this.game.levelsequence.getCurrent().getObject('ship')).fuelFlow (75);
         (<Ship>this.game.levelsequence.getCurrent().getObject('ship')).setResources ();
     }
 
     currentFrame;
 
     preframe = () => {
-        this.gravityAction ();
+        this.revoluteContraints[0].disableMotor ();
+        this.revoluteContraints[1].disableMotor ();
     }
     
     calculate_velocity = (acceleration, initialVel) => {

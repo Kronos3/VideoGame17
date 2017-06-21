@@ -91,6 +91,7 @@ var Level = (function () {
                 i.reset();
             }
             _this.binit(l);
+            _this.getObject('ship').follow();
         };
         this.addFrame = function (a) {
             _this.frameFunctions.push(a);

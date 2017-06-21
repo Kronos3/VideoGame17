@@ -103,6 +103,7 @@ var MainGame = (function () {
             _this.game.load.image('rock2', '../resources/textures/Level3/IO Rock_02.png');
             _this.game.load.image('europa', '../resources/textures/Level4/Europa.png');
             _this.game.load.image('iogradient', '../resources/textures/Level3/io_gradient.png');
+            _this.game.load.image('eugradient', '../resources/textures/Level4/atmo.png');
             _this.game.load.physics('physicsData', '../resources/physics/mappings.json');
             _this.game.load.atlasJSONHash('rover', '../resources/animated/rover/rover.png', '../resources/animated/rover/rover.json');
         };

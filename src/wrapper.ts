@@ -17,7 +17,8 @@ export class Wrapper {
         2,
         0,
         2,
-        0
+        0,
+        2
     ];
     currentTotal: number = 0;
     currentText: number = 0;

@@ -136,6 +136,7 @@ export class Level {
             i.reset ();
         }
         this.binit (l);
+        (<DynamicSprite>this.getObject ('ship')).follow ();
     };
 
     frameFunctions: (() => void)[];

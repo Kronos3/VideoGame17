@@ -19,7 +19,6 @@ var Rock = (function (_super) {
             var target_id = _this.level.getObject('rover').frontWheel.body.id;
             if (shapeB.body.id == target_id) {
                 var b = _this.game.gravityObjects.indexOf(_this);
-                console.log(b);
                 if (b > -1) {
                     _this.game.gravityObjects.splice(b, 1);
                 }
@@ -29,6 +28,7 @@ var Rock = (function (_super) {
                 _this.pObject.body.clearCollision();
                 _this.pObject.visible = false;
                 _this.level.getObject('rover').rockNumber++;
+                $('#rocknum > span').text(_this.level.getObject('rover').rockNumber);
             }
         };
         switch (asset) {
@@ -43,6 +43,7 @@ var Rock = (function (_super) {
         _this.pObject.body.onBeginContact.add(_this.collide, _this);
         _this.appendToLevel();
         _this.game.addGravity(_this);
+        _this.pObject.body.setMaterial(_this.level.getObject('rover').wheelMaterial);
         _this.pObject.body.mass = 3;
         return _this;
     }

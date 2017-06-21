@@ -10583,6 +10583,7 @@ var MainGame = (function () {
             _this.game.load.image('rock2', '../resources/textures/Level3/IO Rock_02.png');
             _this.game.load.image('europa', '../resources/textures/Level4/Europa.png');
             _this.game.load.image('iogradient', '../resources/textures/Level3/io_gradient.png');
+            _this.game.load.image('eugradient', '../resources/textures/Level4/atmo.png');
             _this.game.load.physics('physicsData', '../resources/physics/mappings.json');
             _this.game.load.atlasJSONHash('rover', '../resources/animated/rover/rover.png', '../resources/animated/rover/rover.json');
         };
@@ -10804,6 +10805,7 @@ var Level = (function () {
                 i.reset();
             }
             _this.binit(l);
+            _this.getObject('ship').follow();
         };
         this.addFrame = function (a) {
             _this.frameFunctions.push(a);
@@ -11148,6 +11150,17 @@ function DoGame(game) {
             game: window.GAME,
             objects: [
                 {
+                    name: "iogradient",
+                    assets: "iogradient",
+                    repeat: true,
+                    position: {
+                        x: function () { return 0; },
+                        y: function () { return window.GAME.game.world.height - 600; },
+                        width: 9400,
+                        height: 600
+                    },
+                },
+                {
                     name: "iobackdrop",
                     assets: "IOGround",
                     physics: "IO Ground",
@@ -11167,17 +11180,6 @@ function DoGame(game) {
                         y: function () { return window.GAME.game.world.height - 110; }
                     },
                 },
-                {
-                    name: "iogradient",
-                    assets: "iogradient",
-                    repeat: true,
-                    position: {
-                        x: function () { return 0; },
-                        y: function () { return window.GAME.game.world.height - 110; },
-                        width: 9400,
-                        height: 600
-                    },
-                },
             ],
             frame: function () {
             },
@@ -11186,7 +11188,7 @@ function DoGame(game) {
             },
             init: function (___this) {
                 window.GAME.setGravity(600, 0.1);
-                ___this.game.game.world.setBounds(0, 0, 9400, 1500);
+                ___this.game.game.world.setBounds(0, 0, 9200, 1500);
                 ___this.getObject('ship').pos = {
                     x: function () { return 325; },
                     y: function () { return window.GAME.game.world.height - 200; }
@@ -11242,6 +11244,28 @@ function DoGame(game) {
             game: window.GAME,
             objects: [
                 {
+                    name: "stars",
+                    assets: "Stars",
+                    position: {
+                        x: function () { return 0; },
+                        y: function () { return 0; },
+                        width: 9200,
+                        height: 4000
+                    },
+                    repeat: true
+                },
+                {
+                    name: "eugradient",
+                    assets: "eugradient",
+                    repeat: true,
+                    position: {
+                        x: function () { return 0; },
+                        y: function () { return window.GAME.game.world.height - 600; },
+                        width: 9400,
+                        height: 600
+                    },
+                },
+                {
                     name: "EuropaBackDrop",
                     assets: "europa",
                     physics: "Europa",
@@ -11260,7 +11284,7 @@ function DoGame(game) {
                         x: function () { return 2300 + 4700; },
                         y: function () { return window.GAME.game.world.height - 110; }
                     },
-                },
+                }
             ],
             frame: function () {
             },
@@ -11269,7 +11293,7 @@ function DoGame(game) {
             },
             init: function (___this) {
                 window.GAME.setGravity(600, 0.1);
-                ___this.game.game.world.setBounds(0, 0, 9400, 2500);
+                ___this.game.game.world.setBounds(0, 0, 9200, 4500);
                 ___this.getObject('ship').pos = {
                     x: function () { return 70; },
                     y: function () { return window.GAME.game.world.height - 220; }
@@ -11279,6 +11303,9 @@ function DoGame(game) {
                 ___this.getObject('ship').reset(false);
                 window.GAME.uicontroller.setPlanet('europa');
                 ___this.getObject('EuropaBackDrop').reset();
+                ___this.getObject('EuropaBackDrop1').reset();
+                ___this.getObject('eugradient').reset();
+                ___this.getObject('ship').follow();
             }
         },
     ];
@@ -11325,6 +11352,7 @@ function DoGame(game) {
             html: '\
                 <div>\
                 <p>Survive the asteroid belt</p>\
+                <p>--><p>\
                 </div>',
             condition: function () {
                 return window.GAME.levelsequence.getCurrent().getObject('ship').pObject.x > 9500;
@@ -11343,6 +11371,7 @@ function DoGame(game) {
                 <div>\
                 <p>Collect surface samples</p>\
                 <p class=\"alt\">Return to ship before fuel runs out.</p>\
+                <p id="rocknum">Rocks: <span>0</span></p>\
                 </div>',
             condition: function () {
                 if (window.GAME.levelsequence.getCurrent().getObject('rover') == null) {
@@ -11359,20 +11388,32 @@ function DoGame(game) {
         },
         {
             title: 'Survey moon to generate map',
-            description: '',
+            description: 'Map will be used to create dropzones for colonization.',
             html: '\
                 <div>\
                 <p>Survey moon to generate map</p>\
-                <p class=\"alt\">Map will be used to create dropzones for colonization.</p>\
+                <p class=\"alt\">Then fly out of atmosphere before fuel runs out</p>\
+                <p id="areas">Area surveyed: <span>0%</span></p>\
                 </div>',
             condition: function () {
-                return false;
+                if (window.GAME.levelsequence.getCurrent().getObject('ship') == null) {
+                    return false;
+                }
+                return window.GAME.levelsequence.getCurrent().getObject('ship').getAltitude() > 4000;
             },
             onDone: function () {
                 ;
             },
             update: function () {
-                ;
+                var v = $('#areas > span').text();
+                var level = window.GAME.levelsequence.getCurrent();
+                var p = level.getObject('ship').pObject.x / (level.game.game.world.width - 1200);
+                if (p * 100 > 100) {
+                    p = 1;
+                }
+                if (p * 100 > parseInt(v.substring(0, v.length - 1))) {
+                    $('#areas > span').text('{0}%'.format((p * 100).toFixed(0)));
+                }
             }
         }
     ];
@@ -11417,7 +11458,7 @@ function initShip(___this) {
         {
             key: Phaser.KeyCode.R,
             callback: function () {
-                buf.reset();
+                window.GAME.levelsequence.getCurrent().getObject('ship').reset();
             },
             press: true
         }
@@ -11670,7 +11711,6 @@ var Rock = (function (_super) {
             var target_id = _this.level.getObject('rover').frontWheel.body.id;
             if (shapeB.body.id == target_id) {
                 var b = _this.game.gravityObjects.indexOf(_this);
-                console.log(b);
                 if (b > -1) {
                     _this.game.gravityObjects.splice(b, 1);
                 }
@@ -11680,6 +11720,7 @@ var Rock = (function (_super) {
                 _this.pObject.body.clearCollision();
                 _this.pObject.visible = false;
                 _this.level.getObject('rover').rockNumber++;
+                $('#rocknum > span').text(_this.level.getObject('rover').rockNumber);
             }
         };
         switch (asset) {
@@ -11694,6 +11735,7 @@ var Rock = (function (_super) {
         _this.pObject.body.onBeginContact.add(_this.collide, _this);
         _this.appendToLevel();
         _this.game.addGravity(_this);
+        _this.pObject.body.setMaterial(_this.level.getObject('rover').wheelMaterial);
         _this.pObject.body.mass = 3;
         return _this;
     }
@@ -11770,8 +11812,8 @@ var Rover = (function (_super) {
             _this.backWheel.body.y = _this.pObject.body.y + 20;
             _this.frontWheel.body.x = _this.pObject.body.x + 30;
             _this.frontWheel.body.y = _this.pObject.body.y + 20;
-            _this.game.game.camera.follow(_this.pObject);
         };
+        _this.revoluteContraints = [];
         _this.initWheel = function (target, offsetFromTruck) {
             var truckX = target.position.x;
             var truckY = target.position.y;
@@ -11780,13 +11822,7 @@ var Rover = (function (_super) {
             _this.game.game.physics.p2.enable(wheel);
             wheel.body.clearShapes();
             wheel.body.addCircle(9);
-            /*
-            * Constrain the wheel to the truck so that it can rotate freely on its pivot
-            * createRevoluteConstraint(bodyA, pivotA, bodyB, pivotB, maxForce)
-            * change maxForce to see how it affects chassis bounciness
-            */
-            var maxForce = 70;
-            var rev = _this.game.game.physics.p2.createRevoluteConstraint(target.body, offsetFromTruck, wheel.body, [0, 0]);
+            var rev = _this.game.game.physics.p2.createRevoluteConstraint(target.body, offsetFromTruck, wheel.body, [0, 0], 20000);
             //add wheel to wheels group
             _this.wheels.add(wheel);
             /*
@@ -11794,10 +11830,12 @@ var Rover = (function (_super) {
             * high friction with the ground
             */
             wheel.body.setMaterial(_this.wheelMaterial);
+            wheel.body.debug = true;
+            _this.revoluteContraints.push(rev);
             return wheel;
         };
         _this.facingLeft = true;
-        _this.speed = 200;
+        _this.speed = 400;
         _this.driveForward = function () {
             if (_this.facingLeft) {
                 _this.pObject.scale.x *= -1;
@@ -11805,7 +11843,7 @@ var Rover = (function (_super) {
             }
             _this.frontWheel.body.rotateRight(_this.speed);
             _this.backWheel.body.rotateRight(_this.speed);
-            _this.game.levelsequence.getCurrent().getObject('ship').fuelFlow(50);
+            _this.game.levelsequence.getCurrent().getObject('ship').fuelFlow(75);
             _this.game.levelsequence.getCurrent().getObject('ship').setResources();
         };
         _this.driveBackward = function () {
@@ -11815,11 +11853,12 @@ var Rover = (function (_super) {
             }
             _this.frontWheel.body.rotateLeft(_this.speed);
             _this.backWheel.body.rotateLeft(_this.speed);
-            _this.game.levelsequence.getCurrent().getObject('ship').fuelFlow(50);
+            _this.game.levelsequence.getCurrent().getObject('ship').fuelFlow(75);
             _this.game.levelsequence.getCurrent().getObject('ship').setResources();
         };
         _this.preframe = function () {
-            _this.gravityAction();
+            _this.revoluteContraints[0].disableMotor();
+            _this.revoluteContraints[1].disableMotor();
         };
         _this.calculate_velocity = function (acceleration, initialVel) {
             return (acceleration * _this.game.get_ratio()) + initialVel();
@@ -11828,6 +11867,7 @@ var Rover = (function (_super) {
         _this.pObject = _this.game.game.add.sprite(300, _this.game.game.world.height - 200, 'rover', '01.png');
         _this.bodyName = bodyName;
         _this.loadBody(bodyName);
+        _this.game.addGravity(_this);
         _this.pObject.animations.add('rover', [
             '01.png',
             '02.png',
@@ -11843,7 +11883,7 @@ var Rover = (function (_super) {
         _this.frontWheel = _this.initWheel(_this.pObject, [30, 20]);
         _this.game.game.physics.p2.setWorldMaterial(_this.worldMaterial, true, true, true, true);
         var contactMaterial = _this.game.game.physics.p2.createContactMaterial(_this.wheelMaterial, _this.worldMaterial);
-        contactMaterial.friction = 1e3;
+        contactMaterial.friction = 2e3;
         contactMaterial.restitution = 0;
         _this.pObject.animations.play('rover');
         _this.frontWheel.body.onBeginContact.add(_this.collide, _this);
@@ -11852,6 +11892,8 @@ var Rover = (function (_super) {
     }
     Rover.prototype.disable = function (t) {
         window.GAME.controls[1].disable();
+        this.pObject.visible = false;
+        this.pObject.body.clearCollision();
         //super.disable (t);
     };
     return Rover;
@@ -12405,7 +12447,8 @@ var Wrapper = (function () {
             2,
             0,
             2,
-            0
+            0,
+            2
         ];
         this.currentTotal = 0;
         this.currentText = 0;
