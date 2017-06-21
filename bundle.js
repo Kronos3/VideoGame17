@@ -11219,12 +11219,12 @@ function DoGame(game) {
                 ___this.getObject('iogradient').reset();
                 roverbuff.reset();
                 ___this.game.game.camera.follow(roverbuff.pObject);
-                for (var i = 0; i != 7; i++) {
+                for (var i = 0; i != 30; i++) {
                     var type = UTIL.getRandomInt(0, 1);
                     var buf;
                     if (type) {
                         buf = new rock_1.Rock(___this.game, ___this, "rock{0}".format(i), "rock1", {
-                            x: function () { return UTIL.getRandomInt(1200, 4000); },
+                            x: function () { return UTIL.getRandomInt(1200, window.GAME.game.world.width); },
                             y: function () { return window.GAME.game.world.height - 250; }
                         });
                     }
@@ -11805,7 +11805,7 @@ var Rover = (function (_super) {
             }
             _this.frontWheel.body.rotateRight(_this.speed);
             _this.backWheel.body.rotateRight(_this.speed);
-            _this.game.levelsequence.getCurrent().getObject('ship').fuelFlow();
+            _this.game.levelsequence.getCurrent().getObject('ship').fuelFlow(50);
             _this.game.levelsequence.getCurrent().getObject('ship').setResources();
         };
         _this.driveBackward = function () {
@@ -11815,7 +11815,7 @@ var Rover = (function (_super) {
             }
             _this.frontWheel.body.rotateLeft(_this.speed);
             _this.backWheel.body.rotateLeft(_this.speed);
-            _this.game.levelsequence.getCurrent().getObject('ship').fuelFlow();
+            _this.game.levelsequence.getCurrent().getObject('ship').fuelFlow(50);
             _this.game.levelsequence.getCurrent().getObject('ship').setResources();
         };
         _this.preframe = function () {
@@ -11988,7 +11988,11 @@ var Ship = (function (_super) {
         _this.calcUsage = function (isp) {
             return isp / (_this.game.game.time.fps * 60);
         };
-        _this.fuelFlow = function () {
+        _this.fuelFlow = function (isp) {
+            if (typeof isp != "undefined") {
+                _this.LFO -= _this.calcUsage(isp);
+                return;
+            }
             _this.LFO -= _this.calcUsage(_this.Isp);
         };
         _this.setResources = function () {

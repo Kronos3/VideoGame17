@@ -168,7 +168,7 @@ export class Rover extends DynamicSprite {
         }
         this.frontWheel.body.rotateRight(this.speed);
         this.backWheel.body.rotateRight(this.speed);
-        (<Ship>this.game.levelsequence.getCurrent().getObject('ship')).fuelFlow ();
+        (<Ship>this.game.levelsequence.getCurrent().getObject('ship')).fuelFlow (50);
         (<Ship>this.game.levelsequence.getCurrent().getObject('ship')).setResources ();
     }
 
@@ -179,7 +179,7 @@ export class Rover extends DynamicSprite {
         }
         this.frontWheel.body.rotateLeft(this.speed);
         this.backWheel.body.rotateLeft(this.speed);
-        (<Ship>this.game.levelsequence.getCurrent().getObject('ship')).fuelFlow ();
+        (<Ship>this.game.levelsequence.getCurrent().getObject('ship')).fuelFlow (50);
         (<Ship>this.game.levelsequence.getCurrent().getObject('ship')).setResources ();
     }
 

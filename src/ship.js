@@ -127,7 +127,11 @@ var Ship = (function (_super) {
         _this.calcUsage = function (isp) {
             return isp / (_this.game.game.time.fps * 60);
         };
-        _this.fuelFlow = function () {
+        _this.fuelFlow = function (isp) {
+            if (typeof isp != "undefined") {
+                _this.LFO -= _this.calcUsage(isp);
+                return;
+            }
             _this.LFO -= _this.calcUsage(_this.Isp);
         };
         _this.setResources = function () {

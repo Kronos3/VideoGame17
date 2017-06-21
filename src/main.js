@@ -339,12 +339,12 @@ function DoGame(game) {
                 ___this.getObject('iogradient').reset();
                 roverbuff.reset();
                 ___this.game.game.camera.follow(roverbuff.pObject);
-                for (var i = 0; i != 7; i++) {
+                for (var i = 0; i != 30; i++) {
                     var type = UTIL.getRandomInt(0, 1);
                     var buf;
                     if (type) {
                         buf = new rock_1.Rock(___this.game, ___this, "rock{0}".format(i), "rock1", {
-                            x: function () { return UTIL.getRandomInt(1200, 4000); },
+                            x: function () { return UTIL.getRandomInt(1200, window.GAME.game.world.width); },
                             y: function () { return window.GAME.game.world.height - 250; }
                         });
                     }

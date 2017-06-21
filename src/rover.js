@@ -101,7 +101,7 @@ var Rover = (function (_super) {
             }
             _this.frontWheel.body.rotateRight(_this.speed);
             _this.backWheel.body.rotateRight(_this.speed);
-            _this.game.levelsequence.getCurrent().getObject('ship').fuelFlow();
+            _this.game.levelsequence.getCurrent().getObject('ship').fuelFlow(50);
             _this.game.levelsequence.getCurrent().getObject('ship').setResources();
         };
         _this.driveBackward = function () {
@@ -111,7 +111,7 @@ var Rover = (function (_super) {
             }
             _this.frontWheel.body.rotateLeft(_this.speed);
             _this.backWheel.body.rotateLeft(_this.speed);
-            _this.game.levelsequence.getCurrent().getObject('ship').fuelFlow();
+            _this.game.levelsequence.getCurrent().getObject('ship').fuelFlow(50);
             _this.game.levelsequence.getCurrent().getObject('ship').setResources();
         };
         _this.preframe = function () {

@@ -365,7 +365,7 @@ function DoGame (game: MainGame): void {
                 ___this.getObject('iogradient').reset();
                 roverbuff.reset();
                 ___this.game.game.camera.follow(roverbuff.pObject);
-                for (var i=0; i != 7; i++) {
+                for (var i=0; i !=30; i++) {
                     var type = UTIL.getRandomInt (0,1);
                     var buf;
                     if (type) {
@@ -373,7 +373,7 @@ function DoGame (game: MainGame): void {
                          ___this, "rock{0}".format (i), 
                          "rock1",
                          {
-                             x: () => {return UTIL.getRandomInt(1200, 4000)},
+                             x: () => {return UTIL.getRandomInt(1200, (<any>window).GAME.game.world.width)},
                              y: () => {return (<any>window).GAME.game.world.height - 250}
                          } )
                     }

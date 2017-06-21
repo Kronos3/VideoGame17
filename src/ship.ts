@@ -158,7 +158,11 @@ export class Ship extends DynamicSprite {
         return isp / (this.game.game.time.fps * 60)
     }
 
-    fuelFlow = () => {
+    fuelFlow = (isp?:number) => {
+        if (typeof isp != "undefined") {
+            this.LFO -= this.calcUsage (isp);
+            return;
+        } 
         this.LFO -= this.calcUsage (this.Isp);
     }
 
